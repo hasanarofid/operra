@@ -112,17 +112,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 8. Legacy Data (Keeping for compatibility)
-        User::updateOrCreate(['email' => 'admin@example.com'], [
+        User::updateOrCreate(['email' => 'admin@operra.com'], [
             'name' => 'Admin User',
             'password' => Hash::make('password'),
         ])->assignRole($adminRole);
 
-        User::updateOrCreate(['email' => 'manager@example.com'], [
+        User::updateOrCreate(['email' => 'manager@operra.com'], [
             'name' => 'Manager User',
             'password' => Hash::make('password'),
         ])->assignRole($managerRole);
 
-        User::updateOrCreate(['email' => 'staff@example.com'], [
+        User::updateOrCreate(['email' => 'staff@operra.com'], [
             'name' => 'Staff User',
             'password' => Hash::make('password'),
         ])->assignRole($staffRole);
