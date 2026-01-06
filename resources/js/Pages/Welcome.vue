@@ -57,7 +57,7 @@ defineProps({
                         <div class="ml-auto mr-auto w-full px-4 text-center lg:w-8/12">
                             <div class="pr-0">
                                 <div class="mb-6 flex justify-center">
-                                    <ApplicationLogo class="h-24 w-auto brightness-0 invert opacity-90" />
+                                    <ApplicationLogo class="h-24 w-auto" />
                                 </div>
                                 <h1 class="text-6xl font-black text-white uppercase tracking-tighter leading-none mb-6">
                                     Control Your Business <br/>
