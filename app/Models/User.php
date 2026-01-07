@@ -24,6 +24,21 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function whatsappAgents()
+    {
+        return $this->hasMany(WhatsappAgent::class);
+    }
+
+    public function assignedCustomers()
+    {
+        return $this->hasMany(Customer::class, 'assigned_to');
+    }
+
+    public function assignedChats()
+    {
+        return $this->hasMany(ChatSession::class, 'assigned_user_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

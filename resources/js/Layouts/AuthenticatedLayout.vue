@@ -3,10 +3,14 @@ import { ref, onMounted } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const collapseShow = ref("hidden");
 const isDark = ref(true); // Default dark
+
+const page = usePage();
+const hasRole = (role) => page.props.auth.user.roles.includes(role);
+const hasPermission = (permission) => page.props.auth.user.permissions.includes(permission);
 
 function toggleCollapseShow(classes) {
   collapseShow.value = classes;
@@ -125,57 +129,23 @@ onMounted(() => {
               </Link>
             </li>
 
-            <!-- Master Data Section -->
+            <!-- CRM Section -->
             <hr class="my-4 md:min-w-full" />
             <h6 class="md:min-w-full text-gray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
-              Master Data
+              CRM & Leads
             </h6>
             <li class="items-center">
-                <Link :href="route('master.products.index')" 
+                <Link :href="route('crm.chat.index')" 
                     class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('master.products.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Products
+                    :class="route().current('crm.chat.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                    Chat Inbox
                 </Link>
             </li>
             <li class="items-center">
                 <Link :href="route('master.customers.index')" 
                     class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                     :class="route().current('master.customers.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Customers
-                </Link>
-            </li>
-            <li class="items-center">
-                <Link :href="route('master.suppliers.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('master.suppliers.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Suppliers
-                </Link>
-            </li>
-            <li class="items-center">
-                <Link :href="route('master.warehouses.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('master.warehouses.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Warehouses
-                </Link>
-            </li>
-
-            <!-- Sales Section -->
-            <hr class="my-4 md:min-w-full" />
-            <h6 class="md:min-w-full text-gray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
-              Sales & Inventory
-            </h6>
-            <li class="items-center">
-                <Link :href="route('sales.orders.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('sales.orders.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Sales Orders
-                </Link>
-            </li>
-            <li class="items-center">
-                <Link :href="route('stock.movements.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('stock.movements.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Stock Movements
+                    Manage Leads
                 </Link>
             </li>
           </ul>
@@ -187,13 +157,22 @@ onMounted(() => {
             Administrative
           </h6>
           <ul class="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
-            <li class="items-center">
+            <li v-if="hasRole('super-admin') || hasRole('manager')" class="items-center">
               <Link
                 :href="route('settings.index')"
                 class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                 :class="route().current('settings.index') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'"
               >
                 Company Settings
+              </Link>
+            </li>
+            <li v-if="hasRole('super-admin')" class="items-center">
+              <Link
+                :href="route('whatsapp.settings.index')"
+                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                :class="route().current('whatsapp.settings.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'"
+              >
+                WhatsApp Config
               </Link>
             </li>
             <li class="items-center">

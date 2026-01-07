@@ -17,6 +17,10 @@ use App\Models\Supplier;
 use App\Models\SalesOrder;
 use App\Models\Invoice;
 use App\Models\StockMovement;
+use App\Models\WhatsappAccount;
+use App\Models\WhatsappAgent;
+use App\Models\ChatSession;
+use App\Models\ChatMessage;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -27,9 +31,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Roles & Permissions Setup
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'super-admin']);
         $managerRole = Role::firstOrCreate(['name' => 'manager']);
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
+        $salesRole = Role::firstOrCreate(['name' => 'sales']);
 
         $permissions = [
             'manage orders',
@@ -42,6 +47,13 @@ class DatabaseSeeder extends Seeder
             'manage master data',
             'manage sales',
             'manage stock',
+            // WA & CRM Permissions
+            'manage whatsapp accounts',
+            'manage agents',
+            'view all chats',
+            'view assigned chats',
+            'send messages',
+            'manage leads',
         ];
 
         foreach ($permissions as $permission) {
@@ -49,8 +61,13 @@ class DatabaseSeeder extends Seeder
         }
 
         $adminRole->syncPermissions(Permission::all());
-        $managerRole->syncPermissions(['manage orders', 'manage inventory', 'view activities', 'handle approvals', 'manage sales', 'manage stock']);
+        $managerRole->syncPermissions([
+            'manage orders', 'manage inventory', 'view activities', 'handle approvals', 
+            'manage sales', 'manage stock', 'view all chats', 'send messages', 
+            'manage leads', 'manage agents'
+        ]);
         $staffRole->syncPermissions(['manage orders', 'manage inventory', 'manage sales']);
+        $salesRole->syncPermissions(['view assigned chats', 'send messages', 'manage leads']);
 
         // 2. Settings (Default)
         Setting::updateOrCreate(['key' => 'company_name'], ['value' => 'PT. Operra Solusi Digital']);
@@ -126,5 +143,64 @@ class DatabaseSeeder extends Seeder
             'name' => 'Staff User',
             'password' => Hash::make('password'),
         ])->assignRole($staffRole);
+
+        User::updateOrCreate(['email' => 'sales1@operra.com'], [
+            'name' => 'Sales Ahmad',
+            'password' => Hash::make('password'),
+        ])->assignRole($salesRole);
+
+        User::updateOrCreate(['email' => 'sales2@operra.com'], [
+            'name' => 'Sales Budi',
+            'password' => Hash::make('password'),
+        ])->assignRole($salesRole);
+
+        // 9. WhatsApp & CRM Setup
+        $waAccount = WhatsappAccount::updateOrCreate(['phone_number' => '6281234567890'], [
+            'name' => 'CS Utama Operra',
+            'provider' => 'official',
+            'is_verified' => true, // Centang Hijau
+            'status' => 'active',
+        ]);
+
+        $salesUsers = User::role('sales')->get();
+        foreach ($salesUsers as $user) {
+            WhatsappAgent::updateOrCreate([
+                'user_id' => $user->id,
+                'whatsapp_account_id' => $waAccount->id
+            ], [
+                'is_available' => true
+            ]);
+        }
+
+        // Example Lead/Chat
+        $lead = Customer::create([
+            'name' => 'Calon Lead 1',
+            'phone' => '628999888777',
+            'status' => 'lead',
+            'lead_source' => 'whatsapp'
+        ]);
+
+        $session = ChatSession::create([
+            'whatsapp_account_id' => $waAccount->id,
+            'customer_id' => $lead->id,
+            'assigned_user_id' => $salesUsers->first()->id, // Assigned to Sales Ahmad
+            'status' => 'open',
+            'last_message_at' => now(),
+        ]);
+
+        ChatMessage::create([
+            'chat_session_id' => $session->id,
+            'sender_type' => 'customer',
+            'message_body' => 'Halo, saya tertarik dengan produk MacBook Pro M3',
+            'created_at' => now()->subMinutes(10)
+        ]);
+
+        ChatMessage::create([
+            'chat_session_id' => $session->id,
+            'sender_id' => $salesUsers->first()->id,
+            'sender_type' => 'user',
+            'message_body' => 'Halo! Tentu, untuk MacBook Pro M3 stoknya ready kak.',
+            'created_at' => now()->subMinutes(5)
+        ]);
     }
 }

@@ -12,6 +12,8 @@ use App\Http\Controllers\ERP\SalesOrderController;
 use App\Http\Controllers\ERP\InvoiceController;
 use App\Http\Controllers\ERP\StockMovementController;
 use App\Http\Controllers\ERP\SettingController;
+use App\Http\Controllers\WhatsAppConfigController;
+use App\Http\Controllers\CRMChatController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,29 +32,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::resource('inventory', InventoryController::class);
 
-    // ERP Master Data
+    // CRM Master Data
     Route::prefix('master')->name('master.')->group(function () {
-        Route::resource('products', ProductController::class);
         Route::resource('customers', CustomerController::class);
-        Route::resource('suppliers', SupplierController::class);
-        Route::resource('warehouses', WarehouseController::class);
     });
 
-    // ERP Sales
-    Route::prefix('sales')->name('sales.')->group(function () {
-        Route::resource('orders', SalesOrderController::class);
-        Route::resource('invoices', InvoiceController::class);
-        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
-    });
-
-    // ERP Stock
-    Route::prefix('stock')->name('stock.')->group(function () {
-        Route::resource('movements', StockMovementController::class);
-    });
+    // CRM Chat (Shared Inbox)
+    Route::get('/inbox', [CRMChatController::class, 'index'])->name('crm.chat.index');
+    Route::get('/inbox/{chatSession}', [CRMChatController::class, 'show'])->name('crm.chat.show');
+    Route::post('/inbox/{chatSession}/send', [CRMChatController::class, 'sendMessage'])->name('crm.chat.send');
 
     // Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // WhatsApp Settings (Admin only)
+    Route::middleware(['role:super-admin'])->group(function () {
+        Route::get('/whatsapp-settings', [WhatsAppConfigController::class, 'index'])->name('whatsapp.settings.index');
+        Route::post('/whatsapp-settings', [WhatsAppConfigController::class, 'update'])->name('whatsapp.settings.update');
+    });
 });
 
 Route::middleware('auth')->group(function () {

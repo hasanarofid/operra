@@ -12,6 +12,7 @@ class SettingController extends Controller
     public function index()
     {
         $settings = Setting::all()->pluck('value', 'key');
+        
         return Inertia::render('ERP/Settings/Index', [
             'settings' => $settings
         ]);
