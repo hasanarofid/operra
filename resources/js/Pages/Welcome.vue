@@ -13,64 +13,60 @@ defineProps({
 
     <div class="text-gray-800 antialiased">
         <!-- Navbar -->
-        <nav class="absolute top-0 z-50 flex w-full flex-wrap items-center justify-between px-2 py-3">
-            <div class="container mx-auto flex flex-wrap items-center justify-between px-4">
-                <div class="relative flex w-full justify-between lg:static lg:block lg:w-auto lg:justify-start">
-                    <Link :href="route('dashboard')" class="mr-4 inline-block whitespace-nowrap py-2 text-sm font-bold uppercase leading-relaxed text-white">
-                        <div class="flex items-center gap-2">
-                            <ApplicationLogo class="h-10 w-auto" />
-                            <span class="text-xl font-extrabold tracking-tighter">OPERRA</span>
-                        </div>
-                    </Link>
-                </div>
+        <nav class="absolute top-0 z-50 w-full px-4 py-6">
+            <div class="container mx-auto flex items-center justify-between">
+                <Link :href="route('dashboard')" class="flex items-center gap-2 text-white">
+                    <ApplicationLogo class="h-8 md:h-10 w-auto" />
+                    <span class="text-xl md:text-2xl font-black tracking-tighter uppercase">OPERRA</span>
+                </Link>
                 
-                <div class="flex flex-grow items-center bg-white lg:bg-transparent lg:shadow-none" id="example-navbar-warning">
-                    <ul class="flex list-none flex-col lg:ml-auto lg:flex-row">
-                        <li v-if="canLogin" class="flex items-center">
-                            <Link v-if="$page.props.auth.user" :href="route('dashboard')" 
-                                class="mb-3 ml-3 rounded-full bg-white px-6 py-2 text-xs font-bold uppercase text-gray-800 shadow outline-none transition-all duration-150 ease-linear hover:shadow-md focus:outline-none active:bg-gray-100 lg:mb-0 lg:mr-1">
-                                Dashboard
+                <div class="flex items-center gap-4">
+                    <template v-if="canLogin">
+                        <Link v-if="$page.props.auth.user" :href="route('dashboard')" 
+                            class="rounded-full bg-white px-6 py-2 text-xs font-bold uppercase text-gray-900 shadow-xl transition-all hover:bg-gray-100">
+                            Dashboard
+                        </Link>
+                        <template v-else>
+                            <Link :href="route('login')" class="hidden md:block text-xs font-bold uppercase text-white hover:text-indigo-200 transition-colors">
+                                Log In
                             </Link>
-                            <template v-else>
-                                <Link :href="route('login')" class="px-5 py-4 text-xs font-bold uppercase text-white lg:py-2 hover:text-indigo-200 transition-colors">
-                                    Log In
-                                </Link>
-                                <Link v-if="canRegister" :href="route('register')" 
-                                    class="mb-3 ml-3 rounded-full bg-indigo-600 px-6 py-2 text-xs font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:bg-indigo-700 hover:shadow-md focus:outline-none lg:mb-0 lg:mr-1">
-                                    Get Started
-                                </Link>
-                            </template>
-                        </li>
-                    </ul>
+                            <Link v-if="canRegister" :href="route('register')" 
+                                class="rounded-full bg-indigo-600 px-6 py-2 text-xs font-bold uppercase text-white shadow-xl transition-all hover:bg-indigo-700">
+                                Get Started
+                            </Link>
+                        </template>
+                    </template>
                 </div>
             </div>
         </nav>
 
         <main>
             <!-- Hero Section -->
-            <div class="relative flex min-h-screen content-center items-center justify-center pb-32 pt-16">
+            <div class="relative flex min-h-screen content-center items-center justify-center pb-32 pt-24 overflow-hidden">
                 <div class="absolute top-0 h-full w-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=2426&q=80');">
-                    <span id="blackOverlay" class="absolute h-full w-full bg-gradient-to-b from-gray-900 via-gray-900/80 to-gray-900 opacity-90"></span>
+                    <span id="blackOverlay" class="absolute h-full w-full bg-gradient-to-b from-gray-950 via-gray-900/90 to-gray-950 opacity-95"></span>
                 </div>
-                <div class="container relative mx-auto">
+                <div class="container relative mx-auto px-4">
                     <div class="flex flex-wrap items-center">
-                        <div class="ml-auto mr-auto w-full px-4 text-center lg:w-8/12">
-                            <div class="pr-0">
-                                <div class="mb-6 flex justify-center">
-                                    <ApplicationLogo class="h-24 w-auto" />
+                        <div class="ml-auto mr-auto w-full text-center lg:w-9/12">
+                            <div class="relative z-10">
+                                <div class="mb-8 flex justify-center animate-pulse">
+                                    <div class="p-4 bg-white/5 rounded-3xl backdrop-blur-xl border border-white/10">
+                                        <ApplicationLogo class="h-16 md:h-24 w-auto" />
+                                    </div>
                                 </div>
-                                <h1 class="text-6xl font-black text-white uppercase tracking-tighter leading-none mb-6">
-                                    Control Your Business <br/>
+                                <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white uppercase tracking-tighter leading-tight md:leading-none mb-8">
+                                    Control Your Business <br class="hidden md:block"/>
                                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">With Precision</span>
                                 </h1>
-                                <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed">
+                                <p class="mt-4 text-base md:text-xl text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
                                     Sistem internal cerdas untuk UKM dan startup. Kelola pesanan, stok barang, hingga aktivitas staf dalam satu dasbor kendali yang kuat dan terukur.
                                 </p>
-                                <div class="mt-12 flex flex-wrap justify-center gap-6">
-                                    <Link :href="route('register')" class="rounded-full bg-indigo-600 px-10 py-5 font-bold text-white shadow-2xl transition-all hover:bg-indigo-700 hover:-translate-y-1">
+                                <div class="mt-12 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6">
+                                    <Link :href="route('register')" class="w-full md:w-auto rounded-full bg-indigo-600 px-10 py-5 text-sm md:text-base font-bold text-white shadow-2xl transition-all hover:bg-indigo-700 hover:-translate-y-1 text-center">
                                         Mulai Sekarang
                                     </Link>
-                                    <Link :href="route('login')" class="rounded-full bg-white/10 backdrop-blur-md px-10 py-5 font-bold text-white border border-white/20 transition-all hover:bg-white/20 hover:-translate-y-1">
+                                    <Link :href="route('login')" class="w-full md:w-auto rounded-full bg-white/5 backdrop-blur-md px-10 py-5 text-sm md:text-base font-bold text-white border border-white/10 transition-all hover:bg-white/10 hover:-translate-y-1 text-center">
                                         Demo Sistem
                                     </Link>
                                 </div>

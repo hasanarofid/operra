@@ -31,6 +31,13 @@ Route::get('/link-storage', function () {
     return "Storage Link Created";
 });
 
+Route::get('/clear-system', function () {
+    Artisan::call('optimize:clear');
+    Artisan::call('view:clear');
+    Artisan::call('cache:clear'); // Tambahkan ini
+    return "System Optimized, View & App Cache Cleared!";
+});
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
