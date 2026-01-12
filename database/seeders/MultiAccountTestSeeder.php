@@ -17,6 +17,7 @@ class MultiAccountTestSeeder extends Seeder
     public function run(): void
     {
         $salesRole = Role::firstOrCreate(['name' => 'sales']);
+        $defaultCompany = \App\Models\Company::where('slug', 'operra-default')->first();
 
         // 1. Create 2 Different WhatsApp Accounts
         // Nomor disesuaikan dengan screenshot user untuk testing
@@ -28,6 +29,7 @@ class MultiAccountTestSeeder extends Seeder
                 'endpoint' => 'https://api.fonnte.com/send'
             ],
             'status' => 'active',
+            'company_id' => $defaultCompany->id
         ]);
 
         $accountB = WhatsappAccount::updateOrCreate(['phone_number' => '6282222222222'], [
@@ -39,18 +41,21 @@ class MultiAccountTestSeeder extends Seeder
                 'endpoint' => 'https://api.wa-provider.com/v1'
             ],
             'status' => 'active',
+            'company_id' => $defaultCompany->id
         ]);
 
         // 2. Create 2 Sales Users
         $salesA = User::updateOrCreate(['email' => 'sales.jakarta@operra.com'], [
             'name' => 'Sales Jakarta',
             'password' => Hash::make('password'),
+            'company_id' => $defaultCompany->id
         ]);
         $salesA->assignRole($salesRole);
 
         $salesB = User::updateOrCreate(['email' => 'sales.surabaya@operra.com'], [
             'name' => 'Sales Surabaya',
             'password' => Hash::make('password'),
+            'company_id' => $defaultCompany->id
         ]);
         $salesB->assignRole($salesRole);
 
@@ -69,11 +74,13 @@ class MultiAccountTestSeeder extends Seeder
         $customerA = Customer::updateOrCreate(['phone' => '6285555555555'], [
             'name' => 'Customer Jakarta 1',
             'status' => 'lead',
+            'company_id' => $defaultCompany->id
         ]);
 
         $customerB = Customer::updateOrCreate(['phone' => '6286666666666'], [
             'name' => 'Customer Surabaya 1',
             'status' => 'lead',
+            'company_id' => $defaultCompany->id
         ]);
 
         // 5. Create Chat Sessions

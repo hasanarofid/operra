@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = [
         'name',
         'email',
@@ -14,6 +17,7 @@ class Customer extends Model
         'status',
         'lead_source',
         'assigned_to',
+        'company_id',
     ];
 
     public function assignedSales()

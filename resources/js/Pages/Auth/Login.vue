@@ -34,45 +34,52 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Login" />
+        <Head title="Log In" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+        <div class="mb-10 text-center">
+            <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">Selamat Datang</h2>
+            <p class="text-gray-400 text-sm font-medium">Masuk ke pusat kendali bisnis Anda.</p>
+        </div>
+
+        <div v-if="status" class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-2xl text-green-400 text-sm font-bold text-center">
             {{ status }}
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email Bisnis" class="text-gray-400 font-bold uppercase text-[10px] tracking-widest ml-1 mb-2" />
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
+                    placeholder="nama@perusahaan.com"
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+            <div class="mt-6">
+                <InputLabel for="password" value="Kata Sandi" class="text-gray-400 font-bold uppercase text-[10px] tracking-widest ml-1 mb-2" />
 
                 <div class="relative">
                     <TextInput
                         id="password"
                         :type="showPassword ? 'text' : 'password'"
-                        class="mt-1 block w-full pr-10"
+                        class="mt-1 block w-full pr-12 bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all"
                         v-model="form.password"
                         required
                         autocomplete="current-password"
+                        placeholder="••••••••"
                     />
                     <button
                         type="button"
                         @click="showPassword = !showPassword"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-white transition-colors"
                     >
                         <svg v-if="!showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -87,31 +94,41 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400"
-                        >Remember me</span
+            <div class="mt-6 flex items-center justify-between">
+                <label class="flex items-center group cursor-pointer">
+                    <Checkbox name="remember" v-model:checked="form.remember" class="rounded border-white/10 bg-white/5 text-operra-600 focus:ring-operra-500" />
+                    <span class="ms-2 text-xs font-bold text-gray-500 group-hover:text-gray-300 transition-colors uppercase tracking-wider"
+                        >Ingat Saya</span
                     >
                 </label>
-            </div>
 
-            <div class="mt-4 flex items-center justify-end">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                    class="text-xs font-bold text-operra-500 hover:text-operra-400 transition-colors uppercase tracking-wider"
                 >
-                    Forgot your password?
+                    Lupa Sandi?
                 </Link>
+            </div>
 
-                <PrimaryButton
-                    class="ms-4"
+            <div class="mt-10">
+                <button
+                    class="w-full py-5 rounded-2xl bg-operra-600 text-white font-black uppercase tracking-widest hover:bg-operra-700 transition-all shadow-xl shadow-operra-600/20 disabled:opacity-50 active:scale-[0.98]"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Login
-                </PrimaryButton>
+                    MASUK KE SISTEM
+                </button>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-gray-500 text-xs font-medium">Belum memiliki akun?</p>
+                <Link
+                    :href="route('register')"
+                    class="mt-2 inline-block text-sm font-black text-white hover:text-operra-400 transition-colors uppercase tracking-[0.2em]"
+                >
+                    HUBUNGI SALES KAMI
+                </Link>
             </div>
         </form>
     </GuestLayout>

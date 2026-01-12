@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'sku', 'description', 'purchase_price', 'selling_price', 'min_stock'];
+    use BelongsToCompany;
+
+    protected $fillable = ['name', 'sku', 'description', 'purchase_price', 'selling_price', 'min_stock', 'company_id'];
 
     public function stockMovements(): HasMany
     {

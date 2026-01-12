@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WhatsappAccount extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = [
         'name',
         'phone_number',
@@ -14,6 +17,7 @@ class WhatsappAccount extends Model
         'api_credentials',
         'is_verified',
         'status',
+        'company_id',
     ];
 
     protected $casts = [
@@ -40,7 +44,6 @@ class WhatsappAccount extends Model
         // 1. Terhubung dengan akun WA ini
         // 2. Sedang Online/Available (is_available = true)
         // 3. Urutkan berdasarkan yang paling lama tidak menerima chat (last_assigned_at)
-        // Menggunakan MySQL compatible NULLS FIRST
         return $this->agents()
             ->where('is_available', true)
             ->orderByRaw('last_assigned_at IS NULL DESC')

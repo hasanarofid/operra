@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -33,6 +33,27 @@ const playNotificationSound = () => {
 
 const hasRole = (role) => page.props.auth.user.roles.includes(role);
 const hasPermission = (permission) => page.props.auth.user.permissions.includes(permission);
+const isModuleEnabled = (module) => page.props.auth.user.company?.enabled_modules?.includes(module);
+
+const currentPortal = computed(() => {
+    if (route().current('crm.wa.*')) return 'wa_blast';
+    if (route().current('crm.sales.*')) return 'sales_crm';
+    
+    // Check query parameter using Inertia URL state
+    const portal = page.url.split('portal=')[1]?.split('&')[0];
+    return portal || null;
+});
+
+const getPortalName = (portalId) => {
+    const names = {
+        'wa_blast': 'WhatsApp CRM',
+        'sales_crm': 'Sales CRM',
+        'marketing_crm': 'Marketing CRM',
+        'customer_service': 'Customer Support',
+        'analytical_crm': 'Analytical CRM'
+    };
+    return names[portalId] || 'Pilih Aplikasi';
+};
 
 const requestPermissions = async () => {
     // 1. Request Notification Permission
@@ -84,6 +105,16 @@ function toggleTheme() {
         localStorage.setItem('theme', 'light');
     }
 }
+
+watch(isDark, (val) => {
+    if (val) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+    }
+}, { immediate: true });
 
 onMounted(() => {
     // Check if we should show prompt
@@ -160,19 +191,36 @@ onUnmounted(() => {
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
         </button>
         <!-- Brand -->
-        <Link
-          class="md:block text-left md:pb-2 text-gray-600 dark:text-gray-200 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
-          :href="route('dashboard')"
-        >
-          <div class="flex items-center gap-2">
-            <ApplicationLogo class="h-8 w-auto" />
-            <span class="text-operra-600 dark:text-operra-400 font-black">OPERRA</span>
-          </div>
-        </Link>
+        <div class="flex flex-col w-full">
+            <Link
+              class="md:block text-left md:pb-2 text-gray-600 dark:text-gray-200 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+              :href="route('dashboard')"
+            >
+              <div class="flex items-center gap-2">
+                <ApplicationLogo class="h-8 w-auto" />
+                <span class="text-operra-600 dark:text-operra-400 font-black">OPERRA</span>
+              </div>
+            </Link>
+
+            <!-- App Switcher (Hanya muncul jika multi-module) -->
+            <Link 
+                v-if="page.props.auth.user.company?.enabled_modules?.length > 1"
+                :href="route('dashboard')"
+                class="mt-2 mb-4 px-4 py-2 bg-gray-100 dark:bg-gray-700/50 rounded-xl flex items-center justify-between group hover:bg-operra-50 dark:hover:bg-operra-900/20 transition-all border border-transparent hover:border-operra-200"
+            >
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase font-black text-gray-400 group-hover:text-operra-400 transition-colors tracking-widest">Active App</span>
+                    <span class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                        {{ getPortalName(currentPortal) }}
+                    </span>
+                </div>
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-operra-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            </Link>
+        </div>
         <!-- User Mobile -->
         <ul class="md:hidden items-center flex flex-wrap list-none gap-2">
-          <li class="inline-block relative">
-             <Link :href="route('crm.chat.index')" class="text-gray-500 hover:text-operra-500 block py-1 px-2 transition-colors relative">
+          <li v-if="isModuleEnabled('wa_blast')" class="inline-block relative">
+             <Link :href="route('crm.wa.inbox')" class="text-gray-500 hover:text-operra-500 block py-1 px-2 transition-colors relative">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                 </svg>
@@ -253,32 +301,83 @@ onUnmounted(() => {
               </Link>
             </li>
 
-            <!-- CRM Section -->
-            <hr class="my-4 md:min-w-full" />
-            <h6 class="md:min-w-full text-gray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
-              CRM & Leads
-            </h6>
-            <li class="items-center">
-                <Link :href="route('crm.chat.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('crm.chat.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Chat Inbox
-                </Link>
-            </li>
-            <li class="items-center">
-                <Link :href="route('master.customers.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('master.customers.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    Manage Leads
-                </Link>
-            </li>
-            <li v-if="hasRole('super-admin')" class="items-center">
-                <Link :href="route('whatsapp.settings.index')" 
-                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                    :class="route().current('whatsapp.settings.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                    WA Multi-Account
-                </Link>
-            </li>
+          <!-- CRM Section -->
+          <div v-if="isModuleEnabled('wa_blast') || isModuleEnabled('sales_crm')">
+            <!-- WA Blast Module Links (Only shown if in WA context OR single module) -->
+            <template v-if="isModuleEnabled('wa_blast') && (currentPortal === 'wa_blast' || page.props.auth.user.company?.enabled_modules?.length === 1)">
+              <hr class="my-4 md:min-w-full" />
+              <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
+                WhatsApp Portal
+              </h6>
+              <li class="items-center">
+                  <Link :href="route('crm.wa.inbox')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.inbox') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Chat Inbox
+                  </Link>
+              </li>
+              <li v-if="hasRole('super-admin')" class="items-center">
+                  <Link :href="route('crm.wa.settings.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.settings.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      WA Multi-Account
+                  </Link>
+              </li>
+            </template>
+
+            <!-- Sales CRM Module Links (Only shown if in Sales context OR single module) -->
+            <template v-if="isModuleEnabled('sales_crm') && (currentPortal === 'sales_crm' || page.props.auth.user.company?.enabled_modules?.length === 1)">
+              <hr class="my-4 md:min-w-full" />
+              <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
+                Sales Portal
+              </h6>
+              <li class="items-center">
+                  <Link :href="route('crm.sales.customers.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.sales.customers.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Manage Leads
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.sales.orders.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.sales.orders.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Sales Orders
+                  </Link>
+              </li>
+            </template>
+
+            <!-- Placeholder for other modules -->
+            <template v-if="isModuleEnabled('marketing_crm') && currentPortal === 'marketing_crm'">
+              <hr class="my-4 md:min-w-full" />
+              <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
+                Marketing Portal
+              </h6>
+              <li class="items-center">
+                <span class="text-xs uppercase py-2 font-bold block text-gray-400 italic">Campaigns (Coming Soon)</span>
+              </li>
+            </template>
+
+            <template v-if="isModuleEnabled('customer_service') && currentPortal === 'customer_service'">
+              <hr class="my-4 md:min-w-full" />
+              <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
+                Support Portal
+              </h6>
+              <li class="items-center">
+                <span class="text-xs uppercase py-2 font-bold block text-gray-400 italic">Ticketing (Coming Soon)</span>
+              </li>
+            </template>
+
+            <template v-if="isModuleEnabled('analytical_crm') && currentPortal === 'analytical_crm'">
+              <hr class="my-4 md:min-w-full" />
+              <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
+                Analytics Portal
+              </h6>
+              <li class="items-center">
+                <span class="text-xs uppercase py-2 font-bold block text-gray-400 italic">Reports (Coming Soon)</span>
+              </li>
+            </template>
+          </div>
           </ul>
 
           <!-- Divider -->
@@ -288,6 +387,16 @@ onUnmounted(() => {
             Administrative
           </h6>
           <ul class="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
+            <li v-if="hasRole('super-admin')" class="items-center">
+                <Link :href="route('admin.leads.index')" 
+                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                    :class="route().current('admin.leads.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                    Leads Request
+                    <span v-if="$page.props.newLeadsCount > 0" class="ml-2 px-2 py-0.5 bg-operra-500 text-white rounded-full text-[10px]">
+                        {{ $page.props.newLeadsCount }}
+                    </span>
+                </Link>
+            </li>
             <li v-if="hasRole('super-admin') || hasRole('manager')" class="items-center">
               <Link
                 :href="route('settings.index')"
@@ -365,8 +474,8 @@ onUnmounted(() => {
           </span>
           <!-- User & Theme -->
           <ul class="flex-row list-none items-center hidden md:flex gap-4">
-             <li class="inline-block relative">
-                <Link :href="route('crm.chat.index')" class="text-white hover:text-operra-200 transition-colors duration-200 relative block">
+             <li v-if="isModuleEnabled('wa_blast')" class="inline-block relative">
+                <Link :href="route('crm.wa.inbox')" class="text-white hover:text-operra-200 transition-colors duration-200 relative block">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                     </svg>
