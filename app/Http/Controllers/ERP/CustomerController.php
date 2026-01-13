@@ -30,6 +30,12 @@ class CustomerController extends Controller
 
         Customer::create($request->all());
 
+        // Dynamic redirect based on current route group
+        $routeName = $request->route()->getName();
+        if (str_contains($routeName, 'crm.wa')) {
+            return redirect()->route('crm.wa.leads.index')->with('message', 'Lead created.');
+        }
+
         return redirect()->route('crm.sales.customers.index')->with('message', 'Customer created.');
     }
 

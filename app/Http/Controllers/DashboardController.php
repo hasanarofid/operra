@@ -25,6 +25,8 @@ class DashboardController extends Controller
         $sessionsQuery = ChatSession::query();
         $messagesQuery = ChatMessage::query();
 
+        $portal = $request->query('portal');
+
         if ($user->hasRole('sales')) {
             $leadsQuery->where('assigned_to', $user->id);
             $sessionsQuery->where('assigned_user_id', $user->id);
@@ -40,6 +42,27 @@ class DashboardController extends Controller
             'new_leads_today' => (clone $leadsQuery)->whereDate('created_at', $today)->count(),
             'messages_today' => (clone $messagesQuery)->whereDate('created_at', $today)->count(),
         ];
+
+        if ($portal === 'marketing_crm') {
+            $stats = [
+                'total_leads' => (clone $leadsQuery)->count(),
+                'active_campaigns' => \App\Models\MarketingCampaign::where('status', 'active')->count(),
+                'avg_lead_score' => round(Customer::avg('lead_score') ?? 0, 1),
+                'active_automations' => \App\Models\MarketingAutomation::where('is_active', true)->count(),
+                'recent_campaigns' => \App\Models\MarketingCampaign::latest()->limit(5)->get(),
+                'top_leads' => Customer::orderBy('lead_score', 'desc')->limit(5)->get(),
+            ];
+        }
+
+        if ($portal === 'customer_service') {
+            $stats = [
+                'open_tickets' => \App\Models\SupportTicket::where('status', 'open')->count(),
+                'urgent_tickets' => \App\Models\SupportTicket::where('priority', 'urgent')->count(),
+                'resolved_today' => \App\Models\SupportTicket::where('status', 'resolved')->whereDate('resolved_at', now())->count(),
+                'messages_today' => (clone $messagesQuery)->whereDate('created_at', $today)->count(),
+                'recent_tickets' => \App\Models\SupportTicket::with('customer')->latest()->limit(5)->get(),
+            ];
+        }
 
         // 2. Recent CRM Activity
         $recentLeads = (clone $leadsQuery)->latest()->limit(5)->get();
@@ -128,14 +151,16 @@ class DashboardController extends Controller
              ]);
         }
 
-        // Add dummy stats if all are 0
-        if ($stats['total_leads'] == 0 && $stats['active_chats'] == 0) {
-            $stats = [
-                'total_leads' => 25,
-                'active_chats' => 24,
-                'new_leads_today' => 0,
-                'messages_today' => 0,
-            ];
+        // Add dummy stats if all are 0 (Only for general/wa/sales view)
+        if (!in_array($portal, ['marketing_crm', 'customer_service'])) {
+            if (($stats['total_leads'] ?? 0) == 0 && ($stats['active_chats'] ?? 0) == 0) {
+                $stats = [
+                    'total_leads' => 25,
+                    'active_chats' => 24,
+                    'new_leads_today' => 0,
+                    'messages_today' => 0,
+                ];
+            }
         }
 
         // Add dummy recent chats if none exist
@@ -172,6 +197,35 @@ class DashboardController extends Controller
                     'assigned_user' => (object)['name' => 'Sales Jakarta']
                 ],
             ]);
+        }
+
+        // Add dummy marketing data if none exist
+        if ($portal === 'marketing_crm' && (($stats['recent_campaigns'] ?? collect())->isEmpty())) {
+            $stats['recent_campaigns'] = collect([
+                (object)['id' => 1, 'name' => 'Year End Sale 2025', 'type' => 'Email', 'status' => 'ACTIVE'],
+                (object)['id' => 2, 'name' => 'WhatsApp Welcome Series', 'type' => 'WhatsApp', 'status' => 'ACTIVE'],
+                (object)['id' => 3, 'name' => 'Product Launch - iPhone 16', 'type' => 'Multi-channel', 'status' => 'DRAFT'],
+            ]);
+            $stats['top_leads'] = collect([
+                (object)['id' => 1, 'name' => 'Budi Santoso', 'phone' => '628123456789', 'lead_score' => 95],
+                (object)['id' => 2, 'name' => 'Ani Wijaya', 'phone' => '628555555555', 'lead_score' => 88],
+                (object)['id' => 3, 'name' => 'Iwan Fals', 'phone' => '628666666666', 'lead_score' => 72],
+            ]);
+            $stats['active_campaigns'] = 2;
+            $stats['avg_lead_score'] = 85.0;
+            $stats['active_automations'] = 4;
+        }
+
+        // Add dummy support data
+        if ($portal === 'customer_service' && (($stats['recent_tickets'] ?? collect())->isEmpty())) {
+            $stats['recent_tickets'] = collect([
+                (object)['id' => 1, 'ticket_number' => 'TKT-001', 'subject' => 'Masalah Login', 'status' => 'OPEN', 'priority' => 'HIGH', 'customer' => (object)['name' => 'Budi Santoso']],
+                (object)['id' => 2, 'ticket_number' => 'TKT-002', 'subject' => 'Refund Dana', 'status' => 'IN_PROGRESS', 'priority' => 'URGENT', 'customer' => (object)['name' => 'Ani Wijaya']],
+                (object)['id' => 3, 'ticket_number' => 'TKT-003', 'subject' => 'Pertanyaan Produk', 'status' => 'RESOLVED', 'priority' => 'LOW', 'customer' => (object)['name' => 'Iwan Fals']],
+            ]);
+            $stats['open_tickets'] = 12;
+            $stats['urgent_tickets'] = 2;
+            $stats['resolved_today'] = 5;
         }
 
         return Inertia::render('Dashboard', [

@@ -76,15 +76,16 @@ const modules = [
         icon: 'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z',
         color: 'bg-orange-500',
         link: route('crm.support.dashboard')
-    },
-    {
-        id: 'analytical_crm',
-        name: 'Business Intelligence',
-        description: 'Laporan penjualan mendalam, perilaku pelanggan (behavior), dan analisis LTV.',
-        icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
-        color: 'bg-pink-500',
-        link: '#'
     }
+    // ,
+    // {
+    //     id: 'analytical_crm',
+    //     name: 'Business Intelligence',
+    //     description: 'Laporan penjualan mendalam, perilaku pelanggan (behavior), dan analisis LTV.',
+    //     icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+    //     color: 'bg-pink-500',
+    //     link: '#'
+    // }
 ];
 
 const filteredModules = computed(() => {

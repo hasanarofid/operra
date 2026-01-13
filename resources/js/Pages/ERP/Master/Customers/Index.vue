@@ -1,9 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps({
     customers: Object
+});
+
+const page = usePage();
+const currentPortal = computed(() => {
+    if (route().current('crm.wa.*')) return 'wa_blast';
+    if (route().current('crm.sales.*')) return 'sales_crm';
+    return null;
+});
+
+const createRoute = computed(() => {
+    return currentPortal.value === 'wa_blast' ? 'crm.wa.leads.create' : 'crm.sales.customers.create';
 });
 </script>
 
@@ -12,7 +24,7 @@ defineProps({
 
     <AuthenticatedLayout>
         <template #header>
-            Master Data: Customers
+            {{ currentPortal === 'wa_blast' ? 'CRM: Manage Leads' : 'Master Data: Customers' }}
         </template>
 
         <div class="flex flex-wrap mt-4">
@@ -21,11 +33,13 @@ defineProps({
                     <div class="rounded-t mb-0 px-4 py-3 border-0">
                         <div class="flex flex-wrap items-center">
                             <div class="relative w-full px-4 max-w-full flex-grow flex-1">
-                                <h3 class="font-bold text-base text-gray-700 dark:text-gray-200">Customers List</h3>
+                                <h3 class="font-bold text-base text-gray-700 dark:text-gray-200">
+                                    {{ currentPortal === 'wa_blast' ? 'Leads List' : 'Customers List' }}
+                                </h3>
                             </div>
                             <div class="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
-                                <Link :href="route('crm.sales.customers.create')" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
-                                    Add Customer
+                                <Link :href="route(createRoute)" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
+                                    Add {{ currentPortal === 'wa_blast' ? 'Lead' : 'Customer' }}
                                 </Link>
                             </div>
                         </div>

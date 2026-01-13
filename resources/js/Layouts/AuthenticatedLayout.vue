@@ -38,10 +38,16 @@ const isModuleEnabled = (module) => page.props.auth.user.company?.enabled_module
 const currentPortal = computed(() => {
     if (route().current('crm.wa.*')) return 'wa_blast';
     if (route().current('crm.sales.*')) return 'sales_crm';
+    if (route().current('crm.marketing.*')) return 'marketing_crm';
+    if (route().current('crm.support.*')) return 'customer_service';
     
     // Check query parameter using Inertia URL state
     const portal = page.url.split('portal=')[1]?.split('&')[0];
-    return portal || null;
+    if (portal) return portal;
+
+    // Fallback if only 1 module enabled
+    const enabled = page.props.auth.user.company?.enabled_modules ?? [];
+    return enabled.length === 1 ? enabled[0] : null;
 });
 
 const getPortalName = (portalId) => {
@@ -293,7 +299,7 @@ onUnmounted(() => {
           <ul class="md:flex-col md:min-w-full flex flex-col list-none">
             <li class="items-center">
               <Link
-                :href="route('dashboard')"
+                :href="currentPortal ? route('dashboard', { portal: currentPortal }) : route('dashboard')"
                 class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                 :class="route().current('dashboard') ? 'text-operra-500 hover:text-operra-600' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'"
               >
@@ -302,7 +308,7 @@ onUnmounted(() => {
             </li>
 
             <!-- WA Blast Module Links -->
-            <template v-if="isModuleEnabled('wa_blast') && (currentPortal === 'wa_blast' || page.props.auth.user.company?.enabled_modules?.length === 1)">
+            <template v-if="currentPortal === 'wa_blast'">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
                 CRM & Leads
@@ -315,9 +321,9 @@ onUnmounted(() => {
                   </Link>
               </li>
               <li class="items-center">
-                  <Link :href="route('crm.sales.customers.index')" 
+                  <Link :href="route('crm.wa.leads.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                      :class="route().current('crm.sales.customers.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      :class="route().current('crm.wa.leads.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
                       Manage Leads
                   </Link>
               </li>
@@ -331,7 +337,7 @@ onUnmounted(() => {
             </template>
 
             <!-- Sales CRM Module Links -->
-            <template v-if="isModuleEnabled('sales_crm') && (currentPortal === 'sales_crm' || page.props.auth.user.company?.enabled_modules?.length === 1)">
+            <template v-if="currentPortal === 'sales_crm'">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
                 Sales Portal
@@ -352,23 +358,82 @@ onUnmounted(() => {
               </li>
             </template>
 
-            <template v-if="isModuleEnabled('marketing_crm') && currentPortal === 'marketing_crm'">
+            <!-- Marketing CRM Module Links -->
+            <template v-if="currentPortal === 'marketing_crm'">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
                 Marketing Portal
               </h6>
               <li class="items-center">
-                <span class="text-xs uppercase py-2 font-bold block text-gray-400 italic">Campaigns (Coming Soon)</span>
+                  <Link :href="route('crm.marketing.dashboard')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.marketing.dashboard') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Marketing Stats
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.marketing.campaigns.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.marketing.campaigns.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Campaigns
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.marketing.blasts.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.marketing.blasts.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Email/WA Blast
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.marketing.lead-scoring.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.marketing.lead-scoring.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Lead Scoring
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.marketing.automations.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.marketing.automations.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Automations
+                  </Link>
               </li>
             </template>
 
-            <template v-if="isModuleEnabled('customer_service') && currentPortal === 'customer_service'">
+            <!-- Support CRM Module Links -->
+            <template v-if="currentPortal === 'customer_service'">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
                 Support Portal
               </h6>
               <li class="items-center">
-                <span class="text-xs uppercase py-2 font-bold block text-gray-400 italic">Ticketing (Coming Soon)</span>
+                  <Link :href="route('crm.support.dashboard')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.support.dashboard') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Support Stats
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.support.tickets.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.support.tickets.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Ticketing
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.support.chat-history.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.support.chat-history.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Chat History
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.support.knowledge-base.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.support.knowledge-base.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Knowledge Base
+                  </Link>
               </li>
             </template>
 

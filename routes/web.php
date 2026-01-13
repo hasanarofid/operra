@@ -43,6 +43,8 @@ Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     // CRM Modules
     Route::prefix('crm-wa-blast')->group(base_path('routes/modules/wa_blast.php'));
     Route::prefix('crm-sales')->group(base_path('routes/modules/sales.php'));
+    Route::prefix('crm-marketing')->group(base_path('routes/modules/marketing.php'));
+    Route::prefix('crm-support')->group(base_path('routes/modules/support.php'));
 
     // Core Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

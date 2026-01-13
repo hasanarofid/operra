@@ -224,5 +224,8 @@ class DatabaseSeeder extends Seeder
 
         // 10. Multi Account Test Data
         $this->call(MultiAccountTestSeeder::class);
+
+        // 11. Marketing & Support Data
+        $this->call(MarketingSupportSeeder::class);
     }
 }
