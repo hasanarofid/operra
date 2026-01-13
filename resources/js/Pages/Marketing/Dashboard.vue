@@ -19,6 +19,8 @@ const enabledModules = computed(() => page.props.auth.user.company?.enabled_modu
 
 // Ambil portal dari state Inertia agar reactive
 const selectedModule = computed(() => {
+    if (page.url.includes('/crm-marketing/')) return 'marketing_crm';
+    
     const portal = page.url.split('portal=')[1]?.split('&')[0];
     
     if (portal && enabledModules.value.includes(portal)) {

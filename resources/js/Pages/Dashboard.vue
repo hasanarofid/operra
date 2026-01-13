@@ -77,7 +77,6 @@ const modules = [
         color: 'bg-orange-500',
         link: route('crm.support.dashboard')
     }
-    // ,
     // {
     //     id: 'analytical_crm',
     //     name: 'Business Intelligence',
@@ -142,7 +141,7 @@ const series = [{
 
         <template #stats>
             <!-- Grid Stats hanya muncul jika NOT launcher mode -->
-            <div v-if="!showLauncher" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div v-if="!showLauncher" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Stat Cards for WA & Sales -->
                 <template v-if="selectedModule !== 'marketing_crm' && selectedModule !== 'customer_service'">
                     <StatCard title="Total Leads" :value="stats.total_leads">
@@ -227,30 +226,30 @@ const series = [{
         </template>
 
         <!-- Launcher Mode (Kotak-kotak Modul) -->
-        <div v-if="showLauncher" class="py-8 md:py-12">
+        <div v-if="showLauncher" class="py-12">
             <div class="max-w-4xl mx-auto px-4">
-                <div class="text-center mb-10 md:mb-12">
-                    <h2 class="text-2xl md:text-3xl font-black text-gray-800 dark:text-white uppercase tracking-tighter">Selamat Datang di Operra</h2>
-                    <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Silahkan pilih portal CRM yang ingin Anda akses hari ini.</p>
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-black text-gray-800 dark:text-white">Selamat Datang di Operra</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mt-2">Silahkan pilih portal CRM yang ingin Anda akses hari ini.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div 
                         v-for="module in filteredModules" 
                         :key="module.id"
                         @click="selectPortal(module.id)"
-                        class="group cursor-pointer bg-white dark:bg-gray-800 rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl border-2 border-transparent hover:border-operra-500 transition-all duration-300 transform hover:-translate-y-2 active:scale-95"
+                        class="group cursor-pointer bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl hover:shadow-2xl border-2 border-transparent hover:border-operra-500 transition-all duration-300 transform hover:-translate-y-2"
                     >
-                        <div :class="module.color" class="h-14 w-14 md:h-16 md:w-16 rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div :class="module.color" class="h-16 w-16 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="module.icon"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg md:text-xl font-bold text-gray-800 dark:text-white mb-2 group-hover:text-operra-500 transition-colors uppercase tracking-tight">{{ module.name }}</h3>
-                        <p class="text-gray-500 dark:text-gray-400 text-xs md:text-sm leading-relaxed mb-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2 group-hover:text-operra-500 transition-colors">{{ module.name }}</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-6">
                             {{ module.description }}
                         </p>
-                        <div class="flex items-center text-operra-500 font-bold text-[10px] md:text-sm group-hover:gap-2 transition-all uppercase tracking-widest">
+                        <div class="flex items-center text-operra-500 font-bold text-sm group-hover:gap-2 transition-all">
                             Masuk ke Portal 
                             <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                         </div>

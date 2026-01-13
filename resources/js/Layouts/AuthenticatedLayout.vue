@@ -12,7 +12,7 @@ let globalLastSoundPlayedMessageId = null;
 let globalAudio = null;
 
 const collapseShow = ref("hidden");
-const isDark = ref(true); // Default dark
+const isDark = ref(localStorage.getItem('theme') !== 'light'); // Inisialisasi sesuai localStorage
 const realTimeUnreadCount = ref(null);
 const showPermissionPrompt = ref(false);
 let unsubInbox = null;
@@ -103,13 +103,6 @@ function toggleCollapseShow(classes) {
 
 function toggleTheme() {
     isDark.value = !isDark.value;
-    if (isDark.value) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-    }
 }
 
 watch(isDark, (val) => {
@@ -131,15 +124,6 @@ onMounted(() => {
         setTimeout(() => {
             showPermissionPrompt.value = true;
         }, 1500);
-    }
-
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        isDark.value = false;
-        document.documentElement.classList.remove('dark');
-    } else {
-        isDark.value = true;
-        document.documentElement.classList.add('dark');
     }
 
     // Global notification sound listener

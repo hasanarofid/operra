@@ -241,8 +241,7 @@ const submit = () => {
                     </div>
                 </div>
                 <div class="mt-20 pt-10 border-t border-white/5 flex flex-wrap items-center justify-between text-gray-500 text-[10px] font-black uppercase tracking-widest">
-                    <div>© 2026 Operra Multi-CRM System</div>
-                    <div>Powered by <a href="https://hasanarofid.site" class="text-white">HasanArofid</a></div>
+                    <div>© 2026 Operra by <a href="https://hasanarofid.site" class="text-white">hasanarofid</a></div>
                 </div>
             </div>
         </footer>
