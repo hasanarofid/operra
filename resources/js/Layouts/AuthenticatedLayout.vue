@@ -286,7 +286,7 @@ onUnmounted(() => {
           <!-- Divider -->
           <hr class="my-4 md:min-w-full" />
           <!-- Heading -->
-          <h6 class="md:min-w-full text-gray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
+          <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
             Main Navigation
           </h6>
           <!-- Navigation -->
@@ -294,7 +294,7 @@ onUnmounted(() => {
             <li class="items-center">
               <Link
                 :href="route('dashboard')"
-                class="text-xs uppercase py-3 font-bold block transition-colors duration-200"
+                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                 :class="route().current('dashboard') ? 'text-operra-500 hover:text-operra-600' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'"
               >
                 Dashboard
@@ -307,13 +307,20 @@ onUnmounted(() => {
             <template v-if="isModuleEnabled('wa_blast') && (currentPortal === 'wa_blast' || page.props.auth.user.company?.enabled_modules?.length === 1)">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
-                WhatsApp Portal
+                CRM & Leads
               </h6>
               <li class="items-center">
                   <Link :href="route('crm.wa.inbox')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.inbox') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
                       Chat Inbox
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.sales.customers.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.sales.customers.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Manage Leads
                   </Link>
               </li>
               <li v-if="hasRole('super-admin')" class="items-center">

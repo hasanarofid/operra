@@ -127,37 +127,36 @@ const series = [{
     <AuthenticatedLayout>
         <template #header>
             <span v-if="showLauncher">Pilih Aplikasi CRM</span>
-            <span v-else>Dashboard {{ selectedModule === 'wa_blast' ? 'WhatsApp' : 'Sales' }} CRM</span>
+            <span v-else>DASHBOARD {{ selectedModule === 'wa_blast' ? 'CRM & WHATSAPP BLAST' : 'SALES & PIPELINE CRM' }} ({{ userRole?.toUpperCase() }})</span>
         </template>
 
         <template #stats>
             <!-- Grid Stats hanya muncul jika NOT launcher mode -->
             <div v-if="!showLauncher" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div v-if="selectedModule === 'sales_crm' || !selectedModule" class="contents">
-                    <StatCard title="Total Leads" :value="stats.total_leads">
-                        <template #icon>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        </template>
-                    </StatCard>
-                    <StatCard title="New Leads Today" :value="stats.new_leads_today">
-                        <template #icon>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-                        </template>
-                    </StatCard>
-                </div>
-                
-                <div v-if="selectedModule === 'wa_blast' || !selectedModule" class="contents">
-                    <StatCard title="Active Chats" :value="stats.active_chats" :alert="stats.active_chats > 0">
-                        <template #icon>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-                        </template>
-                    </StatCard>
-                    <StatCard title="Messages Sent/Received" :value="stats.messages_today">
-                        <template #icon>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        </template>
-                    </StatCard>
-                </div>
+                <!-- Stat Cards shared by both modules -->
+                <StatCard title="Total Leads" :value="stats.total_leads">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    </template>
+                </StatCard>
+
+                <StatCard title="Active Chats" :value="stats.active_chats" :alert="stats.active_chats > 0">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                    </template>
+                </StatCard>
+
+                <StatCard title="New Leads Today" :value="stats.new_leads_today">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                    </template>
+                </StatCard>
+
+                <StatCard title="Messages Sent/Received" :value="stats.messages_today">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </template>
+                </StatCard>
             </div>
         </template>
 
@@ -199,8 +198,8 @@ const series = [{
             <div class="flex flex-wrap mt-4 -mx-4">
                 <!-- Row content (Charts, Tables) - Show based on selected module or simplified for both -->
                 <div class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-                    <!-- Chart logic (shared or specific) -->
-                    <div v-if="selectedModule === 'sales_crm'" class="relative flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
+                    <!-- Chart logic (shared) -->
+                    <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast'" class="relative flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
                         <div class="rounded-t mb-0 px-6 py-4 bg-transparent">
                             <h6 class="uppercase text-gray-400 mb-1 text-xs font-bold tracking-widest">Growth Analytics</h6>
                             <h2 class="text-white text-xl font-bold">New Leads Trend</h2>
@@ -210,24 +209,31 @@ const series = [{
                         </div>
                     </div>
 
-                    <!-- Recent Leads (Sales Module) -->
-                    <div v-if="selectedModule === 'sales_crm'" class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
+                    <!-- Recent Leads (Shared) -->
+                    <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast'" class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
                         <div class="rounded-t mb-0 px-6 py-4 border-0 flex justify-between items-center">
                             <h3 class="font-bold text-lg text-gray-700 dark:text-gray-200">Recent Leads</h3>
-                            <Link :href="route('crm.sales.customers.index')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Manage</Link>
+                            <Link v-if="selectedModule === 'sales_crm'" :href="route('crm.sales.customers.index')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Manage</Link>
+                            <Link v-else :href="route('crm.wa.inbox')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Go to Inbox</Link>
                         </div>
                         <div class="block w-full overflow-x-auto">
                             <table class="items-center w-full bg-transparent border-collapse">
                                 <thead>
                                     <tr>
                                         <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left">Name</th>
+                                        <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left text-nowrap">Phone</th>
                                         <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="lead in recentLeads" :key="lead.id">
+                                    <tr v-for="lead in recentLeads" :key="lead.id" class="border-t border-gray-100 dark:border-gray-700">
                                         <td class="px-6 py-4 text-xs font-bold text-gray-700 dark:text-gray-200">{{ lead.name }}</td>
-                                        <td class="px-6 py-4 text-xs">{{ lead.status }}</td>
+                                        <td class="px-6 py-4 text-xs text-gray-600 dark:text-gray-400">{{ lead.phone }}</td>
+                                        <td class="px-6 py-4 text-xs">
+                                            <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 font-bold uppercase tracking-wider text-[10px]">
+                                                {{ lead.status }}
+                                            </span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -238,22 +244,33 @@ const series = [{
                 <div class="w-full xl:w-4/12 px-4">
                      <!-- WA Accounts (WA Module) -->
                      <div v-if="selectedModule === 'wa_blast'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-                        <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200">WA Accounts</h3>
-                        <div v-for="account in waAccounts" :key="account.id" class="mb-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <p class="font-bold text-sm">{{ account.name }}</p>
-                            <p class="text-xs text-gray-500">{{ account.status }}</p>
+                        <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200">WhatsApp Accounts</h3>
+                        <div v-for="account in waAccounts" :key="account.id" class="mb-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600">
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="font-bold text-sm text-gray-800 dark:text-white">{{ account.name }}</p>
+                                <span class="text-[10px] font-black uppercase text-green-500">{{ account.status }}</span>
+                            </div>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-2">{{ account.phone_number }}</p>
+                            <div class="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                <span class="text-[10px] font-bold uppercase">{{ account.agents_count || 0 }} Agents Connected</span>
+                            </div>
                         </div>
                      </div>
 
                      <!-- Recent Conversations (WA Module) -->
                      <div v-if="selectedModule === 'wa_blast'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                         <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200">Recent Chats</h3>
-                        <div v-for="chat in recentChats" :key="chat.id" class="flex items-center gap-3 mb-4">
-                            <div class="h-8 w-8 rounded-full bg-operra-500 flex items-center justify-center text-white font-bold text-xs">
+                        <div v-for="chat in recentChats" :key="chat.id" class="flex items-center gap-3 mb-4 last:mb-0">
+                            <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-black text-sm shadow-md">
                                 {{ chat.customer?.name?.charAt(0) || '?' }}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-bold truncate">{{ chat.customer?.name || 'Unknown' }}</p>
+                                <div class="flex justify-between items-center">
+                                    <p class="text-xs font-black text-gray-800 dark:text-white truncate">{{ chat.customer?.name || 'Unknown' }}</p>
+                                    <span class="text-[9px] font-bold text-green-500 uppercase">{{ chat.status }}</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500 dark:text-gray-400">By: {{ chat.assigned_user?.name || 'Unassigned' }}</p>
                             </div>
                         </div>
                      </div>

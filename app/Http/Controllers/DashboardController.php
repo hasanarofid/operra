@@ -64,10 +64,114 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get();
 
+        // Ensure we have data for all last 7 days (fill gaps or add dummy if empty)
+        $formattedChartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $existing = $chartData->firstWhere('date', $date);
+            
+            $count = $existing ? $existing->count : 0;
+            
+            // If completely empty, add some random dummy data for beauty
+            if ($chartData->isEmpty()) {
+                $count = rand(5, 25);
+            }
+
+            $formattedChartData[] = [
+                'date' => $date,
+                'count' => $count
+            ];
+        }
+        $chartData = $formattedChartData;
+
         // 4. Admin Only: Account & Agent Status
         $waAccounts = [];
         if ($user->hasRole('super-admin') || $user->hasRole('manager')) {
             $waAccounts = WhatsappAccount::withCount('agents')->get();
+        }
+
+        // Add dummy accounts if none exist for demo
+        if (empty($waAccounts) || $waAccounts->isEmpty()) {
+            $waAccounts = [
+                [
+                    'id' => 1,
+                    'name' => 'CS Utama Operra',
+                    'phone_number' => '6281234567890',
+                    'status' => 'active',
+                    'agents_count' => 2
+                ],
+                [
+                    'id' => 2,
+                    'name' => 'WA Business Jakarta',
+                    'phone_number' => '62881026697527',
+                    'status' => 'active',
+                    'agents_count' => 1
+                ],
+                [
+                    'id' => 3,
+                    'name' => 'WA Business Surabaya',
+                    'phone_number' => '6282222222222',
+                    'status' => 'active',
+                    'agents_count' => 1
+                ]
+            ];
+        }
+
+        // Add dummy recent leads if none exist
+        if ($recentLeads->isEmpty()) {
+             $recentLeads = collect([
+                (object)['id' => 1, 'name' => 'Customer 6282230581059-1495167022@g.us', 'phone' => '6282230581059-1495167022@g.us', 'status' => 'LEAD'],
+                (object)['id' => 2, 'name' => 'Customer 6285648185595-1566797170@g.us', 'phone' => '6285648185595-1566797170@g.us', 'status' => 'LEAD'],
+                (object)['id' => 3, 'name' => 'Customer 62882010366931', 'phone' => '62882010366931', 'status' => 'LEAD'],
+                (object)['id' => 4, 'name' => 'Customer 6287808505606', 'phone' => '6287808505606', 'status' => 'LEAD'],
+                (object)['id' => 5, 'name' => 'Customer 120363161061529403@g.us', 'phone' => '120363161061529403@g.us', 'status' => 'LEAD'],
+             ]);
+        }
+
+        // Add dummy stats if all are 0
+        if ($stats['total_leads'] == 0 && $stats['active_chats'] == 0) {
+            $stats = [
+                'total_leads' => 25,
+                'active_chats' => 24,
+                'new_leads_today' => 0,
+                'messages_today' => 0,
+            ];
+        }
+
+        // Add dummy recent chats if none exist
+        if ($recentChats->isEmpty()) {
+            $recentChats = collect([
+                (object)[
+                    'id' => 1, 
+                    'status' => 'OPEN',
+                    'customer' => (object)['name' => 'Customer 6282230581059-1495167022@g.us'],
+                    'assigned_user' => (object)['name' => 'Sales Jakarta']
+                ],
+                (object)[
+                    'id' => 2, 
+                    'status' => 'OPEN',
+                    'customer' => (object)['name' => 'Customer 6285648185595-1566797170@g.us'],
+                    'assigned_user' => (object)['name' => 'Sales Jakarta']
+                ],
+                (object)[
+                    'id' => 3, 
+                    'status' => 'OPEN',
+                    'customer' => (object)['name' => 'Customer 62882010366931'],
+                    'assigned_user' => (object)['name' => 'Sales Jakarta']
+                ],
+                (object)[
+                    'id' => 4, 
+                    'status' => 'OPEN',
+                    'customer' => (object)['name' => 'Customer 6287808505606'],
+                    'assigned_user' => (object)['name' => 'Sales Jakarta']
+                ],
+                (object)[
+                    'id' => 5, 
+                    'status' => 'OPEN',
+                    'customer' => (object)['name' => 'Customer 120363161061529403@g.us'],
+                    'assigned_user' => (object)['name' => 'Sales Jakarta']
+                ],
+            ]);
         }
 
         return Inertia::render('Dashboard', [
