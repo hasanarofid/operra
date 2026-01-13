@@ -32,7 +32,7 @@ class OrderController extends Controller
 
         Order::create($request->all());
 
-        return redirect()->route('orders.index')->with('message', 'Order created successfully.');
+        return redirect()->route('crm.sales.orders.index')->with('message', 'Order created successfully.');
     }
 
     public function edit(Order $order)
@@ -53,12 +53,12 @@ class OrderController extends Controller
 
         $order->update($request->all());
 
-        return redirect()->route('orders.index')->with('message', 'Order updated successfully.');
+        return redirect()->route('crm.sales.orders.index')->with('message', 'Order updated successfully.');
     }
 
     public function destroy(Order $order)
     {
         $order->delete();
-        return redirect()->route('orders.index')->with('message', 'Order deleted successfully.');
+        return redirect()->route('crm.sales.orders.index')->with('message', 'Order deleted successfully.');
     }
 }

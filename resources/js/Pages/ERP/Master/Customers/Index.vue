@@ -24,7 +24,7 @@ defineProps({
                                 <h3 class="font-bold text-base text-gray-700 dark:text-gray-200">Customers List</h3>
                             </div>
                             <div class="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
-                                <Link :href="route('master.customers.create')" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
+                                <Link :href="route('crm.sales.customers.create')" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
                                     Add Customer
                                 </Link>
                             </div>

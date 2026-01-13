@@ -12,7 +12,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('master.customers.store'), {
+    form.post(route('crm.sales.customers.store'), {
         onSuccess: () => form.reset(),
     });
 };
@@ -70,7 +70,7 @@ const submit = () => {
                                 <button type="submit" :disabled="form.processing" class="bg-operra-500 text-white px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-operra-600 transition-colors">
                                     Save Lead
                                 </button>
-                                <Link :href="route('master.customers.index')" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 transition-colors">
+                                <Link :href="route('crm.sales.customers.index')" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 transition-colors">
                                     Cancel
                                 </Link>
                             </div>

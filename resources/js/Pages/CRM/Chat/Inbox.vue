@@ -97,7 +97,7 @@ const selectSession = async (session) => {
 
     isLoading.value = true;
     try {
-        const response = await axios.get(route('crm.chat.show', session.id));
+        const response = await axios.get(route('crm.wa.chat.show', session.id));
         messages.value = response.data.messages;
         scrollToBottom();
     } catch (error) {
@@ -114,7 +114,7 @@ const sendMessage = async () => {
     newMessage.value = '';
 
     try {
-        const response = await axios.post(route('crm.chat.send', selectedSession.value.id), {
+        const response = await axios.post(route('crm.wa.chat.send', selectedSession.value.id), {
             message: text
         });
         messages.value.push(response.data);
@@ -145,7 +145,7 @@ const updateCustomerStatus = async (newStatus) => {
     if (!selectedSession.value) return;
     
     try {
-        await axios.patch(route('master.customers.update-status', selectedSession.value.customer_id), {
+        await axios.patch(route('crm.sales.customers.update-status', selectedSession.value.customer_id), {
             status: newStatus
         });
         selectedSession.value.customer.status = newStatus;
@@ -209,20 +209,20 @@ const updateCustomerStatus = async (newStatus) => {
                         <div class="flex gap-3">
                             <div class="relative shrink-0">
                                 <div class="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-black text-lg shadow-inner">
-                                    {{ session.customer.name.charAt(0) }}
+                                    {{ session.customer?.name?.charAt(0) || '?' }}
                                 </div>
                                 <div v-if="session.status === 'open'" class="absolute bottom-0.5 right-0.5 h-3 w-3 bg-green-500 border-2 border-[#1e293b] rounded-full"></div>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between items-start mb-0.5">
                                     <h4 class="font-bold text-[13px] truncate pr-2 text-blue-400 group-hover:text-blue-300">
-                                        {{ session.customer.name }}
+                                        {{ session.customer?.name || 'Unknown' }}
                                     </h4>
                                     <span class="text-[10px] text-gray-400 font-medium shrink-0">{{ formatTime(session.last_message_at) }}</span>
                                 </div>
                                 <div class="flex justify-between items-center mb-1">
                                     <p class="text-[11px] truncate text-gray-400">
-                                        {{ session.customer.phone }}
+                                        {{ session.customer?.phone || 'No Phone' }}
                                     </p>
                                     <div v-if="session.session_unread_count > 0" class="min-w-[18px] h-[18px] px-1 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
                                         <span class="text-[9px] text-white font-black">{{ session.session_unread_count }}</span>
@@ -231,11 +231,11 @@ const updateCustomerStatus = async (newStatus) => {
                                 <div class="flex items-center gap-2">
                                     <span :class="[
                                         'text-[9px] px-2 py-0.5 rounded font-black uppercase tracking-wider',
-                                        session.customer.status === 'customer' ? 'bg-green-500/20 text-green-400' : 
-                                        session.customer.status === 'prospect' ? 'bg-blue-500/20 text-blue-400' : 
-                                        session.customer.status === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'
+                                        session.customer?.status === 'customer' ? 'bg-green-500/20 text-green-400' : 
+                                        session.customer?.status === 'prospect' ? 'bg-blue-500/20 text-blue-400' : 
+                                        session.customer?.status === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'
                                     ]">
-                                        {{ session.customer.status }}
+                                        {{ session.customer?.status || 'Lead' }}
                                     </span>
                                 </div>
                             </div>
@@ -257,12 +257,13 @@ const updateCustomerStatus = async (newStatus) => {
                             </button>
                             
                             <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-black shadow-lg shrink-0">
-                                {{ selectedSession.customer.name.charAt(0) }}
+                                {{ selectedSession.customer?.name?.charAt(0) || '?' }}
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <div class="font-black text-white truncate text-sm">{{ selectedSession.customer.name }}</div>
+                                    <div class="font-black text-white truncate text-sm">{{ selectedSession.customer?.name || 'Unknown' }}</div>
                                     <select 
+                                        v-if="selectedSession.customer"
                                         v-model="selectedSession.customer.status" 
                                         @change="updateCustomerStatus($event.target.value)"
                                         class="text-[9px] uppercase font-black px-2 py-0.5 h-5 rounded border-none bg-gray-700 text-gray-300 focus:ring-1 focus:ring-blue-500 cursor-pointer"
@@ -275,7 +276,7 @@ const updateCustomerStatus = async (newStatus) => {
                                 </div>
                                 <div class="flex items-center gap-1.5 mt-0.5">
                                     <span class="h-2 w-2 bg-green-500 rounded-full"></span>
-                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest opacity-70">Active on {{ selectedSession.whatsapp_account.name }}</span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest opacity-70">Active on {{ selectedSession.whatsapp_account?.name || 'WA Account' }}</span>
                                 </div>
                             </div>
                         </div>

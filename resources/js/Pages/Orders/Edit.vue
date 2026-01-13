@@ -14,7 +14,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(route('orders.update', props.order.id));
+    form.put(route('crm.sales.orders.update', props.order.id));
 };
 </script>
 
@@ -67,7 +67,7 @@ const submit = () => {
                                 <button type="submit" :disabled="form.processing" class="bg-operra-500 text-white px-4 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-operra-600 transition-colors">
                                     Update Order
                                 </button>
-                                <Link :href="route('orders.index')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 transition-colors">
+                                <Link :href="route('crm.sales.orders.index')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 transition-colors">
                                     Cancel
                                 </Link>
                             </div>

@@ -47,11 +47,20 @@ class WhatsAppWebhookController extends Controller
 
         DB::beginTransaction();
         try {
-            // 2. Cari atau Buat Customer
-            $customer = Customer::firstOrCreate(
-                ['phone' => $senderNumber],
-                ['name' => 'Customer ' . $senderNumber, 'status' => 'lead', 'lead_source' => 'whatsapp']
-            );
+            // 2. Cari atau Buat Customer (Gunakan company_id dari akun WA)
+            $customer = Customer::where('phone', $senderNumber)
+                ->where('company_id', $whatsappAccount->company_id)
+                ->first();
+
+            if (!$customer) {
+                $customer = Customer::create([
+                    'phone' => $senderNumber,
+                    'name' => 'Customer ' . $senderNumber,
+                    'status' => 'lead',
+                    'lead_source' => 'whatsapp',
+                    'company_id' => $whatsappAccount->company_id,
+                ]);
+            }
 
             // 3. Cari ChatSession yang masih 'open' atau 'pending'
             $chatSession = ChatSession::where('whatsapp_account_id', $whatsappAccount->id)
@@ -64,6 +73,7 @@ class WhatsAppWebhookController extends Controller
                 $chatSession = ChatSession::create([
                     'whatsapp_account_id' => $whatsappAccount->id,
                     'customer_id' => $customer->id,
+                    'company_id' => $whatsappAccount->company_id,
                     'status' => 'open',
                     'last_message_at' => now(),
                 ]);

@@ -30,7 +30,7 @@ class CustomerController extends Controller
 
         Customer::create($request->all());
 
-        return redirect()->route('master.customers.index')->with('message', 'Customer created.');
+        return redirect()->route('crm.sales.customers.index')->with('message', 'Customer created.');
     }
 
     public function updateStatus(Request $request, Customer $customer)

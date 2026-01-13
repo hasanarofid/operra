@@ -301,9 +301,7 @@ onUnmounted(() => {
               </Link>
             </li>
 
-          <!-- CRM Section -->
-          <div v-if="isModuleEnabled('wa_blast') || isModuleEnabled('sales_crm')">
-            <!-- WA Blast Module Links (Only shown if in WA context OR single module) -->
+            <!-- WA Blast Module Links -->
             <template v-if="isModuleEnabled('wa_blast') && (currentPortal === 'wa_blast' || page.props.auth.user.company?.enabled_modules?.length === 1)">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
@@ -332,7 +330,7 @@ onUnmounted(() => {
               </li>
             </template>
 
-            <!-- Sales CRM Module Links (Only shown if in Sales context OR single module) -->
+            <!-- Sales CRM Module Links -->
             <template v-if="isModuleEnabled('sales_crm') && (currentPortal === 'sales_crm' || page.props.auth.user.company?.enabled_modules?.length === 1)">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
@@ -354,7 +352,6 @@ onUnmounted(() => {
               </li>
             </template>
 
-            <!-- Placeholder for other modules -->
             <template v-if="isModuleEnabled('marketing_crm') && currentPortal === 'marketing_crm'">
               <hr class="my-4 md:min-w-full" />
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
@@ -384,7 +381,6 @@ onUnmounted(() => {
                 <span class="text-xs uppercase py-2 font-bold block text-gray-400 italic">Reports (Coming Soon)</span>
               </li>
             </template>
-          </div>
           </ul>
 
           <!-- Divider -->

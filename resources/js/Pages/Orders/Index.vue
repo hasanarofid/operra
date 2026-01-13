@@ -16,7 +16,7 @@ const formatCurrency = (value) => {
 
 const deleteOrder = (id) => {
     if (confirm('Are you sure you want to delete this order?')) {
-        router.delete(route('orders.destroy', id));
+        router.delete(route('crm.sales.orders.destroy', id));
     }
 };
 </script>
@@ -38,7 +38,7 @@ const deleteOrder = (id) => {
                                 <h3 class="font-bold text-base text-gray-700 dark:text-gray-200">Orders List</h3>
                             </div>
                             <div class="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
-                                <Link :href="route('orders.create')" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
+                                <Link :href="route('crm.sales.orders.create')" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
                                     Add New Order
                                 </Link>
                             </div>
@@ -69,7 +69,7 @@ const deleteOrder = (id) => {
                                         </span>
                                     </td>
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 flex gap-2">
-                                        <Link :href="route('orders.edit', order.id)" class="text-indigo-500 hover:text-indigo-700 font-bold uppercase text-xs">Edit</Link>
+                                        <Link :href="route('crm.sales.orders.edit', order.id)" class="text-indigo-500 hover:text-indigo-700 font-bold uppercase text-xs">Edit</Link>
                                         <button @click="deleteOrder(order.id)" class="text-red-500 hover:text-red-700 font-bold uppercase text-xs">Delete</button>
                                     </td>
                                 </tr>
