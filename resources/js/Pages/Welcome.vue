@@ -37,31 +37,31 @@ const submit = () => {
 
     <div class="text-gray-800 antialiased bg-gray-950">
         <!-- Navbar -->
-        <nav class="fixed top-0 z-[100] w-full px-4 py-6 bg-gray-950/50 backdrop-blur-lg border-b border-white/5">
+        <nav class="fixed top-0 z-[100] w-full px-4 py-4 md:py-6 bg-gray-950/50 backdrop-blur-lg border-b border-white/5">
             <div class="container mx-auto flex items-center justify-between">
                 <Link :href="route('welcome')" class="flex items-center gap-2 text-white">
-                    <ApplicationLogo class="h-8 md:h-10 w-auto" />
-                    <span class="text-xl md:text-2xl font-black tracking-tighter uppercase">OPERRA</span>
+                    <ApplicationLogo class="h-6 md:h-10 w-auto" />
+                    <span class="text-lg md:text-2xl font-black tracking-tighter uppercase">OPERRA</span>
                 </Link>
                 
-                <div class="hidden md:flex items-center gap-8 text-sm font-bold uppercase text-gray-400 tracking-widest">
-                    <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
-                    <a href="#custom" class="hover:text-white transition-colors">Custom Solution</a>
+                <div class="hidden lg:flex items-center gap-8 text-sm font-bold uppercase text-gray-400 tracking-widest">
+                    <a href="#pricing" class="hover:text-white transition-colors text-[10px] md:text-sm">Pricing</a>
+                    <a href="#custom" class="hover:text-white transition-colors text-[10px] md:text-sm">Custom Solution</a>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 md:gap-4">
                     <template v-if="canLogin">
                         <Link v-if="$page.props.auth.user" :href="route('dashboard')" 
-                            class="rounded-full bg-operra-600 px-6 py-2 text-xs font-bold uppercase text-white shadow-xl transition-all hover:bg-operra-700">
+                            class="rounded-full bg-operra-600 px-4 md:px-6 py-2 text-[10px] md:text-xs font-bold uppercase text-white shadow-xl transition-all hover:bg-operra-700">
                             Dashboard
                         </Link>
                         <template v-else>
-                            <Link :href="route('login')" class="hidden md:block text-xs font-bold uppercase text-white hover:text-operra-200 transition-colors">
+                            <Link :href="route('login')" class="text-[10px] md:text-xs font-bold uppercase text-white hover:text-operra-200 transition-colors px-2">
                                 Log In
                             </Link>
                             <Link v-if="canRegister" :href="route('register')" 
-                                class="rounded-full bg-white px-6 py-2 text-xs font-bold uppercase text-gray-950 shadow-xl transition-all hover:bg-gray-100">
-                                Get Started
+                                class="rounded-full bg-white px-4 md:px-6 py-2 text-[10px] md:text-xs font-bold uppercase text-gray-950 shadow-xl transition-all hover:bg-gray-100">
+                                Join
                             </Link>
                         </template>
                     </template>
@@ -79,25 +79,25 @@ const submit = () => {
                 </div>
 
                 <div class="container relative z-10 mx-auto px-4 text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-operra-400 text-xs font-bold uppercase tracking-widest mb-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-operra-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-6 md:mb-8">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-operra-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-operra-500"></span>
                         </span>
                         The Next Generation Multi-CRM
                     </div>
-                    <h1 class="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.9] mb-8">
+                    <h1 class="text-4xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.9] mb-6 md:mb-8">
                         Scale Your Business <br/>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-operra-400 via-indigo-400 to-cyan-400">With Intelligent CRM</span>
                     </h1>
-                    <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed mb-12">
+                    <p class="text-gray-400 text-base md:text-xl max-w-2xl mx-auto font-medium leading-relaxed mb-10 md:mb-12">
                         Dari WhatsApp Blast hingga Sales Pipeline. Satu platform, semua jenis CRM yang bisnis Anda butuhkan untuk tumbuh lebih cepat.
                     </p>
-                    <div class="flex flex-col md:flex-row justify-center items-center gap-6">
-                        <Link :href="route('register')" class="w-full md:w-auto rounded-full bg-operra-600 px-12 py-5 text-lg font-black text-white shadow-2xl shadow-operra-600/20 hover:bg-operra-700 hover:-translate-y-1 transition-all">
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6">
+                        <Link :href="route('register')" class="w-full md:w-auto rounded-full bg-operra-600 px-10 md:px-12 py-4 md:py-5 text-base md:text-lg font-black text-white shadow-2xl shadow-operra-600/20 hover:bg-operra-700 hover:-translate-y-1 transition-all">
                             DAFTAR SEKARANG
                         </Link>
-                        <a href="#pricing" class="w-full md:w-auto rounded-full bg-white/5 backdrop-blur-md px-12 py-5 text-lg font-black text-white border border-white/10 hover:bg-white/10 transition-all">
+                        <a href="#pricing" class="w-full md:w-auto rounded-full bg-white/5 backdrop-blur-md px-10 md:px-12 py-4 md:py-5 text-base md:text-lg font-black text-white border border-white/10 hover:bg-white/10 transition-all">
                             LIHAT HARGA
                         </a>
                     </div>
@@ -105,42 +105,42 @@ const submit = () => {
             </section>
 
             <!-- Pricing Section -->
-            <section id="pricing" class="py-32 bg-gray-950 relative overflow-hidden">
+            <section id="pricing" class="py-20 md:py-32 bg-gray-950 relative overflow-hidden">
                 <div class="container mx-auto px-4 relative z-10">
-                    <div class="text-center mb-20">
-                        <h2 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4">Pilih Paket Sesuai <span class="text-operra-500">Kebutuhan</span></h2>
-                        <p class="text-gray-400 font-medium">Investasi terbaik untuk pertumbuhan bisnis jangka panjang Anda.</p>
+                    <div class="text-center mb-16 md:mb-20">
+                        <h2 class="text-3xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4 px-2">Pilih Paket Sesuai <span class="text-operra-500">Kebutuhan</span></h2>
+                        <p class="text-gray-400 font-medium text-sm md:text-base px-4">Investasi terbaik untuk pertumbuhan bisnis jangka panjang Anda.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
                         <div 
                             v-for="plan in pricingPlans" 
                             :key="plan.id"
-                            :class="plan.is_popular ? 'bg-operra-600 shadow-2xl shadow-operra-600/20 scale-105 z-10 border-transparent' : 'bg-white/5 border-white/10'"
-                            class="relative rounded-[40px] p-10 border transition-all hover:-translate-y-2 flex flex-col"
+                            :class="plan.is_popular ? 'bg-operra-600 shadow-2xl shadow-operra-600/20 lg:scale-105 z-10 border-transparent' : 'bg-white/5 border-white/10'"
+                            class="relative rounded-[30px] md:rounded-[40px] p-8 md:p-10 border transition-all hover:-translate-y-2 flex flex-col"
                         >
-                            <div v-if="plan.badge" class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-white text-gray-900 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
+                            <div v-if="plan.badge" class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white text-gray-900 text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
                                 {{ plan.badge }}
                             </div>
 
-                            <div class="mb-8">
-                                <h3 class="text-2xl font-black text-white uppercase mb-2">{{ plan.name }}</h3>
+                            <div class="mb-6 md:mb-8">
+                                <h3 class="text-xl md:text-2xl font-black text-white uppercase mb-2">{{ plan.name }}</h3>
                                 <div class="flex items-baseline gap-1">
-                                    <span class="text-white text-4xl font-black">
+                                    <span class="text-white text-3xl md:text-4xl font-black">
                                         {{ plan.price > 0 ? 'Rp' + (plan.price / 1000) + 'k' : 'Custom' }}
                                     </span>
-                                    <span v-if="plan.price > 0" class="text-white/60 text-sm font-bold">/ bulan</span>
+                                    <span v-if="plan.price > 0" class="text-white/60 text-xs md:text-sm font-bold">/ bulan</span>
                                 </div>
                             </div>
 
-                            <ul class="space-y-4 mb-10 flex-1">
-                                <li v-for="feature in plan.features" :key="feature" class="flex items-start gap-3 text-white text-sm font-medium">
-                                    <svg class="w-5 h-5 shrink-0 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            <ul class="space-y-3 md:space-y-4 mb-8 md:mb-10 flex-1">
+                                <li v-for="feature in plan.features" :key="feature" class="flex items-start gap-3 text-white text-xs md:text-sm font-medium">
+                                    <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0 text-white mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                     {{ feature }}
                                 </li>
                             </ul>
 
-                            <button :class="plan.is_popular ? 'bg-white text-operra-600' : 'bg-white/10 text-white hover:bg-white/20'" class="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all">
+                            <button :class="plan.is_popular ? 'bg-white text-operra-600' : 'bg-white/10 text-white hover:bg-white/20'" class="w-full py-4 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm transition-all active:scale-95">
                                 {{ plan.cta_text }}
                             </button>
                         </div>
@@ -149,58 +149,58 @@ const submit = () => {
             </section>
 
             <!-- Custom Request Section -->
-            <section id="custom" class="py-32 bg-gray-900 relative">
+            <section id="custom" class="py-20 md:py-32 bg-gray-900 relative">
                 <div class="container mx-auto px-4">
-                    <div class="max-w-5xl mx-auto bg-gray-950 rounded-[50px] p-8 md:p-16 border border-white/5 shadow-2xl flex flex-wrap items-center">
-                        <div class="w-full lg:w-1/2 mb-12 lg:mb-0 lg:pr-12">
-                            <h2 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter mb-6">Butuh CRM yang <br/> <span class="text-operra-500">Sangat Spesifik?</span></h2>
-                            <p class="text-gray-400 text-lg leading-relaxed mb-8">
+                    <div class="max-w-5xl mx-auto bg-gray-950 rounded-[30px] md:rounded-[50px] p-6 md:p-16 border border-white/5 shadow-2xl flex flex-wrap items-center">
+                        <div class="w-full lg:w-1/2 mb-10 lg:mb-0 lg:pr-12">
+                            <h2 class="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-6">Butuh CRM yang <br class="hidden md:block"/> <span class="text-operra-500">Sangat Spesifik?</span></h2>
+                            <p class="text-gray-400 text-base md:text-lg leading-relaxed mb-8">
                                 Kami berpengalaman membangun CRM kustom untuk berbagai industri. Ceritakan kebutuhan unik bisnis Anda, dan biarkan kami membangun solusinya.
                             </p>
-                            <div class="space-y-6">
+                            <div class="space-y-4 md:space-y-6">
                                 <div class="flex items-center gap-4">
-                                    <div class="h-12 w-12 rounded-2xl bg-white/5 flex items-center justify-center text-operra-500">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                    <div class="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center text-operra-500">
+                                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-white font-bold">On-Premise Ready</h4>
-                                        <p class="text-gray-500 text-sm">Server di kantor Anda sendiri.</p>
+                                        <h4 class="text-white font-bold text-sm md:text-base">On-Premise Ready</h4>
+                                        <p class="text-gray-500 text-xs md:text-sm">Server di kantor Anda sendiri.</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-4">
-                                    <div class="h-12 w-12 rounded-2xl bg-white/5 flex items-center justify-center text-operra-500">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4m4-4l-4 4M6 16l-4-4 4-4"></path></svg>
+                                    <div class="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center text-operra-500">
+                                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4m4-4l-4 4M6 16l-4-4 4-4"></path></svg>
                                     </div>
                                     <div>
-                                        <h4 class="text-white font-bold">Custom Development</h4>
-                                        <p class="text-gray-500 text-sm">Fitur unik sesuai alur bisnis Anda.</p>
+                                        <h4 class="text-white font-bold text-sm md:text-base">Custom Development</h4>
+                                        <p class="text-gray-500 text-xs md:text-sm">Fitur unik sesuai alur bisnis Anda.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="w-full lg:w-1/2">
-                            <form @submit.prevent="submit" class="bg-white/5 p-8 md:p-10 rounded-[40px] border border-white/10">
-                                <div v-if="showSuccess" class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-2xl text-green-400 text-sm font-bold text-center">
+                            <form @submit.prevent="submit" class="bg-white/5 p-6 md:p-10 rounded-[30px] md:rounded-[40px] border border-white/10">
+                                <div v-if="showSuccess" class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-2xl text-green-400 text-xs md:text-sm font-bold text-center">
                                     Permintaan terkirim! Tim kami akan segera menghubungi Anda.
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <input v-model="form.name" type="text" placeholder="Nama Anda" class="bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all" required />
-                                    <input v-model="form.company_name" type="text" placeholder="Nama Perusahaan" class="bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all" required />
+                                    <input v-model="form.name" type="text" placeholder="Nama Anda" class="bg-white/5 border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-sm focus:border-operra-500 focus:ring-0 transition-all placeholder:text-gray-600" required />
+                                    <input v-model="form.company_name" type="text" placeholder="Nama Perusahaan" class="bg-white/5 border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-sm focus:border-operra-500 focus:ring-0 transition-all placeholder:text-gray-600" required />
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <input v-model="form.email" type="email" placeholder="Email Bisnis" class="bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all" required />
-                                    <input v-model="form.phone" type="text" placeholder="Nomor WA (e.g 0812...)" class="bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all" required />
+                                    <input v-model="form.email" type="email" placeholder="Email Bisnis" class="bg-white/5 border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-sm focus:border-operra-500 focus:ring-0 transition-all placeholder:text-gray-600" required />
+                                    <input v-model="form.phone" type="text" placeholder="Nomor WA (e.g 0812...)" class="bg-white/5 border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-sm focus:border-operra-500 focus:ring-0 transition-all placeholder:text-gray-600" required />
                                 </div>
-                                <select v-model="form.business_type" class="w-full bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all mb-4">
-                                    <option value="UMKM">UMKM / Retail</option>
-                                    <option value="Enterprise">Perusahaan Menengah / Besar</option>
-                                    <option value="Government">Instansi / Pemerintah</option>
+                                <select v-model="form.business_type" class="w-full bg-white/5 border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-sm focus:border-operra-500 focus:ring-0 transition-all mb-4">
+                                    <option value="UMKM" class="bg-gray-950">UMKM / Retail</option>
+                                    <option value="Enterprise" class="bg-gray-950">Perusahaan Menengah / Besar</option>
+                                    <option value="Government" class="bg-gray-950">Instansi / Pemerintah</option>
                                 </select>
-                                <textarea v-model="form.message" placeholder="Ceritakan kebutuhan CRM Anda..." rows="4" class="w-full bg-white/5 border-white/10 rounded-2xl p-4 text-white focus:border-operra-500 focus:ring-0 transition-all mb-6" required></textarea>
+                                <textarea v-model="form.message" placeholder="Ceritakan kebutuhan CRM Anda..." rows="4" class="w-full bg-white/5 border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-sm focus:border-operra-500 focus:ring-0 transition-all mb-6 placeholder:text-gray-600" required></textarea>
                                 
-                                <button type="submit" :disabled="form.processing" class="w-full py-5 rounded-2xl bg-operra-600 text-white font-black uppercase tracking-widest hover:bg-operra-700 transition-all shadow-xl shadow-operra-600/20 disabled:opacity-50">
+                                <button type="submit" :disabled="form.processing" class="w-full py-4 md:py-5 rounded-xl md:rounded-2xl bg-operra-600 text-white font-black uppercase tracking-widest text-xs md:text-sm hover:bg-operra-700 transition-all shadow-xl shadow-operra-600/20 disabled:opacity-50">
                                     KIRIM REQUEST KUSTOM
                                 </button>
                             </form>
