@@ -27,6 +27,11 @@ class DashboardController extends Controller
 
         $portal = $request->query('portal');
 
+        // If no portal specified but company only has one module, auto-select it
+        if (!$portal && $user->company && count($user->company->enabled_modules ?? []) === 1) {
+            $portal = $user->company->enabled_modules[0];
+        }
+
         if ($user->hasRole('sales')) {
             $leadsQuery->where('assigned_to', $user->id);
             $sessionsQuery->where('assigned_user_id', $user->id);

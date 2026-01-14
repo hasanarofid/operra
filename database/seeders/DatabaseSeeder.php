@@ -227,5 +227,8 @@ class DatabaseSeeder extends Seeder
 
         // 11. Marketing & Support Data
         $this->call(MarketingSupportSeeder::class);
+
+        // 12. Portal Demo Users
+        $this->call(PortalDemoSeeder::class);
     }
 }
