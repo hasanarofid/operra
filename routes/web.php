@@ -33,6 +33,10 @@ Route::middleware(['auth', 'verified', 'role:super-admin'])->group(function () {
     Route::get('/admin/leads-requests', [LeadsRequestController::class, 'index'])->name('admin.leads.index');
     Route::patch('/admin/leads-requests/{leadsRequest}/status', [LeadsRequestController::class, 'updateStatus'])->name('admin.leads.update-status');
     Route::delete('/admin/leads-requests/{leadsRequest}', [LeadsRequestController::class, 'destroy'])->name('admin.leads.destroy');
+    
+    // System Monitoring Routes (Super Admin Operra)
+    Route::get('/admin/monitoring/companies', [\App\Http\Controllers\Admin\SystemAdminController::class, 'index'])->name('admin.system.companies.index');
+    Route::patch('/admin/monitoring/companies/{company}', [\App\Http\Controllers\Admin\SystemAdminController::class, 'updateSubscription'])->name('admin.system.companies.update');
 });
 Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

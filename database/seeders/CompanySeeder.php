@@ -14,16 +14,15 @@ class CompanySeeder extends Seeder
      */
     public function run(): void
     {
-        $company = Company::create([
+        $company = Company::updateOrCreate(['slug' => 'operra-default'], [
             'name' => 'Operra Default',
-            'slug' => 'operra-default',
             'status' => 'active',
             'enabled_modules' => ['wa_blast', 'sales_crm', 'marketing_crm', 'customer_service', 'analytical_crm'],
+            'is_system_owner' => true,
         ]);
 
-        $admin = User::create([
+        $admin = User::updateOrCreate(['email' => 'admin@operra.com'], [
             'name' => 'Admin Operra',
-            'email' => 'admin@operra.id',
             'password' => Hash::make('password'),
             'company_id' => $company->id,
         ]);

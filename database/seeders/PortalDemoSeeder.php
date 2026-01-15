@@ -14,14 +14,17 @@ class PortalDemoSeeder extends Seeder
     {
         $password = Hash::make('password');
         $superAdminRole = Role::where('name', 'super-admin')->first();
+        $plans = \App\Models\PricingPlan::all();
 
         // 1. User Demo: Semua Portal
         $allPortalsCo = Company::updateOrCreate(['slug' => 'all-portals-demo'], [
             'name' => 'Demo Semua Portal',
             'status' => 'active',
             'enabled_modules' => ['wa_blast', 'sales_crm', 'marketing_crm', 'customer_service'],
+            'pricing_plan_id' => $plans->where('slug', 'enterprise')->first()?->id,
+            'subscription_ends_at' => now()->addMonths(12),
         ]);
-
+        
         $userAll = User::updateOrCreate(['email' => 'demo-all@operra.id'], [
             'name' => 'User Demo (Semua Portal)',
             'password' => $password,
@@ -34,6 +37,8 @@ class PortalDemoSeeder extends Seeder
             'name' => 'Demo WhatsApp Blast',
             'status' => 'active',
             'enabled_modules' => ['wa_blast'],
+            'pricing_plan_id' => $plans->where('slug', 'starter')->first()?->id,
+            'subscription_ends_at' => now()->addMonths(1),
         ]);
 
         $userWa = User::updateOrCreate(['email' => 'demo-wa@operra.id'], [
@@ -48,6 +53,8 @@ class PortalDemoSeeder extends Seeder
             'name' => 'Demo Sales CRM',
             'status' => 'active',
             'enabled_modules' => ['sales_crm'],
+            'pricing_plan_id' => $plans->where('slug', 'pro')->first()?->id,
+            'subscription_ends_at' => now()->addMonths(6),
         ]);
 
         $userSales = User::updateOrCreate(['email' => 'demo-sales@operra.id'], [

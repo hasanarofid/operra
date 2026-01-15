@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                         'id' => $request->user()->company->id,
                         'name' => $request->user()->company->name,
                         'enabled_modules' => $request->user()->company->enabled_modules ?? [],
+                        'is_system_owner' => $request->user()->company->is_system_owner ?? false,
                     ] : null,
                 ] : null,
             ],

@@ -140,13 +140,12 @@ class DatabaseSeeder extends Seeder
             'company_id' => $defaultCompany->id
         ]);
 
-        // 8. Legacy & Demo Data (Semua dikaitkan ke Default Company)
-        $superAdminUser = User::updateOrCreate(['email' => 'admin@operra.com'], [
-            'name' => 'Super Admin Operra',
-            'password' => Hash::make('password'),
-            'company_id' => $defaultCompany->id
-        ]);
-        $superAdminUser->assignRole($adminRole);
+        // 8. Super Admin Operra (System Owner)
+        // User ini dikelola oleh CompanySeeder
+        $superAdminUser = User::where('email', 'admin@operra.com')->first();
+        if ($superAdminUser) {
+            $superAdminUser->assignRole($adminRole);
+        }
 
         // User Demo untuk Manager
         $managerUser = User::updateOrCreate(['email' => 'manager@operra.com'], [

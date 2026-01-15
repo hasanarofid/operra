@@ -19,11 +19,21 @@ class Company extends Model
         'email',
         'status',
         'enabled_modules',
+        'pricing_plan_id',
+        'subscription_ends_at',
+        'is_system_owner',
     ];
 
     protected $casts = [
         'enabled_modules' => 'array',
+        'subscription_ends_at' => 'datetime',
+        'is_system_owner' => 'boolean',
     ];
+
+    public function plan(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(PricingPlan::class, 'pricing_plan_id');
+    }
 
     public function users(): HasMany
     {
