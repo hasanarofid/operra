@@ -40,6 +40,10 @@ Route::middleware(['auth', 'verified', 'role:super-admin'])->group(function () {
 });
 Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/onboarding/complete', function () {
+        auth()->user()->update(['has_completed_onboarding' => true]);
+        return back();
+    })->name('onboarding.complete');
     
     // Legacy support or core features
     Route::resource('inventory', InventoryController::class);

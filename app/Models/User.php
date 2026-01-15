@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'company_id',
+        'has_completed_onboarding',
     ];
 
     public function company()
@@ -65,6 +66,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'has_completed_onboarding' => 'boolean',
         ];
     }
 }
