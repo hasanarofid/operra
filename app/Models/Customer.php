@@ -15,10 +15,16 @@ class Customer extends Model
         'phone',
         'address',
         'status',
+        'customer_status_id',
         'lead_source',
         'assigned_to',
         'company_id',
     ];
+
+    public function statusLabel()
+    {
+        return $this->belongsTo(CustomerStatus::class, 'customer_status_id');
+    }
 
     public function assignedSales()
     {

@@ -327,11 +327,39 @@ onUnmounted(() => {
                       Manage Leads
                   </Link>
               </li>
+              <li class="items-center">
+                  <Link :href="route('crm.wa.blast.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.blast.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      WhatsApp Blast
+                  </Link>
+              </li>
               <li v-if="hasRole('super-admin')" class="items-center">
                   <Link :href="route('crm.wa.settings.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.settings.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
                       WA Multi-Account
+                  </Link>
+              </li>
+              <li v-if="hasRole('super-admin')" class="items-center">
+                  <Link :href="route('crm.wa.external-apps.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.external-apps.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      External Apps (Embed)
+                  </Link>
+              </li>
+              <li v-if="hasRole('super-admin')" class="items-center">
+                  <Link :href="route('crm.wa.media.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.media.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      WA Media Gallery
+                  </Link>
+              </li>
+              <li v-if="hasRole('super-admin')" class="items-center">
+                  <Link :href="route('crm.wa.customer-statuses.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.customer-statuses.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Lead Statuses
                   </Link>
               </li>
             </template>

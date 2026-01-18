@@ -263,21 +263,6 @@ const series = [{
             <div class="flex flex-wrap mt-4 -mx-4">
                 <!-- Row content (Charts, Tables) - Show based on selected module or simplified for both -->
                 <div class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-                    <!-- Chart logic (shared) -->
-                    <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast' || selectedModule === 'marketing_crm'" class="relative flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
-                        <div class="rounded-t mb-0 px-6 py-4 bg-transparent">
-                            <h6 class="uppercase text-gray-400 mb-1 text-xs font-bold tracking-widest">
-                                {{ selectedModule === 'marketing_crm' ? 'Campaign Analytics' : 'Growth Analytics' }}
-                            </h6>
-                            <h2 class="text-white text-xl font-bold">
-                                {{ selectedModule === 'marketing_crm' ? 'Campaign Performance' : 'New Leads Trend' }}
-                            </h2>
-                        </div>
-                        <div class="p-4 flex-auto">
-                            <VueApexCharts height="350" :options="chartOptions" :series="series" />
-                        </div>
-                    </div>
-
                     <!-- Recent Leads (Shared for Sales/WA) or Campaigns (for Marketing) or Tickets (for Support) -->
                     <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast'" class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
                         <div class="rounded-t mb-0 px-6 py-4 border-0 flex justify-between items-center">
@@ -377,6 +362,21 @@ const series = [{
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- Chart logic (shared) -->
+                    <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast' || selectedModule === 'marketing_crm'" class="relative flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
+                        <div class="rounded-t mb-0 px-6 py-4 bg-transparent">
+                            <h6 class="uppercase text-gray-400 mb-1 text-xs font-bold tracking-widest">
+                                {{ selectedModule === 'marketing_crm' ? 'Campaign Analytics' : 'Growth Analytics' }}
+                            </h6>
+                            <h2 class="text-white text-xl font-bold">
+                                {{ selectedModule === 'marketing_crm' ? 'Campaign Performance' : 'New Leads Trend' }}
+                            </h2>
+                        </div>
+                        <div class="p-4 flex-auto">
+                            <VueApexCharts height="350" :options="chartOptions" :series="series" />
                         </div>
                     </div>
                 </div>

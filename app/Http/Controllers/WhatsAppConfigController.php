@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use App\Models\WhatsappAccount;
+use App\Models\WhatsappTemplate;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,17 +14,16 @@ class WhatsAppConfigController extends Controller
     public function index(WhatsAppService $waService)
     {
         $settings = Setting::whereIn('key', [
-            'wa_blast_number',
-            'wa_blast_endpoint',
-            'wa_blast_token',
-            'wa_blast_key',
-            'wa_blast_provider'
+            'meta_access_token',
+            'meta_webhook_verify_token',
+            'meta_app_id',
+            'meta_waba_id',
         ])->pluck('value', 'key');
 
-        $waStatus = null;
-        if (isset($settings['wa_blast_token'])) {
-            $waStatus = $waService->checkStatus();
-        }
+        $waStatus = [
+            'provider' => 'official',
+            'connection' => 'ready'
+        ];
 
         return Inertia::render('Settings/WhatsApp', [
             'settings' => $settings,
@@ -38,7 +38,7 @@ class WhatsAppConfigController extends Controller
             'name' => 'required|string',
             'phone_number' => 'required|string|unique:whatsapp_accounts,phone_number',
             'provider' => 'required|string',
-            'token' => 'required|string',
+            'token' => 'nullable|string',
             'key' => 'nullable|string',
             'endpoint' => 'nullable|url',
         ]);
@@ -48,14 +48,13 @@ class WhatsAppConfigController extends Controller
             'phone_number' => $validated['phone_number'],
             'provider' => $validated['provider'],
             'api_credentials' => [
-                'token' => $validated['token'],
+                'token' => $validated['token'] ?? '', 
                 'key' => $validated['key'] ?? '',
-                'endpoint' => $validated['endpoint'] ?? 'https://api.wa-provider.com/v1',
+                'endpoint' => $validated['endpoint'] ?? '',
             ],
             'status' => 'inactive',
         ]);
 
-        // Langsung sync status setelah input
         $waService->syncAccountStatus($account);
 
         return redirect()->back()->with('message', 'WhatsApp Account added and synced successfully.');
@@ -67,7 +66,7 @@ class WhatsAppConfigController extends Controller
             'name' => 'required|string',
             'phone_number' => 'required|string|unique:whatsapp_accounts,phone_number,' . $whatsappAccount->id,
             'provider' => 'required|string',
-            'token' => 'required|string',
+            'token' => 'nullable|string',
             'key' => 'nullable|string',
             'endpoint' => 'nullable|url',
         ]);
@@ -77,9 +76,9 @@ class WhatsAppConfigController extends Controller
             'phone_number' => $validated['phone_number'],
             'provider' => $validated['provider'],
             'api_credentials' => [
-                'token' => $validated['token'],
+                'token' => $validated['token'] ?? '',
                 'key' => $validated['key'] ?? '',
-                'endpoint' => $validated['endpoint'] ?? 'https://api.wa-provider.com/v1',
+                'endpoint' => $validated['endpoint'] ?? '',
             ],
         ]);
 
@@ -100,20 +99,82 @@ class WhatsAppConfigController extends Controller
         return redirect()->back()->with('message', 'Account status synced.');
     }
 
+    public function syncTemplates(WhatsappAccount $whatsappAccount, WhatsAppService $waService)
+    {
+        $result = $waService->fetchTemplates($whatsappAccount);
+
+        if ($result['status']) {
+            foreach ($result['data'] as $tpl) {
+                if ($tpl['status'] !== 'APPROVED') continue;
+
+                WhatsappTemplate::updateOrCreate(
+                    ['whatsapp_account_id' => $whatsappAccount->id, 'name' => $tpl['name']],
+                    [
+                        'company_id' => $whatsappAccount->company_id,
+                        'language' => $tpl['language'],
+                        'category' => $tpl['category'],
+                        'components' => $tpl['components'],
+                    ]
+                );
+            }
+            return redirect()->back()->with('message', 'Templates synced successfully.');
+        }
+
+        return redirect()->back()->withErrors(['message' => 'Failed to sync templates: ' . $result['message']]);
+    }
+
+    public function syncFromMeta(WhatsAppService $waService)
+    {
+        $wabaId = Setting::get('meta_waba_id');
+        $token = Setting::get('meta_access_token');
+
+        if (!$wabaId || !$token) {
+            return redirect()->back()->withErrors(['message' => 'WABA ID and Global Token are required for sync.']);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withToken($token)
+                ->get("https://graph.facebook.com/v18.0/{$wabaId}/phone_numbers");
+
+            if ($response->successful()) {
+                $numbers = $response->json()['data'] ?? [];
+                
+                foreach ($numbers as $num) {
+                    WhatsappAccount::updateOrCreate(
+                        ['phone_number' => $num['id']], // Phone Number ID
+                        [
+                            'name' => $num['display_phone_number'] . ' (' . ($num['verified_name'] ?? 'Official') . ')',
+                            'provider' => 'official',
+                            'status' => 'active',
+                            'is_verified' => ($num['code_verification_status'] === 'VERIFIED'),
+                            'api_credentials' => ['token' => '', 'key' => '', 'endpoint' => ''],
+                        ]
+                    );
+                }
+
+                return redirect()->back()->with('message', count($numbers) . ' accounts synced from Meta.');
+            }
+
+            return redirect()->back()->withErrors(['message' => 'Meta API Error: ' . $response->body()]);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'wa_blast_number' => 'nullable|string',
-            'wa_blast_endpoint' => 'nullable|url',
-            'wa_blast_token' => 'nullable|string',
-            'wa_blast_key' => 'nullable|string',
-            'wa_blast_provider' => 'nullable|string|in:generic,fonnte,official',
+            'meta_access_token' => 'nullable|string',
+            'meta_webhook_verify_token' => 'nullable|string',
+            'meta_app_id' => 'nullable|string',
+            'meta_waba_id' => 'nullable|string',
         ]);
 
         foreach ($validated as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            Setting::updateOrCreate(['key' => $key], ['value' => $value ?? '']);
         }
 
-        return redirect()->back()->with('message', 'WhatsApp settings updated successfully.');
+        return redirect()->back()->with('message', 'Global Meta configuration updated successfully.');
     }
 }
