@@ -68,6 +68,9 @@ const requestPermissions = async () => {
         try {
             const permission = await Notification.requestPermission();
             console.log('[Operra] Notification permission:', permission);
+            if (permission === 'granted' || permission === 'denied') {
+                sessionStorage.setItem('operra_notification_prompt_dismissed', 'true');
+            }
         } catch (e) {
             console.error('[Operra] Error requesting notification permission:', e);
         }
@@ -90,12 +93,18 @@ const requestPermissions = async () => {
         
         // Optional: Save to session storage that user has dismissed/enabled for this session
         sessionStorage.setItem('operra_audio_unlocked', 'true');
+        sessionStorage.setItem('operra_notification_prompt_dismissed', 'true');
     }).catch(e => {
         console.error('[Operra] Gagal unlock audio:', e);
         // Even if it fails, we close the prompt to not annoy the user, 
         // it will reappear if playNotificationSound fails again later
         showPermissionPrompt.value = false;
     });
+};
+
+const dismissPermissionPrompt = () => {
+    showPermissionPrompt.value = false;
+    sessionStorage.setItem('operra_notification_prompt_dismissed', 'true');
 };
 
 function toggleCollapseShow(classes) {
@@ -119,8 +128,9 @@ watch(isDark, (val) => {
 onMounted(() => {
     // Check if we should show prompt
     const isAudioUnlocked = sessionStorage.getItem('operra_audio_unlocked');
+    const isPromptDismissed = sessionStorage.getItem('operra_notification_prompt_dismissed');
     
-    if (("Notification" in window && Notification.permission !== 'granted') || !isAudioUnlocked) {
+    if (!isPromptDismissed && (("Notification" in window && Notification.permission !== 'granted') || !isAudioUnlocked)) {
         // Delay slightly for better UX
         setTimeout(() => {
             showPermissionPrompt.value = true;
@@ -128,7 +138,7 @@ onMounted(() => {
     }
 
     // Global notification sound listener
-    if (page.props.auth.user) {
+    if (page.props.auth.user && database) {
         const userInboxRef = dbRef(database, `inbox/users/${page.props.auth.user.id}`);
         unsubInbox = onValue(userInboxRef, (snapshot) => {
             const data = snapshot.val();
@@ -332,6 +342,13 @@ onUnmounted(() => {
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.blast.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
                       WhatsApp Blast
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('crm.wa.auto-reply.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.auto-reply.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Auto Reply
                   </Link>
               </li>
               <li v-if="hasRole('super-admin')" class="items-center">
@@ -558,7 +575,7 @@ onUnmounted(() => {
                     </p>
                 </div>
                 <div class="flex gap-3 w-full">
-                    <button @click="showPermissionPrompt = false" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <button @click="dismissPermissionPrompt" class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         Nanti Saja
                     </button>
                     <button @click="requestPermissions" class="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-operra-600 hover:bg-operra-700 text-white shadow-lg shadow-operra-600/20 transition-all active:scale-95">

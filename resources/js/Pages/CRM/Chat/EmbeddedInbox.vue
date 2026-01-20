@@ -52,44 +52,46 @@ onMounted(() => {
     filteredSessions.value = sessionsList.value;
     
     // Firebase listener (Global Inbox for the app's channel)
-    const globalInboxRef = dbRef(database, `inbox/global`);
-    
-    onValue(globalInboxRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            Object.values(data).forEach((incoming) => {
-                const { session, message } = incoming;
-                
-                if (props.app.phone_number && session.whatsapp_account?.phone_number !== props.app.phone_number) {
-                    return;
-                }
-
-                const index = sessionsList.value.findIndex(s => s.id === session.id);
-                const isUnread = message.sender_type === 'customer' && (!selectedSession.value || selectedSession.value.id !== session.id);
-                
-                const updatedSession = { 
-                    ...session, 
-                    is_unread: isUnread || (index !== -1 && sessionsList.value[index].is_unread),
-                    session_unread_count: incoming.session_unread_count || 0,
-                    last_message_at: message.created_at
-                };
-
-                if (index !== -1) {
-                    sessionsList.value.splice(index, 1);
-                }
-                sessionsList.value.unshift(updatedSession);
-                sessionsList.value.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
-
-                if (selectedSession.value && selectedSession.value.id === session.id) {
-                    const isMessageExist = messages.value.some(m => m.id === message.id);
-                    if (!isMessageExist) {
-                        messages.value.push(message);
-                        scrollToBottom();
+    if (database) {
+        const globalInboxRef = dbRef(database, `inbox/global`);
+        
+        onValue(globalInboxRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).forEach((incoming) => {
+                    const { session, message } = incoming;
+                    
+                    if (props.app.phone_number && session.whatsapp_account?.phone_number !== props.app.phone_number) {
+                        return;
                     }
-                }
-            });
-        }
-    });
+
+                    const index = sessionsList.value.findIndex(s => s.id === session.id);
+                    const isUnread = message.sender_type === 'customer' && (!selectedSession.value || selectedSession.value.id !== session.id);
+                    
+                    const updatedSession = { 
+                        ...session, 
+                        is_unread: isUnread || (index !== -1 && sessionsList.value[index].is_unread),
+                        session_unread_count: incoming.session_unread_count || 0,
+                        last_message_at: message.created_at
+                    };
+
+                    if (index !== -1) {
+                        sessionsList.value.splice(index, 1);
+                    }
+                    sessionsList.value.unshift(updatedSession);
+                    sessionsList.value.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+
+                    if (selectedSession.value && selectedSession.value.id === session.id) {
+                        const isMessageExist = messages.value.some(m => m.id === message.id);
+                        if (!isMessageExist) {
+                            messages.value.push(message);
+                            scrollToBottom();
+                        }
+                    }
+                });
+            }
+        });
+    }
 });
 
 const selectSession = async (session) => {

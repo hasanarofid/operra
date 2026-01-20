@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
-// Firebase configuration (Biasanya didapat dari Dashboard Firebase)
+// Firebase configuration
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -12,8 +12,25 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+let database = null;
+
+// Defensive check: only initialize if core values exist and are not empty strings/placeholders
+const isConfigValid = firebaseConfig.apiKey && 
+                     firebaseConfig.projectId && 
+                     firebaseConfig.databaseURL && 
+                     !firebaseConfig.apiKey.startsWith('YOUR_');
+
+if (isConfigValid) {
+    try {
+        const app = initializeApp(firebaseConfig);
+        // Explicitly pass the database URL to getDatabase to avoid auto-discovery issues
+        database = getDatabase(app, firebaseConfig.databaseURL);
+        console.log("[Operra] Firebase initialized successfully.");
+    } catch (error) {
+        console.error("[Operra] Firebase connection failed:", error.message);
+    }
+} else {
+    console.warn("[Operra] Firebase configuration is missing or invalid. Real-time features are disabled.");
+}
 
 export { database };
-

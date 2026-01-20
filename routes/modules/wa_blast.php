@@ -6,6 +6,7 @@ use App\Http\Controllers\WhatsAppBlastController;
 use App\Http\Controllers\WhatsAppMediaController;
 use App\Http\Controllers\ExternalAppController;
 use App\Http\Controllers\CustomerStatusController;
+use App\Http\Controllers\WhatsappAutoReplyController;
 use App\Http\Controllers\ERP\CustomerController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,13 @@ Route::middleware(['auth', 'tenant:wa_blast'])->group(function () {
         Route::post('/customer-statuses', [CustomerStatusController::class, 'store'])->name('crm.wa.customer-statuses.store');
         Route::put('/customer-statuses/{customerStatus}', [CustomerStatusController::class, 'update'])->name('crm.wa.customer-statuses.update');
         Route::delete('/customer-statuses/{customerStatus}', [CustomerStatusController::class, 'destroy'])->name('crm.wa.customer-statuses.destroy');
+
+        // Auto Reply
+        Route::get('/auto-reply', [WhatsappAutoReplyController::class, 'index'])->name('crm.wa.auto-reply.index');
+        Route::post('/auto-reply', [WhatsappAutoReplyController::class, 'store'])->name('crm.wa.auto-reply.store');
+        Route::put('/auto-reply/{whatsappAutoReply}', [WhatsappAutoReplyController::class, 'update'])->name('crm.wa.auto-reply.update');
+        Route::delete('/auto-reply/{whatsappAutoReply}', [WhatsappAutoReplyController::class, 'destroy'])->name('crm.wa.auto-reply.destroy');
+        Route::post('/auto-reply/{whatsappAutoReply}/toggle', [WhatsappAutoReplyController::class, 'toggle'])->name('crm.wa.auto-reply.toggle');
     });
 });
 

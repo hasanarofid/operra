@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Events\NewChatIncoming;
+use App\Models\WhatsappAutoReply;
+use App\Services\WhatsAppService;
 use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class WhatsAppWebhookController extends Controller
@@ -105,6 +107,9 @@ class WhatsAppWebhookController extends Controller
             // 6. PUSH KE FIREBASE REALTIME DATABASE
             $this->pushToFirebase($chatSession, $message);
 
+            // 7. AUTO REPLY LOGIC
+            $this->handleAutoReply($whatsappAccount, $senderNumber, $messageBody, $chatSession);
+
             // Tetap jalankan broadcast lokal (opsional, sebagai backup)
             event(new NewChatIncoming($chatSession->load(['customer', 'assignedUser', 'whatsappAccount']), $message));
 
@@ -114,6 +119,60 @@ class WhatsAppWebhookController extends Controller
             DB::rollBack();
             Log::error('Webhook Processing Error: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Handle Auto Reply based on keywords
+     */
+    private function handleAutoReply($account, $senderNumber, $messageBody, $chatSession)
+    {
+        $messageText = strtolower(trim($messageBody));
+
+        // Cari auto reply yang aktif untuk perusahaan ini dan (opsional) akun WA ini
+        $autoReplies = WhatsappAutoReply::where('company_id', $account->company_id)
+            ->where('is_active', true)
+            ->where(function ($query) use ($account) {
+                $query->whereNull('whatsapp_account_id')
+                    ->orWhere('whatsapp_account_id', $account->id);
+            })
+            ->get();
+
+        foreach ($autoReplies as $reply) {
+            $keyword = strtolower(trim($reply->keyword));
+            $isMatch = false;
+
+            if ($reply->match_type === 'exact') {
+                $isMatch = ($messageText === $keyword);
+            } elseif ($reply->match_type === 'contains') {
+                $isMatch = (str_contains($messageText, $keyword));
+            }
+
+            if ($isMatch) {
+                // Kirim balasan
+                $whatsappService = new WhatsAppService();
+                $response = $whatsappService->sendMessage($senderNumber, $reply->response, $account);
+
+                if ($response['status']) {
+                    // Simpan pesan balasan ke database
+                    $replyMessage = ChatMessage::create([
+                        'chat_session_id' => $chatSession->id,
+                        'sender_type' => 'agent', // Dianggap sebagai agen (sistem)
+                        'message_body' => $reply->response,
+                        'message_type' => 'text',
+                    ]);
+
+                    // Push ke Firebase juga agar sinkron di UI
+                    $this->pushToFirebase($chatSession, $replyMessage);
+                    
+                    Log::info("Auto-reply sent for keyword: {$reply->keyword}");
+                } else {
+                    Log::error("Failed to send auto-reply: " . $response['message']);
+                }
+
+                // Berhenti setelah kecocokan pertama (opsional, bisa disesuaikan)
+                break;
+            }
         }
     }
 
