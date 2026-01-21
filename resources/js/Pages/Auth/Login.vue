@@ -124,7 +124,7 @@ const submit = () => {
             <div class="mt-8 text-center">
                 <p class="text-gray-500 text-xs font-medium">Belum memiliki akun?</p>
                 <Link
-                    :href="route('register')"
+                    :href="route('contact')"
                     class="mt-2 inline-block text-sm font-black text-white hover:text-operra-400 transition-colors uppercase tracking-[0.2em]"
                 >
                     HUBUNGI SALES KAMI

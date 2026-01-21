@@ -11,6 +11,9 @@ const props = defineProps({
     recentChats: Array,
     chartData: Array,
     waAccounts: Array,
+    adminStats: Object,
+    systemLeads: Array,
+    systemCompanies: Array,
     userRole: String,
 });
 
@@ -140,6 +143,33 @@ const series = [{
         </template>
 
         <template #stats>
+            <!-- System Admin Stats (Hanya untuk Super Admin) -->
+            <div v-if="userRole === 'super-admin' && !selectedModule" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <StatCard title="Permintaan Custom" :value="adminStats.total_leads_request" :alert="adminStats.new_leads_request > 0">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
+                    </template>
+                </StatCard>
+
+                <StatCard title="Total Perusahaan" :value="adminStats.total_companies">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    </template>
+                </StatCard>
+
+                <StatCard title="Langganan Aktif" :value="adminStats.active_subscriptions">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    </template>
+                </StatCard>
+
+                <StatCard title="Total Agents" :value="waAccounts.reduce((acc, curr) => acc + (curr.agents_count || 0), 0)">
+                    <template #icon>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    </template>
+                </StatCard>
+            </div>
+
             <!-- Grid Stats hanya muncul jika NOT launcher mode -->
             <div v-if="!showLauncher" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Stat Cards for WA & Sales -->
@@ -260,6 +290,81 @@ const series = [{
 
         <!-- Detailed Dashboard Mode -->
         <div v-else>
+            <!-- System Admin Overview (Hanya untuk Super Admin di Dashboard Utama) -->
+            <div v-if="userRole === 'super-admin' && !selectedModule" class="flex flex-wrap mt-4 -mx-4 mb-8">
+                <div class="w-full xl:w-7/12 px-4 mb-6 xl:mb-0">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+                            <h3 class="text-lg font-black text-gray-800 dark:text-white uppercase tracking-tighter">Permintaan CRM Kustom Terbaru</h3>
+                            <Link :href="route('admin.leads.index')" class="text-xs font-bold text-operra-500 uppercase tracking-widest hover:underline">Lihat Semua</Link>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-gray-700/50">
+                                        <th class="px-6 py-4">Nama / Perusahaan</th>
+                                        <th class="px-6 py-4 text-center">Tipe</th>
+                                        <th class="px-6 py-4 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="lead in systemLeads" :key="lead.id" class="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/20 transition-all">
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm font-bold text-gray-800 dark:text-white">{{ lead.name }}</div>
+                                            <div class="text-[10px] text-gray-500 font-medium">{{ lead.company_name }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <span class="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-[9px] font-black text-gray-500 uppercase">{{ lead.business_type }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span :class="{
+                                                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400': lead.status === 'new',
+                                                'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400': lead.status === 'contacted',
+                                                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': lead.status === 'closed',
+                                            }" class="px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter">
+                                                {{ lead.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="systemLeads.length === 0">
+                                        <td colspan="3" class="px-6 py-10 text-center text-gray-400 text-xs italic">Belum ada permintaan kustom masuk.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full xl:w-5/12 px-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+                            <h3 class="text-lg font-black text-gray-800 dark:text-white uppercase tracking-tighter">Registrasi Perusahaan Baru</h3>
+                            <Link :href="route('admin.system.companies.index')" class="text-xs font-bold text-operra-500 uppercase tracking-widest hover:underline">Lihat Semua</Link>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div v-for="company in systemCompanies" :key="company.id" class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50 border border-transparent hover:border-operra-500 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 rounded-lg bg-operra-600 flex items-center justify-center text-white font-black uppercase text-sm shadow-lg">
+                                        {{ company.name.charAt(0) }}
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-gray-800 dark:text-white truncate max-w-[150px]">{{ company.name }}</div>
+                                        <div class="text-[9px] text-gray-500 font-medium">Terdaftar: {{ new Date(company.created_at).toLocaleDateString() }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span v-if="company.subscription_ends_at && new Date(company.subscription_ends_at) > new Date()" class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[9px] font-black uppercase tracking-tighter">Aktif</span>
+                                    <span v-else class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400 text-[9px] font-black uppercase tracking-tighter">Trial/Expired</span>
+                                </div>
+                            </div>
+                            <div v-if="systemCompanies.length === 0" class="py-10 text-center text-gray-400 text-xs italic">
+                                Belum ada perusahaan terdaftar.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex flex-wrap mt-4 -mx-4">
                 <!-- Row content (Charts, Tables) - Show based on selected module or simplified for both -->
                 <div class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">

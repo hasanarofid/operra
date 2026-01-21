@@ -114,7 +114,24 @@ class DashboardController extends Controller
 
         // 4. Admin Only: Account & Agent Status
         $waAccounts = [];
-        if ($user->hasRole('super-admin') || $user->hasRole('manager')) {
+        $adminStats = [];
+        $systemLeads = [];
+        $systemCompanies = [];
+
+        if ($user->hasRole('super-admin')) {
+            $waAccounts = WhatsappAccount::withCount('agents')->get();
+            
+            // System Admin Stats
+            $adminStats = [
+                'total_leads_request' => \App\Models\LeadsRequest::count(),
+                'new_leads_request' => \App\Models\LeadsRequest::where('status', 'new')->count(),
+                'total_companies' => \App\Models\Company::count(),
+                'active_subscriptions' => \App\Models\Company::where('subscription_ends_at', '>', now())->count(),
+            ];
+
+            $systemLeads = \App\Models\LeadsRequest::latest()->limit(5)->get();
+            $systemCompanies = \App\Models\Company::latest()->limit(5)->get();
+        } elseif ($user->hasRole('manager')) {
             $waAccounts = WhatsappAccount::withCount('agents')->get();
         }
 
@@ -239,6 +256,9 @@ class DashboardController extends Controller
             'recentChats' => $recentChats,
             'chartData' => $chartData,
             'waAccounts' => $waAccounts,
+            'adminStats' => $adminStats,
+            'systemLeads' => $systemLeads,
+            'systemCompanies' => $systemCompanies,
             'userRole' => $user->getRoleNames()->first()
         ]);
     }

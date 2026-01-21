@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\PricingPlan;
 use App\Models\LeadsRequest;
+use App\Mail\CustomRequestMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class LandingPageController extends Controller
@@ -16,6 +18,11 @@ class LandingPageController extends Controller
             'canLogin' => true,
             'canRegister' => true,
         ]);
+    }
+
+    public function showContact()
+    {
+        return Inertia::render('Contact');
     }
 
     public function submitRequest(Request $request)
@@ -30,6 +37,12 @@ class LandingPageController extends Controller
         ]);
 
         LeadsRequest::create($validated);
+
+        try {
+            Mail::to('hasanarofid@gmail.com')->send(new CustomRequestMail($validated));
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim email: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Permintaan Anda telah kami terima. Tim kami akan segera menghubungi Anda!');
     }
