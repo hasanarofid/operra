@@ -140,9 +140,24 @@ const submit = () => {
                                 </li>
                             </ul>
 
-                            <button :class="plan.is_popular ? 'bg-white text-operra-600' : 'bg-white/10 text-white hover:bg-white/20'" class="w-full py-4 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-xs md:text-sm transition-all active:scale-95">
+                            <Link 
+                                v-if="plan.price > 0"
+                                :href="route('register', { plan: plan.slug })"
+                                :class="plan.is_popular ? 'bg-white text-operra-600' : 'bg-white/10 text-white hover:bg-white/20'" 
+                                class="w-full py-4 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-sm md:text-sm text-center transition-all active:scale-95"
+                            >
                                 {{ plan.cta_text }}
-                            </button>
+                            </Link>
+
+                            <a 
+                                v-else
+                                href="#custom"
+                                :class="plan.is_popular ? 'bg-white text-operra-600' : 'bg-white/10 text-white hover:bg-white/20'" 
+                                class="w-full py-4 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-sm md:text-sm text-center transition-all active:scale-95"
+                            >
+                                {{ plan.cta_text }}
+                            </a>
+
                         </div>
                     </div>
                 </div>

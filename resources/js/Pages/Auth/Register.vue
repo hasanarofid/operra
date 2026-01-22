@@ -8,12 +8,17 @@ import { ref } from 'vue';
 
 const showPassword = ref(false);
 
+const props = defineProps({
+    plan: String,
+});
+
 const form = useForm({
     name: '',
     email: '',
     company_name: '',
     password: '',
     password_confirmation: '',
+    plan: props.plan || '',
 });
 
 const submit = () => {
@@ -21,6 +26,7 @@ const submit = () => {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
 </script>
 
 <template>
@@ -28,9 +34,13 @@ const submit = () => {
         <Head title="Daftar Akun" />
 
         <div class="mb-10 text-center px-2">
+            <div v-if="form.plan" class="inline-block px-4 py-1.5 rounded-full bg-operra-600/20 text-operra-400 text-[10px] font-black uppercase tracking-widest mb-4 border border-operra-500/30">
+                Paket: {{ form.plan.replace('-', ' ') }}
+            </div>
             <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-2 leading-none">Daftar Akun Baru</h2>
             <p class="text-gray-400 text-sm font-medium">Mulai kelola bisnis Anda dengan Operra CRM.</p>
         </div>
+
 
         <form @submit.prevent="submit" class="space-y-5">
             <div>
