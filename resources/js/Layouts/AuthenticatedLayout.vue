@@ -35,6 +35,13 @@ const playNotificationSound = () => {
 const hasRole = (role) => page.props.auth.user.roles.includes(role);
 const hasPermission = (permission) => page.props.auth.user.permissions.includes(permission);
 const isModuleEnabled = (module) => page.props.auth.user.company?.enabled_modules?.includes(module);
+const hasPlan = (planSlug) => page.props.auth.user.company?.pricing_plan?.slug === planSlug;
+const hasMinimumPlan = (planSlug) => {
+    const plans = ['starter', 'business-pro', 'enterprise'];
+    const userPlanIdx = plans.indexOf(page.props.auth.user.company?.pricing_plan?.slug || 'starter');
+    const requiredPlanIdx = plans.indexOf(planSlug);
+    return userPlanIdx >= requiredPlanIdx;
+};
 
 const currentPortal = computed(() => {
     if (route().current('crm.wa.*')) return 'wa_blast';
@@ -337,7 +344,7 @@ onUnmounted(() => {
                       Manage Leads
                   </Link>
               </li>
-              <li class="items-center">
+               <li v-if="hasMinimumPlan('business-pro')" class="items-center">
                   <Link :href="route('crm.wa.blast.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.blast.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
@@ -351,14 +358,14 @@ onUnmounted(() => {
                       Auto Reply
                   </Link>
               </li>
-              <li v-if="hasRole('super-admin')" class="items-center">
+              <li v-if="hasRole('super-admin') && hasMinimumPlan('business-pro')" class="items-center">
                   <Link :href="route('crm.wa.settings.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.settings.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
                       WA Multi-Account
                   </Link>
               </li>
-              <li v-if="hasRole('super-admin')" class="items-center">
+              <li v-if="hasRole('super-admin') && hasMinimumPlan('business-pro')" class="items-center">
                   <Link :href="route('crm.wa.external-apps.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.external-apps.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">

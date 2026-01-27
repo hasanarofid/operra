@@ -22,6 +22,32 @@ const form = useForm({
     plan: props.plan || '',
 });
 
+const planDetails = {
+    'starter': {
+        name: 'Starter (UMKM)',
+        price: 'Rp 149k',
+        features: [
+            '1 Akun WhatsApp',
+            'Manajemen Lead Dasar',
+            'Shared Inbox (2 Agent)',
+            'Follow-up Otomatis',
+            'Laporan Harian via WA'
+        ]
+    },
+    'business-pro': {
+        name: 'Business Pro',
+        price: 'Rp 399k',
+        features: [
+            'Multi-Account WhatsApp (Up to 5)',
+            'Sales Pipeline & Deal Tracking',
+            'Unlimited Agents',
+            'WhatsApp Blast (Scheduler)',
+            'API Integration Ready',
+            'Priority Support'
+        ]
+    }
+};
+
 const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
@@ -35,15 +61,59 @@ const submit = () => {
         <Head title="Daftar Akun" />
 
         <div class="mb-10 text-center px-2">
-            <div v-if="form.plan" class="inline-block px-4 py-1.5 rounded-full bg-operra-600/20 text-operra-400 text-[10px] font-black uppercase tracking-widest mb-4 border border-operra-500/30">
+            <!-- Plan Info Card -->
+            <div v-if="form.plan && planDetails[form.plan]" class="mb-8 p-4 rounded-3xl bg-operra-600/10 border border-operra-500/30 text-left relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                    <svg class="w-16 h-16 text-operra-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/></svg>
+                </div>
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div class="px-3 py-1 bg-operra-600 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-lg">
+                        Paket Terpilih
+                    </div>
+                    <button type="button" @click="form.plan = ''" class="text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors cursor-pointer p-1">
+                        Ubah Paket
+                    </button>
+                </div>
+                <h3 class="text-xl font-black text-white uppercase tracking-tighter">{{ planDetails[form.plan].name }}</h3>
+                <div class="text-operra-400 font-bold mb-3">{{ planDetails[form.plan].price }} / bulan</div>
+                
+                <ul class="space-y-1.5">
+                    <li v-for="feature in planDetails[form.plan].features" :key="feature" class="flex items-center text-[10px] text-gray-400 font-medium">
+                        <svg class="w-3 h-3 text-operra-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        {{ feature }}
+                    </li>
+                </ul>
+            </div>
+
+            <div v-else-if="form.plan" class="inline-block px-4 py-1.5 rounded-full bg-operra-600/20 text-operra-400 text-[10px] font-black uppercase tracking-widest mb-4 border border-operra-500/30">
                 Paket: {{ form.plan.replace('-', ' ') }}
             </div>
+
             <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-2 leading-none">Daftar Akun Baru</h2>
             <p class="text-gray-400 text-sm font-medium">Mulai kelola bisnis Anda dengan Operra CRM.</p>
         </div>
 
 
         <form @submit.prevent="submit" class="space-y-5">
+            <!-- Plan Selection if Empty -->
+            <div v-if="!form.plan" class="p-5 rounded-3xl bg-white/5 border border-white/10 mb-8">
+                <InputLabel value="Pilih Paket Layanan" class="text-gray-400 font-bold uppercase text-[10px] tracking-widest ml-1 mb-4" />
+                <div class="grid grid-cols-2 gap-3">
+                    <button 
+                        type="button"
+                        v-for="(details, slug) in planDetails" 
+                        :key="slug"
+                        @click="form.plan = slug"
+                        :class="form.plan === slug ? 'bg-operra-600 border-operra-500 text-white' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'"
+                        class="p-4 rounded-2xl border text-left transition-all"
+                    >
+                        <div class="text-[10px] font-black uppercase tracking-tight mb-1">{{ details.name }}</div>
+                        <div class="text-xs font-bold">{{ details.price }}</div>
+                    </button>
+                </div>
+                <InputError class="mt-2" :message="form.errors.plan" />
+            </div>
+
             <div>
                 <InputLabel for="name" value="Nama Lengkap" class="text-gray-400 font-bold uppercase text-[10px] tracking-widest ml-1 mb-2" />
                 <TextInput

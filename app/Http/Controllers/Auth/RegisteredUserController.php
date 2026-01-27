@@ -19,9 +19,11 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'plan' => $request->query('plan')
+        ]);
     }
 
     /**
@@ -39,12 +41,16 @@ class RegisteredUserController extends Controller
             'plan' => 'nullable|string|exists:pricing_plans,slug',
         ]);
 
-        $pricingPlan = \App\Models\PricingPlan::where('slug', $request->plan)->first();
+        // Default to starter if not provided
+        $planSlug = $request->plan ?: 'starter';
+        $pricingPlan = \App\Models\PricingPlan::where('slug', $planSlug)->first();
 
-        // Default modules for trial/registration
+        // Default modules (Starter gets WA Blast)
         $enabledModules = ['wa_blast'];
-        if ($pricingPlan && $pricingPlan->slug === 'business-pro') {
-            $enabledModules = ['wa_blast', 'sales', 'marketing', 'support'];
+
+        // Modules for Business Pro or Enterprise
+        if ($pricingPlan && in_array($pricingPlan->slug, ['business-pro', 'enterprise'])) {
+            $enabledModules = ['wa_blast', 'sales_crm', 'marketing_crm', 'customer_service'];
         }
 
         // Create the company first
