@@ -19,6 +19,7 @@ const props = defineProps({
 
 const page = usePage();
 const enabledModules = computed(() => page.props.auth.user.company?.enabled_modules ?? []);
+const pricingPlan = computed(() => page.props.auth.user?.company?.pricing_plan);
 
 // Ambil portal dari state Inertia agar reactive
 const selectedModule = computed(() => {
@@ -490,6 +491,23 @@ const series = [{
                 </div>
 
                 <div class="w-full xl:w-4/12 px-4">
+                     <!-- Your Package Info (WA Module) -->
+                     <div v-if="selectedModule === 'wa_blast' && pricingPlan" class="bg-gradient-to-br from-operra-600 to-operra-800 text-white rounded-xl shadow-lg p-6 mb-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+
+                        <div class="relative z-10">
+                            <h3 class="font-black text-xs uppercase tracking-widest mb-1 text-operra-200">Paket Saat Ini</h3>
+                            <div class="text-2xl font-black mb-4 uppercase">{{ pricingPlan.name }}</div>
+
+                            <div class="space-y-3 mb-2">
+                                <div v-for="(feature, index) in pricingPlan.features" :key="index" class="flex items-start gap-3 text-sm font-bold text-white/90">
+                                    <svg class="w-5 h-5 shrink-0 text-operra-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    {{ feature }}
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+
                      <!-- WA Accounts (WA Module) -->
                      <div v-if="selectedModule === 'wa_blast'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
                         <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200">WhatsApp Accounts</h3>

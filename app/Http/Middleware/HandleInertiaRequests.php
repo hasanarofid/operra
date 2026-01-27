@@ -49,6 +49,7 @@ class HandleInertiaRequests extends Middleware
                         'pricing_plan' => $request->user()->company->plan ? [
                             'name' => $request->user()->company->plan->name,
                             'slug' => $request->user()->company->plan->slug,
+                            'features' => $request->user()->company->plan->features,
                         ] : null,
                         'subscription_ends_at' => $request->user()->company->subscription_ends_at,
                     ] : null,
