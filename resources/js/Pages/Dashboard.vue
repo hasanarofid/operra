@@ -144,7 +144,7 @@ const series = [{
 
         <template #stats>
             <!-- System Admin Stats (Hanya untuk Super Admin) -->
-            <div v-if="userRole === 'super-admin' && !selectedModule" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div v-if="userRole === 'super-admin' && page.props.auth.user.company?.is_system_owner && !selectedModule" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <StatCard title="Permintaan Custom" :value="adminStats.total_leads_request" :alert="adminStats.new_leads_request > 0">
                     <template #icon>
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
@@ -291,7 +291,7 @@ const series = [{
         <!-- Detailed Dashboard Mode -->
         <div v-else>
             <!-- System Admin Overview (Hanya untuk Super Admin di Dashboard Utama) -->
-            <div v-if="userRole === 'super-admin' && !selectedModule" class="flex flex-wrap mt-4 -mx-4 mb-8">
+            <div v-if="userRole === 'super-admin' && page.props.auth.user.company?.is_system_owner && !selectedModule" class="flex flex-wrap mt-4 -mx-4 mb-8">
                 <div class="w-full xl:w-7/12 px-4 mb-6 xl:mb-0">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                         <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">

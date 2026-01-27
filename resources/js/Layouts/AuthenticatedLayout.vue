@@ -508,7 +508,7 @@ onUnmounted(() => {
                     Monitoring Pelanggan
                 </Link>
             </li>
-            <li v-if="hasRole('super-admin')" class="items-center">
+            <li v-if="hasRole('super-admin') && $page.props.auth.user.company?.is_system_owner" class="items-center">
                 <Link :href="route('admin.leads.index')" 
                     class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                     :class="route().current('admin.leads.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
