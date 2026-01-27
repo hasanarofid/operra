@@ -58,7 +58,7 @@ class RegisteredUserController extends Controller
             'name' => $request->company_name,
             'slug' => \Illuminate\Support\Str::slug($request->company_name),
             'pricing_plan_id' => $pricingPlan?->id,
-            'subscription_ends_at' => now()->addDays(7), // 7 days trial
+            'subscription_ends_at' => now()->addDays(3), // 3 days trial
             'status' => 'active',
             'enabled_modules' => $enabledModules,
         ]);

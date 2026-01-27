@@ -59,13 +59,21 @@ Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
+    // Billing & Payment
+    Route::get('/billing', [\App\Http\Controllers\PaymentController::class, 'index'])->name('billing.index');
+    Route::post('/billing', [\App\Http\Controllers\PaymentController::class, 'store'])->name('billing.store');
+
     // Admin Features
-    Route::middleware(['role:super-admin'])->group(function () {
+    Route::middleware(['role:super-admin', 'system_owner'])->group(function () {
         // Staff Management
         Route::get('/staff-management', [StaffManagementController::class, 'index'])->name('staff.index');
         Route::post('/staff-management', [StaffManagementController::class, 'store'])->name('staff.store');
         Route::put('/staff-management/{user}', [StaffManagementController::class, 'update'])->name('staff.update');
         Route::delete('/staff-management/{user}', [StaffManagementController::class, 'destroy'])->name('staff.destroy');
+
+        // Admin Payment Verification
+        Route::get('/admin/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('admin.payments.index');
+        Route::patch('/admin/payments/{payment}', [\App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('admin.payments.verify');
     });
 });
 

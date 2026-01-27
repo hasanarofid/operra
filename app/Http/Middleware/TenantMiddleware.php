@@ -28,9 +28,9 @@ class TenantMiddleware
         }
 
         // Cek Masa Berlaku Langganan
-        if ($company->subscription_ends_at && $company->subscription_ends_at->isPast()) {
-            abort(403, 'Masa berlaku langganan Anda telah berakhir. Silahkan lakukan perpanjangan.');
-        }
+        // if ($company->subscription_ends_at && $company->subscription_ends_at->isPast()) {
+        //     abort(403, 'Masa berlaku langganan Anda telah berakhir. Silahkan lakukan perpanjangan.');
+        // }
 
         // Jika ada parameter module, cek apakah module tersebut aktif untuk company ini
         if ($module && !$company->isModuleEnabled($module)) {

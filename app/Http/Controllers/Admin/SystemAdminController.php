@@ -17,7 +17,9 @@ class SystemAdminController extends Controller
             abort(403);
         }
 
-        $companies = Company::with('plan')
+        $companies = Company::with(['plan', 'payments' => function($query) {
+                $query->where('status', 'pending');
+            }])
             ->where('is_system_owner', false)
             ->withCount('users')
             ->latest()
@@ -44,6 +46,19 @@ class SystemAdminController extends Controller
         ]);
 
         $company->update($request->only(['pricing_plan_id', 'subscription_ends_at', 'status']));
+
+        // If a payment was verified during this update
+        if ($request->filled('verified_payment_id')) {
+            $payment = \App\Models\Payment::find($request->verified_payment_id);
+            if ($payment && $payment->company_id === $company->id) {
+                $payment->update([
+                    'status' => 'approved',
+                    'verified_at' => now(),
+                    'verified_by' => auth()->id(),
+                    'notes' => 'Auto-approved via System Monitoring'
+                ]);
+            }
+        }
 
         return back()->with('success', 'Data langganan berhasil diperbarui.');
     }

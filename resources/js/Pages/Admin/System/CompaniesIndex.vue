@@ -15,6 +15,7 @@ const form = useForm({
     pricing_plan_id: '',
     subscription_ends_at: '',
     status: '',
+    verified_payment_id: null, // New field to link approval
 });
 
 const openEditModal = (company) => {
@@ -22,7 +23,23 @@ const openEditModal = (company) => {
     form.pricing_plan_id = company.pricing_plan_id || '';
     form.subscription_ends_at = company.subscription_ends_at ? new Date(company.subscription_ends_at).toISOString().split('T')[0] : '';
     form.status = company.status;
+    form.verified_payment_id = null; // Reset
     showEditModal.value = true;
+};
+
+const approvePayment = (payment) => {
+    form.verified_payment_id = payment.id;
+    
+    // Auto extend date logic
+    let currentEnd = new Date();
+    if (selectedCompany.value.subscription_ends_at && new Date(selectedCompany.value.subscription_ends_at) > currentEnd) {
+        currentEnd = new Date(selectedCompany.value.subscription_ends_at);
+    }
+    
+    // Add months
+    currentEnd.setMonth(currentEnd.getMonth() + payment.months);
+    form.subscription_ends_at = currentEnd.toISOString().split('T')[0];
+    form.status = 'active';
 };
 
 const submit = () => {
@@ -124,6 +141,25 @@ const isExpired = (dateString) => {
                     <div class="mb-6 text-center">
                         <h3 class="text-xl font-black text-gray-800 dark:text-white uppercase tracking-tighter">Edit Langganan</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ selectedCompany?.name }}</p>
+                    </div>
+
+                    <!-- Pending Payment Section -->
+                    <div v-if="selectedCompany?.payments?.length > 0" class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-700/50">
+                        <h4 class="text-[10px] font-black uppercase text-yellow-600 dark:text-yellow-500 tracking-widest mb-3">Permintaan Perpanjangan Barrier</h4>
+                        <div v-for="payment in selectedCompany.payments" :key="payment.id" class="flex gap-3 mb-3 last:mb-0 items-start">
+                            <a :href="'/storage/' + payment.proof_of_payment" target="_blank" class="h-16 w-16 rounded-lg bg-gray-200 block overflow-hidden flex-shrink-0 border border-gray-300">
+                                <img :src="'/storage/' + payment.proof_of_payment" class="w-full h-full object-cover">
+                            </a>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-gray-800 dark:text-gray-200">
+                                    {{ payment.months }} Bulan - {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(payment.amount) }}
+                                </div>
+                                <div class="text-[10px] text-gray-500">{{ new Date(payment.payment_date).toLocaleDateString() }}</div>
+                                <button type="button" @click="approvePayment(payment)" class="mt-2 text-[10px] font-black uppercase bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 transition-colors">
+                                    Setujui & Perpanjang Otomatis
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <form @submit.prevent="submit" class="space-y-4">

@@ -20,6 +20,7 @@ const props = defineProps({
 const page = usePage();
 const enabledModules = computed(() => page.props.auth.user.company?.enabled_modules ?? []);
 const pricingPlan = computed(() => page.props.auth.user?.company?.pricing_plan);
+const subscriptionStatus = computed(() => page.props.auth.user?.company?.subscription_status);
 
 // Ambil portal dari state Inertia agar reactive
 const selectedModule = computed(() => {
@@ -144,6 +145,20 @@ const series = [{
         </template>
 
         <template #stats>
+            <!-- Trial Banner -->
+            <div v-if="subscriptionStatus?.is_trial" class="bg-yellow-500 text-white px-4 py-3 mb-6 rounded-lg shadow-lg flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 2m9-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div>
+                        <div class="font-black uppercase tracking-widest text-xs">Masa Percobaan (Trial)</div>
+                        <div class="font-bold text-sm">Sisa waktu: {{ subscriptionStatus.days_left }} hari lagi.</div>
+                    </div>
+                </div>
+                <Link :href="route('billing.index')" class="bg-white text-yellow-600 px-4 py-2 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-yellow-50 transition-colors">
+                    Langganan Sekarang
+                </Link>
+            </div>
+
             <!-- System Admin Stats (Hanya untuk Super Admin) -->
             <div v-if="userRole === 'super-admin' && page.props.auth.user.company?.is_system_owner && !selectedModule" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <StatCard title="Permintaan Custom" :value="adminStats.total_leads_request" :alert="adminStats.new_leads_request > 0">

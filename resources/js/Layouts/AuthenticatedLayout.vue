@@ -7,6 +7,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { database } from '@/firebase';
 import { ref as dbRef, onValue } from "firebase/database";
 import OnboardingModal from '@/Components/OnboardingModal.vue';
+import ExpirationModal from '@/Components/ExpirationModal.vue';
 
 // Global variable to persist across page navigations (Inertia re-mounts)
 let globalLastSoundPlayedMessageId = null;
@@ -679,5 +680,6 @@ onUnmounted(() => {
       </div>
     </div>
     <OnboardingModal :show="!page.props.auth.user.has_completed_onboarding" />
+    <ExpirationModal />
   </div>
 </template>
