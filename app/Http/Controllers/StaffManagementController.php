@@ -13,11 +13,16 @@ use Spatie\Permission\Models\Role;
 
 class StaffManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['roles', 'whatsappAgents.whatsappAccount'])->get();
-        $roles = Role::all();
-        $whatsappAccounts = WhatsappAccount::all();
+        $user = $request->user();
+        $users = User::where('company_id', $user->company_id)
+            ->with(['roles', 'whatsappAgents.whatsappAccount'])->get();
+
+        // Roles are global in this setup
+        $roles = Role::whereIn('name', ['super-admin', 'manager', 'staff', 'sales'])->get();
+
+        $whatsappAccounts = WhatsappAccount::where('company_id', $user->company_id)->get();
 
         return Inertia::render('Settings/Staff', [
             'users' => $users,
@@ -42,6 +47,7 @@ class StaffManagementController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
+                'company_id' => $request->user()->company_id,
             ]);
 
             $user->assignRole($validated['role']);
@@ -64,6 +70,11 @@ class StaffManagementController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // Security: Ensure user belongs to the same company
+        if ($user->company_id !== $request->user()->company_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -85,11 +96,15 @@ class StaffManagementController extends Controller
 
             $user->syncRoles([$validated['role']]);
 
-            // Update WhatsApp Account link
+            // Update WhatsApp Account link (only if it belongs to the company)
             if ($validated['whatsapp_account_id']) {
+                $wa = WhatsappAccount::where('id', $validated['whatsapp_account_id'])
+                    ->where('company_id', $request->user()->company_id)
+                    ->firstOrFail();
+
                 WhatsappAgent::updateOrCreate(
                     ['user_id' => $user->id],
-                    ['whatsapp_account_id' => $validated['whatsapp_account_id'], 'is_available' => true]
+                    ['whatsapp_account_id' => $wa->id, 'is_available' => true]
                 );
             } else {
                 WhatsappAgent::where('user_id', $user->id)->delete();
@@ -103,9 +118,14 @@ class StaffManagementController extends Controller
         }
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
-        if ($user->id === auth()->id()) {
+        // Security: Ensure user belongs to the same company
+        if ($user->company_id !== $request->user()->company_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($user->id === $request->user()->id) {
             return redirect()->back()->with('error', 'You cannot delete yourself.');
         }
 

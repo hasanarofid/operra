@@ -11,7 +11,7 @@ use Inertia\Inertia;
 
 class WhatsAppConfigController extends Controller
 {
-    public function index(WhatsAppService $waService)
+    public function index(Request $request, WhatsAppService $waService)
     {
         $settings = Setting::whereIn('key', [
             'meta_access_token',
@@ -28,7 +28,7 @@ class WhatsAppConfigController extends Controller
         return Inertia::render('Settings/WhatsApp', [
             'settings' => $settings,
             'waStatus' => $waStatus,
-            'accounts' => WhatsappAccount::all()
+            'accounts' => WhatsappAccount::where('company_id', $request->user()->company_id)->get()
         ]);
     }
 
@@ -44,11 +44,12 @@ class WhatsAppConfigController extends Controller
         ]);
 
         $account = WhatsappAccount::create([
+            'company_id' => $request->user()->company_id,
             'name' => $validated['name'],
             'phone_number' => $validated['phone_number'],
             'provider' => $validated['provider'],
             'api_credentials' => [
-                'token' => $validated['token'] ?? '', 
+                'token' => $validated['token'] ?? '',
                 'key' => $validated['key'] ?? '',
                 'endpoint' => $validated['endpoint'] ?? '',
             ],
@@ -62,6 +63,10 @@ class WhatsAppConfigController extends Controller
 
     public function updateAccount(Request $request, WhatsappAccount $whatsappAccount, WhatsAppService $waService)
     {
+        if ($whatsappAccount->company_id !== $request->user()->company_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string',
             'phone_number' => 'required|string|unique:whatsapp_accounts,phone_number,' . $whatsappAccount->id,
@@ -87,8 +92,12 @@ class WhatsAppConfigController extends Controller
         return redirect()->back()->with('message', 'WhatsApp Account updated and synced successfully.');
     }
 
-    public function destroyAccount(WhatsappAccount $whatsappAccount)
+    public function destroyAccount(Request $request, WhatsappAccount $whatsappAccount)
     {
+        if ($whatsappAccount->company_id !== $request->user()->company_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $whatsappAccount->delete();
         return redirect()->back()->with('message', 'WhatsApp Account deleted successfully.');
     }
@@ -105,7 +114,8 @@ class WhatsAppConfigController extends Controller
 
         if ($result['status']) {
             foreach ($result['data'] as $tpl) {
-                if ($tpl['status'] !== 'APPROVED') continue;
+                if ($tpl['status'] !== 'APPROVED')
+                    continue;
 
                 WhatsappTemplate::updateOrCreate(
                     ['whatsapp_account_id' => $whatsappAccount->id, 'name' => $tpl['name']],
@@ -138,7 +148,7 @@ class WhatsAppConfigController extends Controller
 
             if ($response->successful()) {
                 $numbers = $response->json()['data'] ?? [];
-                
+
                 foreach ($numbers as $num) {
                     WhatsappAccount::updateOrCreate(
                         ['phone_number' => $num['id']], // Phone Number ID

@@ -394,6 +394,9 @@ const series = [{
                                             </span>
                                         </td>
                                     </tr>
+                                    <tr v-if="recentLeads.length === 0">
+                                        <td colspan="3" class="px-6 py-10 text-center text-gray-400 text-xs italic">Belum ada data leads.</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -501,6 +504,9 @@ const series = [{
                                 <span class="text-[10px] font-bold uppercase">{{ account.agents_count || 0 }} Agents Connected</span>
                             </div>
                         </div>
+                        <div v-if="waAccounts.length === 0" class="text-center py-6 text-gray-400 text-xs italic">
+                            Belum ada akun WhatsApp terhubung.
+                        </div>
                      </div>
 
                      <!-- Recent Conversations (WA Module) -->
@@ -517,6 +523,9 @@ const series = [{
                                 </div>
                                 <p class="text-[10px] text-gray-500 dark:text-gray-400">By: {{ chat.assigned_user?.name || 'Unassigned' }}</p>
                             </div>
+                        </div>
+                        <div v-if="recentChats.length === 0" class="text-center py-6 text-gray-400 text-xs italic">
+                            Belum ada percakapan terbaru.
                         </div>
                      </div>
 

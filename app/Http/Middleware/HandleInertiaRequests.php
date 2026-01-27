@@ -46,14 +46,19 @@ class HandleInertiaRequests extends Middleware
                         'name' => $request->user()->company->name,
                         'enabled_modules' => $request->user()->company->enabled_modules ?? [],
                         'is_system_owner' => $request->user()->company->is_system_owner ?? false,
+                        'pricing_plan' => $request->user()->company->plan ? [
+                            'name' => $request->user()->company->plan->name,
+                            'slug' => $request->user()->company->plan->slug,
+                        ] : null,
+                        'subscription_ends_at' => $request->user()->company->subscription_ends_at,
                     ] : null,
                 ] : null,
             ],
-            'unreadCount' => $request->user() ? ChatMessage::whereHas('chatSession', function($query) use ($request) {
+            'unreadCount' => $request->user() ? ChatMessage::whereHas('chatSession', function ($query) use ($request) {
                 $query->where('assigned_user_id', $request->user()->id);
             })->where('sender_type', 'customer')->whereNull('read_at')->count() : 0,
-            'newLeadsCount' => $request->user() && $request->user()->hasRole('super-admin') 
-                ? LeadsRequest::where('status', 'new')->count() 
+            'newLeadsCount' => $request->user() && $request->user()->hasRole('super-admin')
+                ? LeadsRequest::where('status', 'new')->count()
                 : 0,
         ];
     }

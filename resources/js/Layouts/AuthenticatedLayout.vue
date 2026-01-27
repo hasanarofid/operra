@@ -539,7 +539,8 @@ onUnmounted(() => {
             <li class="items-center">
               <Link
                 :href="route('profile.edit')"
-                class="text-gray-700 dark:text-gray-300 hover:text-operra-500 text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                :class="route().current('profile.edit') ? 'text-operra-500 border-l-4 border-operra-500 pl-3' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'"
               >
                 Profile Settings
               </Link>
@@ -618,8 +619,16 @@ onUnmounted(() => {
              <li class="inline-block relative">
                 <Dropdown align="right" width="48">
                     <template #trigger>
-                        <button class="text-white block py-1 px-3 font-semibold hover:text-operra-200 transition-colors duration-200">
-                            {{ $page.props.auth.user.name }}
+                        <button class="text-white flex items-center gap-2 py-1 px-3 font-semibold hover:text-operra-200 transition-colors duration-200 group">
+                            <span class="flex flex-col items-end">
+                                <span class="text-sm leading-none">{{ $page.props.auth.user.name }}</span>
+                                <span v-if="$page.props.auth.user.company?.pricing_plan" class="text-[10px] font-black uppercase tracking-widest text-cyan-200 group-hover:text-white transition-colors">
+                                    {{ $page.props.auth.user.company.pricing_plan.name }} PLAN
+                                </span>
+                                <span v-if="$page.props.auth.user.company?.subscription_ends_at" class="text-[9px] font-bold text-white group-hover:text-white/90 transition-colors uppercase tracking-wider">
+                                    EXP: {{ new Date($page.props.auth.user.company.subscription_ends_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) }}
+                                </span>
+                            </span>
                         </button>
                     </template>
                     <template #content>
