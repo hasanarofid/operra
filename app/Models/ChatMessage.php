@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChatMessage extends Model
 {
+    use BelongsToCompany;
+
     protected $fillable = [
         'chat_session_id',
         'sender_id',
@@ -15,6 +18,7 @@ class ChatMessage extends Model
         'message_type',
         'attachment_path',
         'read_at',
+        'company_id',
     ];
 
     protected $casts = [

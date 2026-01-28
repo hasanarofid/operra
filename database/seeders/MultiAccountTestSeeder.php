@@ -48,14 +48,16 @@ class MultiAccountTestSeeder extends Seeder
         $salesA = User::updateOrCreate(['email' => 'sales.jakarta@operra.com'], [
             'name' => 'Sales Jakarta',
             'password' => Hash::make('password'),
-            'company_id' => $defaultCompany->id
+            'company_id' => $defaultCompany->id,
+            'email_verified_at' => now(),
         ]);
         $salesA->assignRole($salesRole);
 
         $salesB = User::updateOrCreate(['email' => 'sales.surabaya@operra.com'], [
             'name' => 'Sales Surabaya',
             'password' => Hash::make('password'),
-            'company_id' => $defaultCompany->id
+            'company_id' => $defaultCompany->id,
+            'email_verified_at' => now(),
         ]);
         $salesB->assignRole($salesRole);
 

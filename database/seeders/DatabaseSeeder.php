@@ -151,7 +151,8 @@ class DatabaseSeeder extends Seeder
         $managerUser = User::updateOrCreate(['email' => 'manager@operra.com'], [
             'name' => 'Manager Demo',
             'password' => Hash::make('password'),
-            'company_id' => $defaultCompany->id
+            'company_id' => $defaultCompany->id,
+            'email_verified_at' => now(),
         ]);
         $managerUser->assignRole($managerRole);
 
@@ -159,7 +160,8 @@ class DatabaseSeeder extends Seeder
         $staffUser = User::updateOrCreate(['email' => 'staff@operra.com'], [
             'name' => 'Staff Demo',
             'password' => Hash::make('password'),
-            'company_id' => $defaultCompany->id
+            'company_id' => $defaultCompany->id,
+            'email_verified_at' => now(),
         ]);
         $staffUser->assignRole($staffRole);
 
@@ -167,7 +169,8 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(['email' => 'sales1@operra.com'], [
             'name' => 'Sales Ahmad',
             'password' => Hash::make('password'),
-            'company_id' => $defaultCompany->id
+            'company_id' => $defaultCompany->id,
+            'email_verified_at' => now(),
         ])->assignRole($salesRole);
 
         // 9. WhatsApp & CRM Setup

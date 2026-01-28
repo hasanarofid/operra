@@ -25,6 +25,7 @@ class CompanySeeder extends Seeder
             'name' => 'Admin Operra',
             'password' => Hash::make('password'),
             'company_id' => $company->id,
+            'email_verified_at' => now(),
         ]);
 
         $admin->assignRole('super-admin');

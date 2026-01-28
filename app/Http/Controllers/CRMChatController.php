@@ -32,9 +32,15 @@ class CRMChatController extends Controller
             return $session;
         });
 
+        // Calculate sent today
+        $sentToday = ChatMessage::where('sender_type', 'user')
+            ->whereDate('created_at', now()->toDateString())
+            ->count();
+
         return Inertia::render('CRM/Chat/Inbox', [
             'sessions' => $sessions,
             'whatsappAccounts' => WhatsappAccount::where('status', 'active')->get(),
+            'sentToday' => $sentToday,
         ]);
     }
 

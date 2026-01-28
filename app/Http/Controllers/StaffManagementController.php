@@ -53,6 +53,12 @@ class StaffManagementController extends Controller
             $user->assignRole($validated['role']);
 
             if ($validated['whatsapp_account_id']) {
+                $company = $request->user()->company;
+                if (!$company->canAddAgent()) {
+                    DB::rollBack();
+                    return redirect()->back()->withErrors(['message' => 'Anda telah mencapai batas maksimum agent WhatsApp untuk paket ' . ($company->plan->name ?? 'ini') . '.']);
+                }
+
                 WhatsappAgent::create([
                     'user_id' => $user->id,
                     'whatsapp_account_id' => $validated['whatsapp_account_id'],
@@ -101,6 +107,16 @@ class StaffManagementController extends Controller
                 $wa = WhatsappAccount::where('id', $validated['whatsapp_account_id'])
                     ->where('company_id', $request->user()->company_id)
                     ->firstOrFail();
+
+                // Check limit ONLY IF this user is NOT already an agent
+                $isAlreadyAgent = WhatsappAgent::where('user_id', $user->id)->exists();
+                if (!$isAlreadyAgent) {
+                    $company = $request->user()->company;
+                    if (!$company->canAddAgent()) {
+                        DB::rollBack();
+                        return redirect()->back()->withErrors(['message' => 'Anda telah mencapai batas maksimum agent WhatsApp untuk paket ' . ($company->plan->name ?? 'ini') . '.']);
+                    }
+                }
 
                 WhatsappAgent::updateOrCreate(
                     ['user_id' => $user->id],

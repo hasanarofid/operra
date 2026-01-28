@@ -339,6 +339,13 @@ onUnmounted(() => {
                   </Link>
               </li>
               <li class="items-center">
+                  <Link :href="route('crm.wa.settings.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.wa.settings.index') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Scan WhatsApp
+                  </Link>
+              </li>
+              <li class="items-center">
                   <Link :href="route('crm.wa.leads.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
                       :class="route().current('crm.wa.leads.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
@@ -359,12 +366,10 @@ onUnmounted(() => {
                       Auto Reply
                   </Link>
               </li>
-              <li v-if="hasRole('super-admin') && hasMinimumPlan('business-pro')" class="items-center">
-                  <Link :href="route('crm.wa.settings.index')" 
-                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                      :class="route().current('crm.wa.settings.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
-                      WA Multi-Account
-                  </Link>
+              <li class="items-center">
+                  <span class="text-[10px] uppercase py-2 font-black block text-gray-400">
+                      Laporan Harian (WA)
+                  </span>
               </li>
               <li v-if="hasRole('super-admin') && hasMinimumPlan('business-pro')" class="items-center">
                   <Link :href="route('crm.wa.external-apps.index')" 

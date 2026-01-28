@@ -29,6 +29,7 @@ class PortalDemoSeeder extends Seeder
             'name' => 'User Demo (Semua Portal)',
             'password' => $password,
             'company_id' => $allPortalsCo->id,
+            'email_verified_at' => now(),
         ]);
         $userAll->assignRole($superAdminRole);
 
@@ -45,6 +46,7 @@ class PortalDemoSeeder extends Seeder
             'name' => 'User Demo (WA Blast)',
             'password' => $password,
             'company_id' => $waCo->id,
+            'email_verified_at' => now(),
         ]);
         $userWa->assignRole($superAdminRole);
 
@@ -61,6 +63,7 @@ class PortalDemoSeeder extends Seeder
             'name' => 'User Demo (Sales CRM)',
             'password' => $password,
             'company_id' => $salesCo->id,
+            'email_verified_at' => now(),
         ]);
         $userSales->assignRole($superAdminRole);
 
@@ -75,6 +78,7 @@ class PortalDemoSeeder extends Seeder
             'name' => 'User Demo (Marketing)',
             'password' => $password,
             'company_id' => $marketingCo->id,
+            'email_verified_at' => now(),
         ]);
         $userMarketing->assignRole($superAdminRole);
 
@@ -89,6 +93,7 @@ class PortalDemoSeeder extends Seeder
             'name' => 'User Demo (Customer Support)',
             'password' => $password,
             'company_id' => $supportCo->id,
+            'email_verified_at' => now(),
         ]);
         $userSupport->assignRole($superAdminRole);
     }

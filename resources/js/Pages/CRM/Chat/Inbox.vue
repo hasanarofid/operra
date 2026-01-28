@@ -11,6 +11,7 @@ const { props: pageProps } = usePage();
 const props = defineProps({
     sessions: Array,
     whatsappAccounts: Array,
+    sentToday: Number,
 });
 
 const sessionsList = ref(props.sessions.map(s => ({
@@ -185,7 +186,7 @@ const updateCustomerStatus = async (newStatus) => {
                 </div>
                 <div class="bg-[#0ea5e9]/20 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/10 text-white shadow-lg col-span-2 md:col-span-1">
                     <div class="text-[10px] uppercase font-black tracking-widest opacity-80 mb-1">Sent Today</div>
-                    <div class="text-2xl md:text-3xl font-black">24</div>
+                    <div class="text-2xl md:text-3xl font-black">{{ sentToday }}</div>
                 </div>
             </div>
         </template>

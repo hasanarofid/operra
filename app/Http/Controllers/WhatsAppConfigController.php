@@ -34,6 +34,11 @@ class WhatsAppConfigController extends Controller
 
     public function storeAccount(Request $request, WhatsAppService $waService)
     {
+        $company = $request->user()->company;
+        if (!$company->canAddWaAccount()) {
+            return redirect()->back()->withErrors(['message' => 'Anda telah mencapai batas maksimum akun WhatsApp untuk paket ' . ($company->plan->name ?? 'ini') . '.']);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string',
             'phone_number' => 'required|string|unique:whatsapp_accounts,phone_number',

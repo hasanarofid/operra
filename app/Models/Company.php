@@ -57,4 +57,41 @@ class Company extends Model
         }
         return in_array($module, $this->enabled_modules);
     }
+
+    public function getLimit(string $key)
+    {
+        $plan = $this->plan;
+        if (!$plan) return 0;
+
+        switch ($key) {
+            case 'wa_accounts':
+                if ($plan->slug === 'starter') return 1;
+                if ($plan->slug === 'business-pro') return 5;
+                return 999;
+            case 'agents':
+                if ($plan->slug === 'starter') return 2;
+                if ($plan->slug === 'business-pro') return 999;
+                return 999;
+            default:
+                return 0;
+        }
+    }
+
+    public function canAddWaAccount(): bool
+    {
+        $limit = $this->getLimit('wa_accounts');
+        $current = WhatsappAccount::where('company_id', $this->id)->count();
+        return $current < $limit;
+    }
+
+    public function canAddAgent(): bool
+    {
+        $limit = $this->getLimit('agents');
+        // Agents are users with a role other than super-admin/manager usually, 
+        // but here we check WhatsappAgent records.
+        $current = WhatsappAgent::whereHas('user', function($q) {
+            $q->where('company_id', $this->id);
+        })->count();
+        return $current < $limit;
+    }
 }
