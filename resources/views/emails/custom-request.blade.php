@@ -1,44 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Permintaan Custom CRM Baru</title>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; color: #333; }
-        .container { width: 80%; margin: 20px auto; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
-        .header { background: #000; color: #fff; padding: 10px; text-align: center; border-radius: 10px 10px 0 0; }
-        .content { padding: 20px; }
-        .field { font-weight: bold; margin-bottom: 5px; }
-        .value { margin-bottom: 15px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Operra CRM</h1>
-        </div>
-        <div class="content">
-            <h2>Permintaan Custom CRM Baru</h2>
-            <p>Anda menerima permintaan kustom baru dari landing page:</p>
-            
-            <div class="field">Nama:</div>
-            <div class="value">{{ $formData['name'] }}</div>
+@extends('emails.layout')
 
-            <div class="field">Nama Perusahaan:</div>
-            <div class="value">{{ $formData['company_name'] }}</div>
+@section('content')
+<h1>Permintaan Custom CRM Baru</h1>
+<p>Halo Admin,</p>
+<p>Anda telah menerima permintaan Custom CRM baru dari website Operra. Berikut adalah detailnya:</p>
 
-            <div class="field">Email:</div>
-            <div class="value">{{ $formData['email'] }}</div>
-
-            <div class="field">Nomor WA:</div>
-            <div class="value">{{ $formData['phone'] }}</div>
-
-            <div class="field">Tipe Bisnis:</div>
-            <div class="value">{{ $formData['business_type'] }}</div>
-
-            <div class="field">Pesan/Kebutuhan:</div>
-            <div class="value">{{ $formData['message'] }}</div>
-        </div>
+<div class="attributes">
+    <div class="attributes_content">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="30%"><strong>Nama</strong></td>
+                <td>: {{ $formData['name'] }}</td>
+            </tr>
+            <tr>
+                <td width="30%"><strong>Perusahaan</strong></td>
+                <td>: {{ $formData['company_name'] }}</td>
+            </tr>
+            <tr>
+                <td width="30%"><strong>Email</strong></td>
+                <td>: <a href="mailto:{{ $formData['email'] }}">{{ $formData['email'] }}</a></td>
+            </tr>
+            <tr>
+                <td width="30%"><strong>Telepon</strong></td>
+                <td>: {{ $formData['phone'] }}</td>
+            </tr>
+            <tr>
+                <td width="30%"><strong>Bisnis</strong></td>
+                <td>: {{ $formData['business_type'] }}</td>
+            </tr>
+        </table>
     </div>
-</body>
-</html>
+</div>
 
+<h2>Pesan Tambahan</h2>
+<p style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #3869D4; font-style: italic;">
+    "{{ $formData['message'] }}"
+</p>
+
+<div class="body-action">
+    <a href="mailto:{{ $formData['email'] }}" class="button button--blue">Balas Email</a>
+</div>
+@endsection
