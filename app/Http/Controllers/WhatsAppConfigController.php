@@ -113,6 +113,59 @@ class WhatsAppConfigController extends Controller
         return redirect()->back()->with('message', 'Account status synced.');
     }
 
+    public function getQrCode(WhatsappAccount $whatsappAccount, WhatsAppService $waService)
+    {
+        if ($whatsappAccount->company_id !== auth()->user()->company_id) {
+            abort(403);
+        }
+
+        $result = $waService->getQrCode($whatsappAccount);
+        return response()->json($result);
+    }
+
+    public function connectInstance(WhatsappAccount $whatsappAccount, WhatsAppService $waService)
+    {
+        if ($whatsappAccount->company_id !== auth()->user()->company_id) {
+            abort(403);
+        }
+
+        $result = $waService->getQrCode($whatsappAccount);
+        return response()->json($result);
+    }
+
+    public function getInstanceStatus(WhatsappAccount $whatsappAccount, WhatsAppService $waService)
+    {
+        if ($whatsappAccount->company_id !== auth()->user()->company_id) {
+            abort(403);
+        }
+
+        $status = $waService->getInstanceStatus($whatsappAccount);
+        return response()->json($status);
+    }
+
+    public function disconnectInstance(WhatsappAccount $whatsappAccount, WhatsAppService $waService)
+    {
+        if ($whatsappAccount->company_id !== auth()->user()->company_id) {
+            abort(403);
+        }
+
+        $result = $waService->disconnectInstance($whatsappAccount);
+        return response()->json($result);
+    }
+
+    public function generateToken(Request $request)
+    {
+        $user = $request->user();
+        // Simple logic: return a dummy token or integrate with a real token system
+        $token = 'operra_live_' . bin2hex(random_bytes(16));
+        
+        return response()->json([
+            'status' => true,
+            'token' => $token,
+            'message' => 'Token berhasil digenerate.'
+        ]);
+    }
+
     public function syncTemplates(WhatsappAccount $whatsappAccount, WhatsAppService $waService)
     {
         $result = $waService->fetchTemplates($whatsappAccount);

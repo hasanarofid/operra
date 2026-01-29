@@ -540,7 +540,7 @@ onUnmounted(() => {
                 Company Settings
               </Link>
             </li>
-            <li v-if="hasRole('super-admin')" class="items-center">
+            <li v-if="hasRole('super-admin') && (hasMinimumPlan('business-pro') || $page.props.auth.user.company?.is_system_owner)" class="items-center">
               <Link
                 :href="route('staff.index')"
                 class="text-xs uppercase py-2 font-bold block transition-colors duration-200"

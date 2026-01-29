@@ -279,4 +279,103 @@ class WhatsAppService
             return false;
         }
     }
+
+    public function getQrCode($account)
+    {
+        $token = $account->api_credentials['token'] ?? null;
+        $provider = $account->provider;
+
+        if (!$token) {
+            return [
+                'status' => false,
+                'message' => 'Token belum diatur untuk akun ini.'
+            ];
+        }
+
+        try {
+            if ($provider === 'fonnte') {
+                $response = Http::withHeaders(['Authorization' => $token])
+                    ->post('https://api.fonnte.com/qr');
+                
+                if ($response->successful()) {
+                    $data = $response->json();
+                    return [
+                        'status' => true,
+                        'qr' => $data['url'] ?? null,
+                        'message' => 'QR Code berhasil dimuat.'
+                    ];
+                }
+            }
+
+            // Generic logic (e.g., using a local gateway or other providers)
+            return [
+                'status' => false,
+                'message' => 'Provider ini tidak mendukung pengambilan QR Code via API.'
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('WhatsApp QR Error: ' . $e->getMessage());
+            return [
+                'status' => false,
+                'message' => 'Terjadi kesalahan sistem.'
+            ];
+        }
+    }
+
+    public function getInstanceStatus($account)
+    {
+        $token = $account->api_credentials['token'] ?? null;
+        $provider = $account->provider;
+
+        if (!$token) return ['status' => 'expired', 'message' => 'Token missing'];
+
+        try {
+            if ($provider === 'fonnte') {
+                $response = Http::withHeaders(['Authorization' => $token])
+                    ->post('https://api.fonnte.com/device');
+                
+                if ($response->successful()) {
+                    $data = $response->json();
+                    $status = $data['status'] ?? 'disconnected';
+                    
+                    if ($status === 'connect') {
+                        // Sync status in database
+                        $account->update(['status' => 'active']);
+                        return [
+                            'status' => 'connected',
+                            'phone' => $data['device'] ?? $account->phone_number,
+                            'name' => $data['name'] ?? $account->name
+                        ];
+                    }
+                    
+                    return ['status' => 'waiting_scan'];
+                }
+            }
+
+            return ['status' => 'expired'];
+        } catch (\Exception $e) {
+            return ['status' => 'error', 'message' => $e->getMessage()];
+        }
+    }
+
+    public function disconnectInstance($account)
+    {
+        $token = $account->api_credentials['token'] ?? null;
+        if (!$token) return ['status' => false, 'message' => 'Token missing'];
+
+        try {
+            if ($account->provider === 'fonnte') {
+                $response = Http::withHeaders(['Authorization' => $token])
+                    ->post('https://api.fonnte.com/disconnect');
+                
+                if ($response->successful()) {
+                    $account->update(['status' => 'disconnected']);
+                    return ['status' => true, 'message' => 'Berhasil memutuskan koneksi.'];
+                }
+            }
+            return ['status' => false, 'message' => 'Provider tidak mendukung pemutusan koneksi via API.'];
+        } catch (\Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
+        }
+    }
 }

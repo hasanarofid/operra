@@ -53,9 +53,13 @@ class HandleInertiaRequests extends Middleware
                         ] : null,
                         'subscription_ends_at' => $request->user()->company->subscription_ends_at,
                         'subscription_status' => [
-                            'is_trial' => $request->user()->company->subscription_ends_at && $request->user()->company->created_at->diffInDays($request->user()->company->subscription_ends_at) <= 4, // Logic: trial usually close to creation
+                            'is_trial' => $request->user()->company->subscription_ends_at && $request->user()->company->created_at->diffInDays($request->user()->company->subscription_ends_at) <= 4,
                             'days_left' => $request->user()->company->subscription_ends_at ? ceil(now()->diffInSeconds($request->user()->company->subscription_ends_at, false) / 86400) : 0,
                             'is_expired' => $request->user()->company->subscription_ends_at && now()->greaterThan($request->user()->company->subscription_ends_at),
+                        ],
+                        'limits' => [
+                            'wa_accounts' => $request->user()->company->getLimit('wa_accounts'),
+                            'agents' => $request->user()->company->getLimit('agents'),
                         ]
                     ] : null,
                 ] : null,

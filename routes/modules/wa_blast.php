@@ -37,6 +37,11 @@ Route::middleware(['auth', 'tenant:wa_blast'])->group(function () {
         Route::put('/accounts/{whatsappAccount}', [WhatsAppConfigController::class, 'updateAccount'])->name('crm.wa.accounts.update');
         Route::delete('/accounts/{whatsappAccount}', [WhatsAppConfigController::class, 'destroyAccount'])->name('crm.wa.accounts.destroy');
         Route::post('/accounts/{whatsappAccount}/sync', [WhatsAppConfigController::class, 'syncAccount'])->name('crm.wa.accounts.sync');
+        Route::get('/accounts/{whatsappAccount}/qr', [WhatsAppConfigController::class, 'getQrCode'])->name('crm.wa.accounts.qr');
+        Route::post('/accounts/{whatsappAccount}/connect', [WhatsAppConfigController::class, 'connectInstance'])->name('crm.wa.accounts.connect');
+        Route::get('/accounts/{whatsappAccount}/status', [WhatsAppConfigController::class, 'getInstanceStatus'])->name('crm.wa.accounts.status');
+        Route::post('/accounts/{whatsappAccount}/disconnect', [WhatsAppConfigController::class, 'disconnectInstance'])->name('crm.wa.accounts.disconnect');
+        Route::post('/generate-token', [WhatsAppConfigController::class, 'generateToken'])->name('crm.wa.generate-token');
         
         // Templates
         Route::post('/accounts/sync-meta', [WhatsAppConfigController::class, 'syncFromMeta'])->name('crm.wa.accounts.sync-meta');
