@@ -25,14 +25,14 @@ const submit = () => {
         form.put(route('staff.update', form.id), {
             onSuccess: () => {
                 resetForm();
-                alert('Staff updated successfully!');
+                Swal.fire({ icon: 'success', title: 'Success', text: 'Staff updated successfully!', timer: 2000, showConfirmButton: false });
             },
         });
     } else {
         form.post(route('staff.store'), {
             onSuccess: () => {
                 resetForm();
-                alert('Staff created successfully!');
+                Swal.fire({ icon: 'success', title: 'Success', text: 'Staff created successfully!', timer: 2000, showConfirmButton: false });
             },
         });
     }
@@ -49,11 +49,21 @@ const editUser = (user) => {
 };
 
 const deleteUser = (id) => {
-    if (confirm('Are you sure you want to delete this staff member?')) {
-        form.delete(route('staff.destroy', id), {
-            onSuccess: () => alert('Staff deleted!'),
-        });
-    }
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('staff.destroy', id), {
+                onSuccess: () => Swal.fire('Deleted!', 'Staff member has been deleted.', 'success'),
+            });
+        }
+    });
 };
 
 const resetForm = () => {

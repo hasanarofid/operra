@@ -17,7 +17,7 @@ const form = useForm({
 const submit = () => {
     form.post(route('settings.update'), {
         preserveScroll: true,
-        onSuccess: () => alert('Settings updated successfully!'),
+        onSuccess: () => Swal.fire({ icon: 'success', title: 'Saved', text: 'Settings updated successfully!', timer: 2000, showConfirmButton: false }),
     });
 };
 </script>

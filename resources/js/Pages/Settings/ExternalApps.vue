@@ -39,7 +39,7 @@ const togglePreview = (key) => {
     script.setAttribute('data-key', key);
     document.body.appendChild(script);
     
-    alert('Simulasi diaktifkan! Lihat pojok layar Anda.');
+    Swal.fire({ icon: 'info', title: 'Simulation', text: 'Simulasi diaktifkan! Lihat pojok layar Anda.', timer: 3000, showConfirmButton: false });
 };
 
 const openPreviewPage = (key, type = 'widget') => {
@@ -81,9 +81,19 @@ const editApp = (app) => {
 };
 
 const deleteApp = (id) => {
-    if (confirm('Are you sure you want to delete this app?')) {
-        form.delete(route('crm.wa.external-apps.destroy', id));
-    }
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Delete this app?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route('crm.wa.external-apps.destroy', id));
+        }
+    });
 };
 
 const resetForm = () => {
@@ -93,7 +103,7 @@ const resetForm = () => {
 
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+    Swal.fire({ icon: 'success', title: 'Copied!', text: 'Copied to clipboard!', timer: 1500, showConfirmButton: false });
 };
 </script>
 

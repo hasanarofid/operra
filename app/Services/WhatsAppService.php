@@ -49,8 +49,8 @@ class WhatsAppService
         }
 
         try {
-            if ($provider === 'fonnte') {
-                return $this->sendFonnte($to, $message, $token, $baseUrl);
+            if ($provider === 'fonnte' || $provider === 'internal') {
+                return $this->sendInternal($to, $message, $account);
             } elseif ($provider === 'official') {
                 return $this->sendOfficial($to, $message, $token, $baseUrl, $sender, $template, $templateData);
             }
@@ -88,27 +88,39 @@ class WhatsAppService
 
     protected function sendFonnte($to, $message, $token, $baseUrl)
     {
-        $endpoint = $baseUrl ?: 'https://api.fonnte.com/send';
+        // For our internal gateway, we don't need 'token' from api_credentials
+        // We rely on the internal mapping of accountId
         
-        $response = Http::withHeaders([
-            'Authorization' => $token,
-        ])->post($endpoint, [
-            'target' => $to,
-            'message' => $message,
-            'countryCode' => '62',
-        ]);
+        // However, this method signature is shared. We might need to pass the ACCOUNT ID here 
+        // to know WHICH session to use.
+        // The original architecture passed 'token' but maybe not the full account object to this protected method.
+        // Check usage in sendMessage:
+        // public function sendMessage($to, $message, $account = null, ...)
+        
+        // I will refactor sendMessage to call a new `sendInternal` method if provider is 'fonnte'
+        return ['status' => false, 'message' => 'Redirected to Internal Gateway in Main Method']; 
+    }
 
-        if ($response->successful()) {
-            return [
-                'status' => true,
-                'data' => $response->json()
-            ];
+    protected function sendInternal($to, $message, $account)
+    {
+        if (!$account) return ['status' => false, 'message' => 'Account required for Internal Gateway'];
+
+        try {
+            $response = Http::post('http://localhost:3000/chat/send', [
+                'accountId' => (string) $account->id,
+                'to' => $to,
+                'message' => $message
+            ]);
+
+            if ($response->successful()) {
+                return ['status' => true, 'data' => $response->json()];
+            }
+
+            return ['status' => false, 'message' => 'Gateway Error: ' . $response->body()];
+
+        } catch (\Exception $e) {
+            return ['status' => false, 'message' => $e->getMessage()];
         }
-
-        return [
-            'status' => false,
-            'message' => 'Fonnte Error: ' . $response->body()
-        ];
     }
 
     protected function sendOfficial($to, $message, $token, $baseUrl, $senderId, $template = null, $templateData = [])
@@ -282,98 +294,64 @@ class WhatsAppService
 
     public function getQrCode($account)
     {
-        $token = $account->api_credentials['token'] ?? null;
-        $provider = $account->provider;
-
-        if (!$token) {
-            return [
-                'status' => false,
-                'message' => 'Token belum diatur untuk akun ini.'
-            ];
-        }
-
+        // Call Local Node.js Gateway
         try {
-            if ($provider === 'fonnte') {
-                $response = Http::withHeaders(['Authorization' => $token])
-                    ->post('https://api.fonnte.com/qr');
-                
-                if ($response->successful()) {
-                    $data = $response->json();
-                    return [
-                        'status' => true,
-                        'qr' => $data['url'] ?? null,
-                        'message' => 'QR Code berhasil dimuat.'
-                    ];
-                }
+            $response = Http::post('http://localhost:3000/session/start', [
+                'accountId' => (string) $account->id // Ensure string format if needed
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return [
+                    'status' => true,
+                    'qr' => $data['qr'],
+                    'message' => 'Silakan scan QR Code yang muncul.'
+                ];
             }
 
-            // Generic logic (e.g., using a local gateway or other providers)
-            return [
-                'status' => false,
-                'message' => 'Provider ini tidak mendukung pengambilan QR Code via API.'
-            ];
+            return ['status' => false, 'message' => 'Gagal memulai sesi: ' . $response->body()];
 
         } catch (\Exception $e) {
-            Log::error('WhatsApp QR Error: ' . $e->getMessage());
-            return [
-                'status' => false,
-                'message' => 'Terjadi kesalahan sistem.'
-            ];
+            Log::error('WhatsApp Node QR Error: ' . $e->getMessage());
+            return ['status' => false, 'message' => 'Gagal menghubungi Gateway Lokal. Pastikan service berjalan.'];
         }
     }
 
     public function getInstanceStatus($account)
     {
-        $token = $account->api_credentials['token'] ?? null;
-        $provider = $account->provider;
-
-        if (!$token) return ['status' => 'expired', 'message' => 'Token missing'];
-
         try {
-            if ($provider === 'fonnte') {
-                $response = Http::withHeaders(['Authorization' => $token])
-                    ->post('https://api.fonnte.com/device');
+            $response = Http::timeout(3)->get('http://localhost:3000/session/status/' . $account->id);
+            
+            if ($response->successful()) {
+                $data = $response->json();
                 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    $status = $data['status'] ?? 'disconnected';
-                    
-                    if ($status === 'connect') {
-                        // Sync status in database
-                        $account->update(['status' => 'active']);
-                        return [
-                            'status' => 'connected',
-                            'phone' => $data['device'] ?? $account->phone_number,
-                            'name' => $data['name'] ?? $account->name
-                        ];
+                if ($data['status'] === 'connected') {
+                    if ($account->status !== 'active') {
+                        $account->update(['status' => 'active', 'name' => $data['name'] ?? $account->name]);
                     }
-                    
-                    return ['status' => 'waiting_scan'];
+                    return $data;
                 }
             }
 
-            return ['status' => 'expired'];
+            return ['status' => 'waiting_scan'];
+
         } catch (\Exception $e) {
+            // If service is down or other error
             return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 
     public function disconnectInstance($account)
     {
-        $token = $account->api_credentials['token'] ?? null;
-        if (!$token) return ['status' => false, 'message' => 'Token missing'];
-
         try {
-            if ($account->provider === 'fonnte') {
-                $response = Http::withHeaders(['Authorization' => $token])
-                    ->post('https://api.fonnte.com/disconnect');
-                
-                if ($response->successful()) {
-                    $account->update(['status' => 'disconnected']);
-                    return ['status' => true, 'message' => 'Berhasil memutuskan koneksi.'];
-                }
+            $response = Http::post('http://localhost:3000/session/terminate/' . $account->id);
+            
+            if ($response->successful() || $response->status() === 404) {
+                 $account->update(['status' => 'disconnected']);
+                 return ['status' => true, 'message' => 'Berhasil memutuskan koneksi.'];
             }
-            return ['status' => false, 'message' => 'Provider tidak mendukung pemutusan koneksi via API.'];
+            
+            return ['status' => false, 'message' => 'Gagal memutuskan koneksi: ' . $response->body()];
         } catch (\Exception $e) {
             return ['status' => false, 'message' => $e->getMessage()];
         }

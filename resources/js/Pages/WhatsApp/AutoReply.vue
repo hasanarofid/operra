@@ -24,7 +24,7 @@ const saveAutoReply = () => {
         form.put(route('crm.wa.auto-reply.update', form.id), {
             onSuccess: () => {
                 resetForm();
-                alert('Auto Reply updated successfully!');
+                Swal.fire({ icon: 'success', title: 'Success', text: 'Auto Reply updated successfully!', timer: 2000, showConfirmButton: false });
             }
         });
     } else {

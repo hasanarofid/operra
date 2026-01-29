@@ -87,3 +87,16 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+Route::get('/debug-tenant', function () {
+    $user = auth()->user();
+    $company = $user->company;
+    $hasModule = $company->isModuleEnabled('sales_crm');
+    return [
+        'user' => $user->id,
+        'company' => $company->id,
+        'has_sales_crm' => $hasModule,
+        'modules' => $company->enabled_modules,
+        'raw_modules' => $company->getAttributes()['enabled_modules']
+    ];
+})->middleware('auth');

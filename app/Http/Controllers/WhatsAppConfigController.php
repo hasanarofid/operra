@@ -39,6 +39,15 @@ class WhatsAppConfigController extends Controller
             return redirect()->back()->withErrors(['message' => 'Anda telah mencapai batas maksimum akun WhatsApp untuk paket ' . ($company->plan->name ?? 'ini') . '.']);
         }
 
+        // Sanitize Input first
+        $rawPhone = $request->input('phone_number');
+        $cleanPhone = preg_replace('/[^0-9]/', '', $rawPhone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+        
+        $request->merge(['phone_number' => $cleanPhone]);
+
         $validated = $request->validate([
             'name' => 'required|string',
             'phone_number' => 'required|string|unique:whatsapp_accounts,phone_number',
@@ -63,7 +72,10 @@ class WhatsAppConfigController extends Controller
 
         $waService->syncAccountStatus($account);
 
-        return redirect()->back()->with('message', 'WhatsApp Account added and synced successfully.');
+        return redirect()->back()->with([
+            'message' => 'WhatsApp Account added and synced successfully.',
+            'new_account_id' => $account->id
+        ]);
     }
 
     public function updateAccount(Request $request, WhatsappAccount $whatsappAccount, WhatsAppService $waService)

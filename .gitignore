@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+/wa-gateway/node_modules
+/wa-gateway/sessions

@@ -16,9 +16,15 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return Inertia::render('ERP/Master/Customers/Create');
+        $isWa = str_contains($request->route()->getName(), 'crm.wa');
+
+        return Inertia::render('ERP/Master/Customers/Create', [
+            'submitRoute' => $isWa ? 'crm.wa.leads.store' : 'crm.sales.customers.store',
+            'cancelRoute' => $isWa ? 'crm.wa.leads.index' : 'crm.sales.customers.index',
+            'pageTitle' => $isWa ? 'Add New Lead' : 'Add New Customer'
+        ]);
     }
 
     public function store(Request $request)

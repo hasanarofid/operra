@@ -30,16 +30,26 @@ const submit = () => {
 };
 
 const processCampaign = (id) => {
-    if (confirm('Start sending messages for this campaign?')) {
-        axios.post(route('crm.wa.blast.process', id))
-            .then(response => {
-                alert(response.data.message);
-                window.location.reload();
-            })
-            .catch(error => {
-                alert(error.response?.data?.message || 'Error processing campaign');
-            });
-    }
+    Swal.fire({
+        title: 'Start sending messages?',
+        text: "This will start the blast campaign.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, start!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post(route('crm.wa.blast.process', id))
+                .then(response => {
+                    Swal.fire({ icon: 'success', title: 'Success', text: response.data.message, timer: 3000, showConfirmButton: false });
+                    window.location.reload();
+                })
+                .catch(error => {
+                    Swal.fire({ icon: 'error', title: 'Error', text: error.response?.data?.message || 'Error processing campaign' });
+                });
+        }
+    });
 };
 </script>
 

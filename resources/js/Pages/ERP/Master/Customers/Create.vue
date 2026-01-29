@@ -11,8 +11,14 @@ const form = useForm({
     lead_source: 'manual',
 });
 
+const props = defineProps({
+    submitRoute: String,
+    cancelRoute: String,
+    pageTitle: String,
+});
+
 const submit = () => {
-    form.post(route('crm.sales.customers.store'), {
+    form.post(route(props.submitRoute), {
         onSuccess: () => form.reset(),
     });
 };
@@ -24,7 +30,7 @@ const submit = () => {
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                CRM: Add New Lead
+                {{ pageTitle || 'Add New Customer' }}
             </h2>
         </template>
 
@@ -72,7 +78,7 @@ const submit = () => {
                                 <button type="submit" :disabled="form.processing" class="bg-blue-600 text-white px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-blue-700 transition-colors">
                                     Save Lead
                                 </button>
-                                <Link :href="route('crm.wa.leads.index')" class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                <Link :href="route(cancelRoute)" class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
                                     Cancel
                                 </Link>
                             </div>

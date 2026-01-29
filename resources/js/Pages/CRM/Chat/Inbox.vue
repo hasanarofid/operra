@@ -124,7 +124,7 @@ const sendMessage = async () => {
         scrollToBottom();
     } catch (error) {
         console.error('Failed to send message', error);
-        alert('Gagal mengirim pesan');
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal mengirim pesan' });
     }
 };
 
@@ -161,7 +161,7 @@ const updateCustomerStatus = async (newStatus) => {
         
     } catch (error) {
         console.error('Gagal update status', error);
-        alert('Gagal memperbarui status customer');
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal memperbarui status customer' });
     }
 };
 </script>
