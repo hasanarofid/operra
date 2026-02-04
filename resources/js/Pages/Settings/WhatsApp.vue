@@ -7,7 +7,8 @@ import axios from 'axios';
 const props = defineProps({
     settings: Object,
     waStatus: Object,
-    accounts: Array
+    accounts: Array,
+    can_add_account: Boolean
 });
 
 // --- Forms ---
@@ -59,6 +60,39 @@ const totalDevices = computed(() => props.accounts.length);
 const connectedCount = computed(() => props.accounts.filter(a => a.status === 'active').length);
 // Mock message count for now, or use a prop if available
 const messageCount = ref(0); 
+
+// --- Watch Flash Reports ---
+import { usePage } from '@inertiajs/vue3';
+import { watch } from 'vue';
+import Swal from 'sweetalert2';
+
+const page = usePage();
+
+watch(() => page.props.flash?.message, (message) => {
+    if (message) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: message,
+            timer: 3000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+    }
+}, { immediate: true });
+
+watch(() => page.props.errors, (errors) => {
+    if (Object.keys(errors).length > 0) {
+        const firstError = Object.values(errors)[0];
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: firstError,
+            confirmButtonText: 'OKE'
+        });
+    }
+}, { deep: true, immediate: true });
 
 // --- Actions ---
 
@@ -289,9 +323,6 @@ const closeModal = () => {
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                             Auto-Sync Meta Devices
                         </button>
-                        <button @click="showGlobalSettings = true" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700 bg-gray-100 dark:bg-gray-700 dark:text-gray-300 rounded-lg transition-all">
-                            System Settings
-                        </button>
                     </div>
                 </div>
             </div>
@@ -340,9 +371,12 @@ const closeModal = () => {
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                         <h3 class="font-bold text-lg text-gray-800 dark:text-white">Devices</h3>
-                        <button @click="openAddDeviceModal" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform shadow-lg">
+                        <button v-if="props.can_add_account" @click="openAddDeviceModal" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-transform shadow-lg">
                             + Add Device
                         </button>
+                        <div v-else class="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 rounded-lg border border-dashed border-gray-200 dark:border-gray-600">
+                            Limit Reached
+                        </div>
                     </div>
                     
                     <div class="overflow-x-auto">
@@ -493,37 +527,6 @@ const closeModal = () => {
                     
                     <button v-if="!connectionStatus === 'connected'" @click="deviceStep = 1" class="mt-4 text-xs font-bold text-gray-400 hover:text-gray-600">Back to Details</button>
                 </div>
-            </div>
-        </div>
-
-        <!-- System Settings Slide-over (Right Side) -->
-         <div v-if="showGlobalSettings" class="fixed inset-0 z-50 overflow-hidden">
-            <div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" @click="showGlobalSettings = false"></div>
-            <div class="absolute inset-y-0 right-0 max-w-sm w-full bg-white dark:bg-gray-800 shadow-2xl transform transition-transform border-l border-gray-100 dark:border-gray-700 p-6 overflow-y-auto">
-                <div class="flex justify-between items-center mb-8">
-                    <h3 class="font-bold text-xl text-gray-800 dark:text-white">System Settings</h3>
-                    <button @click="showGlobalSettings = false" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-
-                <form @submit.prevent="submitGlobal" class="space-y-6">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2">Meta WABA ID</label>
-                        <input v-model="globalForm.meta_waba_id" type="text" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm">
-                    </div>
-                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2">App ID</label>
-                        <input v-model="globalForm.meta_app_id" type="text" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm">
-                    </div>
-                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2">Access Token</label>
-                        <input v-model="globalForm.meta_access_token" type="password" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm">
-                    </div>
-                    <button type="submit" class="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 py-3 rounded-xl text-xs font-black uppercase tracking-widest">
-                        Save Configuration
-                    </button>
-                </form>
             </div>
         </div>
 

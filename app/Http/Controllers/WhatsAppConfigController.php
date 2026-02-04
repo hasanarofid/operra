@@ -35,7 +35,8 @@ class WhatsAppConfigController extends Controller
         return Inertia::render('Settings/WhatsApp', [
             'settings' => $settings,
             'waStatus' => $waStatus,
-            'accounts' => WhatsappAccount::where('company_id', $request->user()->company_id)->get()
+            'accounts' => WhatsappAccount::where('company_id', $request->user()->company_id)->get(),
+            'can_add_account' => $request->user()->company->canAddWaAccount()
         ]);
     }
 

@@ -23,7 +23,7 @@ class WhatsAppService
             'meta_waba_id'
         ])->pluck('value', 'key');
 
-        $this->token = $settings['meta_access_token'] ?? config('services.whatsapp.meta_token');
+        $this->token = !empty($settings['meta_access_token']) ? $settings['meta_access_token'] : config('services.whatsapp.meta_token');
         $this->sender = config('services.whatsapp.meta_phone_number_id');
         $this->baseUrl = 'https://graph.facebook.com/v18.0';
         $this->provider = 'official';
@@ -243,12 +243,12 @@ class WhatsAppService
 
     public function syncAccountStatus($account)
     {
-        $token = $account->api_credentials['token'] ?? $this->token;
+        $token = !empty($account->api_credentials['token']) ? $account->api_credentials['token'] : $this->token;
         $key = $account->api_credentials['key'] ?? $this->key;
         $baseUrl = $account->api_credentials['endpoint'] ?? $this->baseUrl;
         $provider = $account->provider;
 
-        if (!$token) return false;
+        if (empty($token) && $provider !== 'official') return false;
 
         try {
             if ($provider === 'fonnte') {
