@@ -261,6 +261,9 @@ class WhatsAppService
                     ]);
                     return true;
                 }
+            } elseif ($provider === 'internal') {
+                $statusData = $this->getInstanceStatus($account);
+                return $statusData['status'] === 'connected';
             } elseif ($provider === 'official') {
                 $account->update([
                     'status' => 'active',

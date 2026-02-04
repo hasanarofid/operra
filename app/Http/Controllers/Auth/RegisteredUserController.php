@@ -45,8 +45,8 @@ class RegisteredUserController extends Controller
         $planSlug = $request->plan ?: 'starter';
         $pricingPlan = \App\Models\PricingPlan::where('slug', $planSlug)->first();
 
-        // Default modules (Starter gets WA Blast)
-        $enabledModules = ['wa_blast'];
+        // Default modules (Starter gets WA Blast and Sales CRM for Leads)
+        $enabledModules = ['internal', 'wa_blast', 'sales_crm'];
 
         // Modules for Business Pro or Enterprise
         if ($pricingPlan && in_array($pricingPlan->slug, ['business-pro', 'enterprise'])) {
@@ -57,7 +57,7 @@ class RegisteredUserController extends Controller
         $company = Company::create([
             'name' => $request->company_name,
             'slug' => \Illuminate\Support\Str::slug($request->company_name),
-            'pricing_plan_id' => $pricingPlan?->id,
+            'pricing_plan_id' => $pricingPlan ? $pricingPlan->id : null,
             'subscription_ends_at' => now()->addDays(3), // 3 days trial
             'status' => 'active',
             'enabled_modules' => $enabledModules,

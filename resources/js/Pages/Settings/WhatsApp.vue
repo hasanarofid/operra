@@ -22,11 +22,26 @@ const accountForm = useForm({
     id: null,
     name: '',
     phone_number: '', 
-    provider: 'fonnte', // Default to Fonnte for UMKM
+    provider: 'internal', // Default to Internal for Operra
     token: '',
     key: '',
     endpoint: '',
 });
+
+const generatingToken = ref(false);
+const generateToken = async () => {
+    generatingToken.value = true;
+    try {
+        const response = await axios.post(route('crm.wa.settings.generate-token'));
+        if (response.data.status) {
+            accountForm.token = response.data.token;
+        }
+    } catch (e) {
+        console.error(e);
+    } finally {
+        generatingToken.value = false;
+    }
+};
 
 // --- State ---
 const isEditing = ref(false);
@@ -60,7 +75,7 @@ const submitGlobal = () => {
 
 const openAddDeviceModal = () => {
     accountForm.reset();
-    accountForm.provider = 'fonnte'; // Ensure default
+    accountForm.provider = 'internal'; // Ensure default
     isEditing.value = false;
     deviceStep.value = 1;
     showAddDeviceModal.value = true;
@@ -369,9 +384,29 @@ const closeModal = () => {
                         <input v-model="accountForm.phone_number" type="text" placeholder="628123456789" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm focus:ring-0 focus:border-indigo-500 transition-all">
                     </div>
 
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Provider</label>
+                            <select v-model="accountForm.provider" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm focus:ring-0 focus:border-indigo-500 transition-all">
+                                <option value="internal">Operra (Internal)</option>
+                                <option value="fonnte">Fonnte</option>
+                                <option value="official">Official API</option>
+                            </select>
+                        </div>
+                         <div>
+                            <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">API Token</label>
+                            <div class="relative">
+                                <input v-model="accountForm.token" type="password" placeholder="API Token" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm focus:ring-0 focus:border-indigo-500 transition-all">
+                                <button v-if="accountForm.provider === 'internal'" @click="generateToken" type="button" class="absolute right-2 top-1.5 px-2 py-1 bg-indigo-600 text-white text-[8px] font-bold rounded-lg hover:bg-indigo-700 transition-colors">
+                                    {{ generatingToken ? '...' : 'GENERATE' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="pt-4">
                         <button @click="saveDeviceAndScan" :disabled="accountForm.processing" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
-                            {{ isEditing ? 'Save Changes' : 'Add & Scan QR' }}
+                            {{ isEditing ? 'Save Changes' : 'Add & Scan WhatsApp' }}
                         </button>
                     </div>
                 </div>

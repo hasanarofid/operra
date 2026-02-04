@@ -61,7 +61,7 @@ class WhatsAppConfigController extends Controller
             'company_id' => $request->user()->company_id,
             'name' => $validated['name'],
             'phone_number' => $validated['phone_number'],
-            'provider' => $validated['provider'],
+            'provider' => $validated['provider'], // Can be 'internal', 'official', or 'fonnte'
             'api_credentials' => [
                 'token' => $validated['token'] ?? '',
                 'key' => $validated['key'] ?? '',
@@ -70,10 +70,13 @@ class WhatsAppConfigController extends Controller
             'status' => 'inactive',
         ]);
 
-        $waService->syncAccountStatus($account);
+        // Sync status if not internal (Internal setup handled by separate Connect action)
+        if ($account->provider !== 'internal') {
+            $waService->syncAccountStatus($account);
+        }
 
         return redirect()->back()->with([
-            'message' => 'WhatsApp Account added and synced successfully.',
+            'message' => 'WhatsApp Account added successfully.',
             'new_account_id' => $account->id
         ]);
     }
@@ -104,7 +107,9 @@ class WhatsAppConfigController extends Controller
             ],
         ]);
 
-        $waService->syncAccountStatus($whatsappAccount);
+        if ($whatsappAccount->provider !== 'internal') {
+            $waService->syncAccountStatus($whatsappAccount);
+        }
 
         return redirect()->back()->with('message', 'WhatsApp Account updated and synced successfully.');
     }

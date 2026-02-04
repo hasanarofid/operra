@@ -16,8 +16,18 @@ Route::get('/contact', [LandingPageController::class, 'showContact'])->name('con
 Route::post('/request-custom-crm', [LandingPageController::class, 'submitRequest'])->name('request.custom');
 
 Route::get('/link-storage', function () {
-    Artisan::call('storage:link');
-    return "Storage Link Created";
+    try {
+        if (file_exists(public_path('storage'))) {
+            @unlink(public_path('storage'));
+        }
+        Artisan::call('storage:link', ['--relative' => true]);
+        return "Storage Link Recreated (Relative)";
+    } catch (\Throwable $e) {
+        $cmd = "ln -s ../storage/app/public public/storage";
+        return "Gagal membuat link secara otomatis karena batasan server (exec/symlink disabled). <br><br> " .
+               "Silahkan jalankan perintah ini di terminal server: <br><br> " .
+               "<code style='background: #f4f4f4; padding: 10px; display: block;'>" . $cmd . "</code>";
+    }
 });
 
 Route::get('/clear-system', function () {

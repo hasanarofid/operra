@@ -41,7 +41,7 @@ Route::middleware(['auth', 'tenant:wa_blast'])->group(function () {
         Route::post('/accounts/{whatsappAccount}/connect', [WhatsAppConfigController::class, 'connectInstance'])->name('crm.wa.accounts.connect');
         Route::get('/accounts/{whatsappAccount}/status', [WhatsAppConfigController::class, 'getInstanceStatus'])->name('crm.wa.accounts.status');
         Route::post('/accounts/{whatsappAccount}/disconnect', [WhatsAppConfigController::class, 'disconnectInstance'])->name('crm.wa.accounts.disconnect');
-        Route::post('/generate-token', [WhatsAppConfigController::class, 'generateToken'])->name('crm.wa.generate-token');
+        Route::post('/generate-token', [WhatsAppConfigController::class, 'generateToken'])->name('crm.wa.settings.generate-token');
         
         // Templates
         Route::post('/accounts/sync-meta', [WhatsAppConfigController::class, 'syncFromMeta'])->name('crm.wa.accounts.sync-meta');
