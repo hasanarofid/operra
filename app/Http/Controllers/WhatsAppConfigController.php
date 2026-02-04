@@ -20,9 +20,16 @@ class WhatsAppConfigController extends Controller
             'meta_waba_id',
         ])->pluck('value', 'key');
 
+        // Apply fallback from config/env
+        if (empty($settings['meta_access_token'])) $settings['meta_access_token'] = config('services.whatsapp.meta_token');
+        if (empty($settings['meta_waba_id'])) $settings['meta_waba_id'] = config('services.whatsapp.meta_waba_id');
+
+        $isMetaReady = !empty($settings['meta_access_token']) && !empty($settings['meta_waba_id']);
+
         $waStatus = [
             'provider' => 'official',
-            'connection' => 'ready'
+            'connection' => $isMetaReady ? 'ready' : 'not_configured',
+            'is_meta_ready' => $isMetaReady
         ];
 
         return Inertia::render('Settings/WhatsApp', [
@@ -208,13 +215,13 @@ class WhatsAppConfigController extends Controller
         return redirect()->back()->withErrors(['message' => 'Failed to sync templates: ' . $result['message']]);
     }
 
-    public function syncFromMeta(WhatsAppService $waService)
+    public function syncFromMeta(Request $request, WhatsAppService $waService)
     {
-        $wabaId = Setting::get('meta_waba_id');
-        $token = Setting::get('meta_access_token');
+        $wabaId = Setting::get('meta_waba_id') ?? config('services.whatsapp.meta_waba_id');
+        $token = Setting::get('meta_access_token') ?? config('services.whatsapp.meta_token');
 
         if (!$wabaId || !$token) {
-            return redirect()->back()->withErrors(['message' => 'WABA ID and Global Token are required for sync.']);
+            return redirect()->back()->withErrors(['message' => 'WABA ID and Global Token are required for sync. (Set in System Settings or .env)']);
         }
 
         try {
@@ -226,7 +233,7 @@ class WhatsAppConfigController extends Controller
 
                 foreach ($numbers as $num) {
                     WhatsappAccount::updateOrCreate(
-                        ['phone_number' => $num['id']], // Phone Number ID
+                        ['phone_number' => $num['id'], 'company_id' => $request->user()->company_id], // Unique per company & number ID
                         [
                             'name' => $num['display_phone_number'] . ' (' . ($num['verified_name'] ?? 'Official') . ')',
                             'provider' => 'official',

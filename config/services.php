@@ -34,5 +34,13 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    
+    'whatsapp' => [
+        'gateway_url' => env('WA_GATEWAY_URL', 'http://localhost:3000'),
+        'meta_token' => env('WA_TOKEN'),
+        'meta_phone_number_id' => env('WA_ID'),
+        'meta_waba_id' => env('WA_ID_AKUN_BISNIS'),
+        'meta_webhook_verify_token' => env('WA_VERIFY_TOKEN', 'operra_secret_token'),
+    ],
 
 ];

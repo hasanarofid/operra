@@ -19,11 +19,12 @@ class WhatsAppService
         $settings = Setting::whereIn('key', [
             'meta_access_token',
             'meta_webhook_verify_token',
-            'meta_app_id'
+            'meta_app_id',
+            'meta_waba_id'
         ])->pluck('value', 'key');
 
-        $this->token = $settings['meta_access_token'] ?? null;
-        $this->sender = null; // Meta uses Phone Number ID per account
+        $this->token = $settings['meta_access_token'] ?? config('services.whatsapp.meta_token');
+        $this->sender = config('services.whatsapp.meta_phone_number_id');
         $this->baseUrl = 'https://graph.facebook.com/v18.0';
         $this->provider = 'official';
     }
@@ -106,7 +107,7 @@ class WhatsAppService
         if (!$account) return ['status' => false, 'message' => 'Account required for Internal Gateway'];
 
         try {
-            $response = Http::post('http://localhost:3000/chat/send', [
+            $response = Http::post(config('services.whatsapp.gateway_url') . '/chat/send', [
                 'accountId' => (string) $account->id,
                 'to' => $to,
                 'message' => $message
@@ -166,7 +167,7 @@ class WhatsAppService
     public function fetchTemplates($account)
     {
         $token = $account->api_credentials['token'] ?? $this->token;
-        $wabaId = Setting::get('meta_waba_id');
+        $wabaId = Setting::get('meta_waba_id') ?? config('services.whatsapp.meta_waba_id');
         
         if (!$wabaId) return ['status' => false, 'message' => 'WABA ID not configured.'];
 
@@ -299,7 +300,7 @@ class WhatsAppService
     {
         // Call Local Node.js Gateway
         try {
-            $response = Http::post('http://localhost:3000/session/start', [
+            $response = Http::post(config('services.whatsapp.gateway_url') . '/session/start', [
                 'accountId' => (string) $account->id // Ensure string format if needed
             ]);
 
@@ -323,7 +324,7 @@ class WhatsAppService
     public function getInstanceStatus($account)
     {
         try {
-            $response = Http::timeout(3)->get('http://localhost:3000/session/status/' . $account->id);
+            $response = Http::timeout(3)->get(config('services.whatsapp.gateway_url') . '/session/status/' . $account->id);
             
             if ($response->successful()) {
                 $data = $response->json();
@@ -347,7 +348,7 @@ class WhatsAppService
     public function disconnectInstance($account)
     {
         try {
-            $response = Http::post('http://localhost:3000/session/terminate/' . $account->id);
+            $response = Http::post(config('services.whatsapp.gateway_url') . '/session/terminate/' . $account->id);
             
             if ($response->successful() || $response->status() === 404) {
                  $account->update(['status' => 'disconnected']);
