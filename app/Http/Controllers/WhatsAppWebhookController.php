@@ -218,7 +218,7 @@ class WhatsAppWebhookController extends Controller
      */
     private function verifyMetaWebhook(Request $request)
     {
-        $verifyToken = config('services.whatsapp.verify_token') ?? 'operra_secret_token';
+        $verifyToken = config('services.whatsapp.meta_webhook_verify_token') ?? 'operra_secret_token';
         
         if ($request->input('hub_mode') === 'subscribe' && $request->input('hub_verify_token') === $verifyToken) {
             return response($request->input('hub_challenge'), 200);

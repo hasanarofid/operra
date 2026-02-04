@@ -153,6 +153,11 @@ class WhatsAppConfigController extends Controller
             abort(403);
         }
 
+        if ($whatsappAccount->provider === 'official') {
+            $waService->syncAccountStatus($whatsappAccount);
+            return response()->json(['status' => 'connected', 'message' => 'Akun Official berhasil sinkron.']);
+        }
+
         $result = $waService->getQrCode($whatsappAccount);
         return response()->json($result);
     }

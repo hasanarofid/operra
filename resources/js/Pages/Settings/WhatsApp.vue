@@ -22,7 +22,7 @@ const accountForm = useForm({
     id: null,
     name: '',
     phone_number: '', 
-    provider: 'internal', // Default to Internal for Operra
+    provider: 'official', // Default to Official for Meta integration
     token: '',
     key: '',
     endpoint: '',
@@ -75,7 +75,7 @@ const submitGlobal = () => {
 
 const openAddDeviceModal = () => {
     accountForm.reset();
-    accountForm.provider = 'internal'; // Ensure default
+    accountForm.provider = 'official'; // Ensure default
     isEditing.value = false;
     deviceStep.value = 1;
     showAddDeviceModal.value = true;
@@ -114,6 +114,13 @@ const saveDeviceAndScan = () => {
             const newAccountId = page.props.flash?.new_account_id;
             
             if (newAccountId) {
+                // If official, no need to scan QR
+                if (accountForm.provider === 'official') {
+                    showAddDeviceModal.value = false;
+                    Swal.fire({ icon: 'success', title: 'Success', text: 'Akun Official berhasil ditambahkan.', timer: 2000, showConfirmButton: false });
+                    setTimeout(() => window.location.reload(), 1500);
+                    return;
+                }
                 deviceStep.value = 2;
                 fetchQrCode(newAccountId);
                 return;
@@ -173,11 +180,25 @@ const startPolling = (accountId) => {
 };
 
 const openScanForExisting = (account) => {
+    if (account.provider === 'official') {
+        syncAccount(account.id);
+        return;
+    }
     accountForm.phone_number = account.phone_number; // Set for context
     isEditing.value = false; // Not editing details, just scanning
     deviceStep.value = 2;
     showAddDeviceModal.value = true;
     fetchQrCode(account.id);
+};
+
+const syncAccount = async (id) => {
+    try {
+        await axios.post(route('crm.wa.accounts.sync', id));
+        Swal.fire({ icon: 'success', title: 'Synced', text: 'Status akun sinkron.', timer: 1500, showConfirmButton: false });
+        setTimeout(() => window.location.reload(), 1500);
+    } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal sinkronisasi status.' });
+    }
 };
 
 const disconnectDevice = async (id) => {
@@ -357,7 +378,7 @@ const closeModal = () => {
                                         <div class="flex justify-end gap-2">
                                             <!-- Connect Button -->
                                             <button v-if="account.status !== 'active'" @click="openScanForExisting(account)" class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors shadow-sm">
-                                                Connect
+                                                {{ account.provider === 'official' ? 'Sync Status' : 'Connect' }}
                                             </button>
                                             
                                             <!-- Disconnect Button -->
@@ -419,14 +440,14 @@ const closeModal = () => {
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Provider</label>
-                            <select v-model="accountForm.provider" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm focus:ring-0 focus:border-indigo-500 transition-all">
+                            <label v-if="accountForm.provider !== 'official'" class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Provider</label>
+                            <select v-if="accountForm.provider !== 'official'" v-model="accountForm.provider" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm focus:ring-0 focus:border-indigo-500 transition-all">
+                                <option value="official">Official API</option>
                                 <option value="internal">Operra (Internal)</option>
                                 <option value="fonnte">Fonnte</option>
-                                <option value="official">Official API</option>
                             </select>
                         </div>
-                         <div>
+                         <div v-if="accountForm.provider !== 'official'">
                             <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">API Token</label>
                             <div class="relative">
                                 <input v-model="accountForm.token" type="password" placeholder="API Token" class="w-full rounded-xl bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-sm focus:ring-0 focus:border-indigo-500 transition-all">
@@ -439,7 +460,10 @@ const closeModal = () => {
 
                     <div class="pt-4">
                         <button @click="saveDeviceAndScan" :disabled="accountForm.processing" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 active:scale-95 transition-all">
-                            {{ isEditing ? 'Save Changes' : 'Add & Scan WhatsApp' }}
+                            {{ isEditing ? 'Save Changes' : (accountForm.provider === 'official' ? 'LINK META DEVICE' : 'Add & Scan WhatsApp') }}
+                        </button>
+                        <button v-if="accountForm.provider === 'official'" @click="accountForm.provider = 'internal'" class="w-full mt-2 text-[10px] font-bold text-gray-400 hover:text-gray-600 uppercase tracking-widest">
+                            Show Legacy Providers
                         </button>
                     </div>
                 </div>
