@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\PricingPlan;
+use App\Models\WebhookLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -30,6 +31,7 @@ class SystemAdminController extends Controller
         return Inertia::render('Admin/System/CompaniesIndex', [
             'companies' => $companies,
             'pricingPlans' => $pricingPlans,
+            'webhookLogs' => WebhookLog::latest()->limit(20)->get(),
         ]);
     }
 

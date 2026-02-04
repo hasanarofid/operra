@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Events\NewChatIncoming;
 use App\Models\WhatsappAutoReply;
 use App\Services\WhatsAppService;
+use App\Models\WebhookLog;
 use Kreait\Laravel\Firebase\Facades\Firebase;
 
 class WhatsAppWebhookController extends Controller
@@ -22,7 +23,16 @@ class WhatsAppWebhookController extends Controller
      */
     public function handle(Request $request)
     {
-        // Log incoming for debugging
+        // Log incoming to database for monitoring
+        WebhookLog::create([
+            'provider' => $request->has('object') ? 'meta' : ($request->has('device') ? 'fonnte' : 'unknown'),
+            'payload' => $request->all(),
+            'headers' => $request->headers->all(),
+            'sender_ip' => $request->ip(),
+            'status_code' => 200,
+        ]);
+
+        // Log incoming for debugging (file)
         Log::info('WhatsApp Webhook Received:', $request->all());
 
         // Meta Cloud API Verification

@@ -6,6 +6,7 @@ import { ref } from 'vue';
 const props = defineProps({
     companies: Array,
     pricingPlans: Array,
+    webhookLogs: Array,
 });
 
 const selectedCompany = ref(null);
@@ -127,6 +128,51 @@ const isExpired = (dateString) => {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp Webhook Monitor Section -->
+            <div v-if="true" class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-12 pb-12">
+                <div class="bg-gray-900 overflow-hidden shadow-2xl sm:rounded-[32px] p-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-xl font-black text-white uppercase tracking-tighter">WhatsApp Webhook Monitor</h3>
+                            <p class="text-xs text-gray-400">Log sinkronisasi Real-time dari Meta Cloud API & Vendor lain.</p>
+                        </div>
+                        <div class="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-2">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            <span class="text-[10px] font-bold text-green-500 uppercase tracking-widest">Listening...</span>
+                        </div>
+                    </div>
+
+                    <div v-if="webhookLogs && webhookLogs.length === 0" class="text-center py-12 border border-dashed border-gray-800 rounded-3xl">
+                        <div class="text-gray-600 mb-2">
+                            <svg class="w-12 h-12 mx-auto opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <p class="text-gray-500 text-sm">Belum ada aktivitas webhook yang terdeteksi.</p>
+                        <p class="text-[10px] text-gray-700 uppercase font-black mt-1">Sistem siap menerima, pastikan URL meta sudah benar.</p>
+                    </div>
+
+                    <div v-else-if="webhookLogs" class="space-y-3">
+                        <div v-for="log in webhookLogs" :key="log.id" class="p-4 bg-gray-800/50 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-3">
+                                    <span :class="[
+                                        'px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest',
+                                        log.provider === 'meta' ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white'
+                                    ]">
+                                        {{ log.provider }}
+                                    </span>
+                                    <span class="text-[10px] font-bold text-gray-400 font-mono">{{ log.sender_ip }}</span>
+                                </div>
+                                <div class="text-[10px] font-bold text-gray-600">{{ new Date(log.created_at).toLocaleString('id-ID') }}</div>
+                            </div>
+                            <!-- Simple payload summary -->
+                            <div class="text-xs text-gray-300 font-mono line-clamp-1 opacity-60">
+                                {{ JSON.stringify(log.payload) }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
