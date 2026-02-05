@@ -24,13 +24,20 @@ class WhatsAppWebhookController extends Controller
     public function handle(Request $request)
     {
         // Log incoming to database for monitoring
-        WebhookLog::create([
+        $log = WebhookLog::create([
             'provider' => $request->has('object') ? 'meta' : ($request->has('device') ? 'fonnte' : 'unknown'),
             'payload' => $request->all(),
             'headers' => $request->headers->all(),
             'sender_ip' => $request->ip(),
             'status_code' => 200,
         ]);
+
+        // Push to Firebase for real-time monitoring
+        try {
+            Firebase::database()->getReference('monitoring/webhooks')->push($log->toArray());
+        } catch (\Exception $e) {
+            Log::error('Firebase Monitoring Push Error: ' . $e->getMessage());
+        }
 
         // Log incoming for debugging (file)
         Log::info('WhatsApp Webhook Received:', $request->all());

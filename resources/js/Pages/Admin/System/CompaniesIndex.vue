@@ -1,7 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { getDatabase, ref as dbRef, onChildAdded, limitToLast, query, off } from "firebase/database";
 
 const props = defineProps({
     companies: Array,
@@ -9,7 +10,30 @@ const props = defineProps({
     webhookLogs: Array,
 });
 
+const activeWebhookLogs = ref([...(props.webhookLogs || [])]);
 const selectedCompany = ref(null);
+
+onMounted(() => {
+    const db = getDatabase();
+    const webhookQuery = query(dbRef(db, 'monitoring/webhooks'), limitToLast(20));
+    
+    onChildAdded(webhookQuery, (snapshot) => {
+        const data = snapshot.val();
+        // Check if already exists to avoid duplicates from initial load
+        if (!activeWebhookLogs.value.find(l => l.id === data.id)) {
+            activeWebhookLogs.value.unshift(data);
+            if (activeWebhookLogs.value.length > 20) {
+                activeWebhookLogs.value.pop();
+            }
+        }
+    });
+});
+
+onUnmounted(() => {
+    const db = getDatabase();
+    off(dbRef(db, 'monitoring/webhooks'));
+});
+
 const showEditModal = ref(false);
 
 const form = useForm({
@@ -146,7 +170,7 @@ const isExpired = (dateString) => {
                         </div>
                     </div>
 
-                    <div v-if="webhookLogs && webhookLogs.length === 0" class="text-center py-12 border border-dashed border-gray-800 rounded-3xl">
+                    <div v-if="activeWebhookLogs && activeWebhookLogs.length === 0" class="text-center py-12 border border-dashed border-gray-800 rounded-3xl">
                         <div class="text-gray-600 mb-2">
                             <svg class="w-12 h-12 mx-auto opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
@@ -154,8 +178,8 @@ const isExpired = (dateString) => {
                         <p class="text-[10px] text-gray-700 uppercase font-black mt-1">Sistem siap menerima, pastikan URL meta sudah benar.</p>
                     </div>
 
-                    <div v-else-if="webhookLogs" class="space-y-3">
-                        <div v-for="log in webhookLogs" :key="log.id" class="p-4 bg-gray-800/50 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                    <div v-else-if="activeWebhookLogs" class="space-y-3">
+                        <div v-for="log in activeWebhookLogs" :key="log.id || log.created_at" class="p-4 bg-gray-800/50 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex items-center gap-3">
                                     <span :class="[

@@ -80,7 +80,10 @@ class Company extends Model
     public function canAddWaAccount(): bool
     {
         $limit = $this->getLimit('wa_accounts');
-        $current = WhatsappAccount::where('company_id', $this->id)->count();
+        // Count only accounts that are NOT disconnected (active or inactive/pending)
+        $current = WhatsappAccount::where('company_id', $this->id)
+            ->where('status', '!=', 'disconnected')
+            ->count();
         return $current < $limit;
     }
 

@@ -404,7 +404,7 @@ const closeModal = () => {
                                         <div class="flex items-center gap-2">
                                             <span :class="account.status === 'active' ? 'bg-green-500' : 'bg-red-500'" class="w-2.5 h-2.5 rounded-full"></span>
                                             <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">
-                                                {{ account.status === 'active' ? 'Connected' : 'Disconnect' }}
+                                                {{ account.status === 'active' ? 'Connected' : 'Disconnected' }}
                                             </span>
                                         </div>
                                     </td>

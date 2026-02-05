@@ -347,6 +347,11 @@ class WhatsAppService
 
     public function disconnectInstance($account)
     {
+        if ($account->provider === 'official') {
+            $account->update(['status' => 'disconnected']);
+            return ['status' => true, 'message' => 'Sesi Official diputuskan secara lokal.'];
+        }
+
         try {
             $response = Http::post(config('services.whatsapp.gateway_url') . '/session/terminate/' . $account->id);
             
