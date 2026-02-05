@@ -253,6 +253,13 @@ const submit = () => {
                                 <li><Link :href="route('register')" class="hover:text-white transition-colors">Daftar</Link></li>
                             </ul>
                         </div>
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-[0.2em] text-operra-500 mb-6">Legal</span>
+                            <ul class="space-y-4 text-sm font-bold text-gray-400">
+                                <li><Link :href="route('privacy.policy')" class="hover:text-white transition-colors">Privacy Policy</Link></li>
+                                <li><Link :href="route('terms.service')" class="hover:text-white transition-colors">Terms of Service</Link></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-20 pt-10 border-t border-white/5 flex flex-wrap items-center justify-between text-gray-500 text-[10px] font-black uppercase tracking-widest">

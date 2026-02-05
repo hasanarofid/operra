@@ -46,4 +46,14 @@ class LandingPageController extends Controller
 
         return back()->with('success', 'Permintaan Anda telah kami terima. Tim kami akan segera menghubungi Anda!');
     }
+
+    public function termsOfService()
+    {
+        return Inertia::render('TermsOfService');
+    }
+
+    public function privacyPolicy()
+    {
+        return Inertia::render('PrivacyPolicy');
+    }
 }

@@ -14,6 +14,8 @@ use App\Http\Controllers\LandingPageController;
 Route::get('/', [LandingPageController::class, 'index'])->name('welcome');
 Route::get('/contact', [LandingPageController::class, 'showContact'])->name('contact');
 Route::post('/request-custom-crm', [LandingPageController::class, 'submitRequest'])->name('request.custom');
+Route::get('/privacy-policy', [LandingPageController::class, 'privacyPolicy'])->name('privacy.policy');
+Route::get('/terms-of-service', [LandingPageController::class, 'termsOfService'])->name('terms.service');
 
 Route::get('/link-storage', function () {
     try {
