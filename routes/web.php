@@ -112,3 +112,6 @@ Route::get('/debug-tenant', function () {
         'raw_modules' => $company->getAttributes()['enabled_modules']
     ];
 })->middleware('auth');
+
+
+

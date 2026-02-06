@@ -23,9 +23,9 @@ class WhatsAppService
             'meta_waba_id'
         ])->pluck('value', 'key');
 
-        $this->token = !empty($settings['meta_access_token']) ? $settings['meta_access_token'] : config('services.whatsapp.meta_token');
+        $this->token = !empty($settings['meta_access_token']) ? $settings['meta_access_token'] : (config('services.whatsapp.meta_token') ?? env('WA_TOKEN'));
         $this->sender = config('services.whatsapp.meta_phone_number_id');
-        $this->baseUrl = 'https://graph.facebook.com/v18.0';
+        $this->baseUrl = 'https://graph.facebook.com/v22.0';
         $this->provider = 'official';
     }
 
@@ -126,7 +126,17 @@ class WhatsAppService
 
     protected function sendOfficial($to, $message, $token, $baseUrl, $senderId, $template = null, $templateData = [])
     {
-        $endpoint = $baseUrl ?: "https://graph.facebook.com/v18.0/{$senderId}/messages";
+        // Meta Official menggunakan ID numerik sebagai senderId. 
+        if (empty($senderId) || !is_numeric($senderId) || strlen($senderId) < 10) {
+            $senderId = config('services.whatsapp.meta_phone_number_id');
+        }
+
+        // Pastikan baseUrl memiliki trailing slash jika ada, atau gunakan default Meta
+        $base = rtrim($baseUrl ?: 'https://graph.facebook.com/v22.0', '/');
+        
+        // Endpoint Meta Official harus menyertakan Phone Number ID
+        $endpoint = "{$base}/{$senderId}/messages";
+        
 
         $payload = [
             'messaging_product' => 'whatsapp',
@@ -148,6 +158,7 @@ class WhatsAppService
                 'body' => $message,
             ];
         }
+
 
         $response = Http::withToken($token)->post($endpoint, $payload);
 
@@ -172,7 +183,7 @@ class WhatsAppService
         if (!$wabaId) return ['status' => false, 'message' => 'WABA ID not configured.'];
 
         try {
-            $response = Http::withToken($token)->get("https://graph.facebook.com/v18.0/{$wabaId}/message_templates");
+            $response = Http::withToken($token)->get("https://graph.facebook.com/v22.0/{$wabaId}/message_templates");
             
             if ($response->successful()) {
                 return [
@@ -195,7 +206,7 @@ class WhatsAppService
 
         $token = !empty($account->api_credentials['token']) ? $account->api_credentials['token'] : $this->token;
         $senderId = !empty($account->phone_number) ? $account->phone_number : $this->sender;
-        $endpoint = "https://graph.facebook.com/v18.0/{$senderId}/messages";
+        $endpoint = "https://graph.facebook.com/v22.0/{$senderId}/messages";
 
         try {
             $response = Http::withToken($token)->post($endpoint, [
@@ -219,7 +230,7 @@ class WhatsAppService
         $token = !empty($account->api_credentials['token']) ? $account->api_credentials['token'] : $this->token;
         
         try {
-            $response = Http::withToken($token)->get("https://graph.facebook.com/v18.0/{$mediaId}");
+            $response = Http::withToken($token)->get("https://graph.facebook.com/v22.0/{$mediaId}");
             if (!$response->successful()) return null;
             
             $mediaUrl = $response->json()['url'];
