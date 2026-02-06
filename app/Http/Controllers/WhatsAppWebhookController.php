@@ -276,12 +276,16 @@ class WhatsAppWebhookController extends Controller
             $database->getReference('inbox/global/' . $chatSession->id)
                 ->set($data);
 
-            // 2. Update daftar session spesifik per user yang di-assign (untuk sales)
+            // 2. Update daftar session untuk seluruh perusahaan (agar semua user di perusahaan tersebut dpt update real-time)
+            $database->getReference('inbox/companies/' . $chatSession->company_id . '/' . $chatSession->id)
+                ->set($data);
+
+            // 3. Update daftar session spesifik per user yang di-assign (untuk sales)
             if ($chatSession->assigned_user_id) {
                 $database->getReference('inbox/users/' . $chatSession->assigned_user_id . '/' . $chatSession->id)
                     ->set($data);
                 
-                // 3. Update unread count total untuk user tersebut secara realtime
+                // 4. Update unread count total untuk user tersebut secara realtime
                 $database->getReference('notifications/users/' . $chatSession->assigned_user_id)
                     ->update(['unread_count' => $unreadCount]);
             }

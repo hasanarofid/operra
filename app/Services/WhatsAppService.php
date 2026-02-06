@@ -34,10 +34,10 @@ class WhatsAppService
      */
     public function sendMessage($to, $message, $account = null, $template = null, $templateData = [])
     {
-        $token = $account ? ($account->api_credentials['token'] ?? $this->token) : $this->token;
-        $key = $account ? ($account->api_credentials['key'] ?? $this->key) : $this->key;
-        $sender = $account ? ($account->phone_number ?? $this->sender) : $this->sender;
-        $baseUrl = $account ? ($account->api_credentials['endpoint'] ?? $this->baseUrl) : $this->baseUrl;
+        $token = ($account && !empty($account->api_credentials['token'])) ? $account->api_credentials['token'] : $this->token;
+        $key = ($account && !empty($account->api_credentials['key'])) ? $account->api_credentials['key'] : $this->key;
+        $sender = ($account && !empty($account->phone_number)) ? $account->phone_number : $this->sender;
+        $baseUrl = ($account && !empty($account->api_credentials['endpoint'])) ? $account->api_credentials['endpoint'] : $this->baseUrl;
         $provider = $account ? $account->provider : $this->provider;
 
         if ($provider === 'third_party_api') $provider = 'generic';
@@ -166,8 +166,8 @@ class WhatsAppService
 
     public function fetchTemplates($account)
     {
-        $token = $account->api_credentials['token'] ?? $this->token;
-        $wabaId = Setting::get('meta_waba_id') ?? config('services.whatsapp.meta_waba_id');
+        $token = !empty($account->api_credentials['token']) ? $account->api_credentials['token'] : $this->token;
+        $wabaId = !empty($account->api_credentials['key']) ? $account->api_credentials['key'] : (Setting::get('meta_waba_id') ?? config('services.whatsapp.meta_waba_id'));
         
         if (!$wabaId) return ['status' => false, 'message' => 'WABA ID not configured.'];
 
@@ -193,8 +193,8 @@ class WhatsAppService
             return ['status' => true];
         }
 
-        $token = $account->api_credentials['token'] ?? $this->token;
-        $senderId = $account->phone_number;
+        $token = !empty($account->api_credentials['token']) ? $account->api_credentials['token'] : $this->token;
+        $senderId = !empty($account->phone_number) ? $account->phone_number : $this->sender;
         $endpoint = "https://graph.facebook.com/v18.0/{$senderId}/messages";
 
         try {
@@ -216,7 +216,7 @@ class WhatsAppService
 
     public function downloadMedia($mediaId, $account)
     {
-        $token = $account->api_credentials['token'] ?? $this->token;
+        $token = !empty($account->api_credentials['token']) ? $account->api_credentials['token'] : $this->token;
         
         try {
             $response = Http::withToken($token)->get("https://graph.facebook.com/v18.0/{$mediaId}");

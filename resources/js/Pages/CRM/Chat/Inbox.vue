@@ -33,13 +33,14 @@ const resetSelection = () => {
 onMounted(() => {
     // 1. Listen ke Firebase Realtime Database
     if (database) {
-        const userInboxRef = dbRef(database, `inbox/users/${pageProps.auth.user.id}`);
+        // Karena banyak user bisa membuka Inbox (Admin/Manager/Sales),
+        // Kita dengerin perubahan di level PERUSAHAAN (Company)
+        const companyId = pageProps.auth.user.company_id;
+        const companyInboxRef = dbRef(database, `inbox/companies/${companyId}`);
         
-        onValue(userInboxRef, (snapshot) => {
+        onValue(companyInboxRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Firebase mengembalikan objek, kita butuh data terbaru
-                // Karena kita nge-set data dengan key = session_id di backend
                 Object.values(data).forEach((incoming) => {
                     const { session, message } = incoming;
 
@@ -52,7 +53,7 @@ onMounted(() => {
                         ...session, 
                         is_unread: isUnread || (index !== -1 && sessionsList.value[index].is_unread),
                         session_unread_count: incoming.session_unread_count || 0,
-                        last_message_at: message.created_at // Update timestamp terakhir
+                        last_message_at: message.created_at
                     };
 
                     if (index !== -1) {
@@ -60,14 +61,9 @@ onMounted(() => {
                     }
                     sessionsList.value.unshift(updatedSession);
                     
-                    // Urutkan list agar pesan terbaru selalu di paling atas
-                    sessionsList.value.sort((a, b) => {
-                        return new Date(b.last_message_at) - new Date(a.last_message_at);
-                    });
+                    sessionsList.value.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
 
-                    // Jika sedang membuka session tersebut, tambah pesan secara real-time
                     if (selectedSession.value && selectedSession.value.id === session.id) {
-                        // Cek agar tidak duplikat (karena Firebase onValue trigger tiap ada perubahan)
                         const isMessageExist = messages.value.some(m => m.id === message.id);
                         if (!isMessageExist) {
                             messages.value.push(message);
@@ -144,11 +140,47 @@ const formatTime = (date) => {
     });
 };
 
+const renameCustomer = async () => {
+    if (!selectedSession.value || !selectedSession.value.customer) return;
+
+    const { value: newName } = await Swal.fire({
+        title: 'Ganti Nama Kontak',
+        input: 'text',
+        inputLabel: 'Masukkan nama baru',
+        inputValue: selectedSession.value.customer.name,
+        showCancelButton: true,
+        inputValidator: (value) => {
+            if (!value) return 'Nama tidak boleh kosong!';
+        }
+    });
+
+    if (newName) {
+        try {
+            await axios.patch(route('crm.wa.leads.update', selectedSession.value.customer_id), {
+                name: newName
+            });
+            
+            selectedSession.value.customer.name = newName;
+            
+            // Update di sessionsList agar UI sinkron
+            const session = sessionsList.value.find(s => s.id === selectedSession.value.id);
+            if (session) {
+                session.customer.name = newName;
+            }
+
+            Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Nama kontak telah diperbarui', timer: 1500 });
+        } catch (error) {
+            console.error('Gagal ganti nama', error);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal mengubah nama kontak' });
+        }
+    }
+};
+
 const updateCustomerStatus = async (newStatus) => {
     if (!selectedSession.value) return;
     
     try {
-        await axios.patch(route('crm.sales.customers.update-status', selectedSession.value.customer_id), {
+        await axios.patch(route('crm.wa.leads.update-status', selectedSession.value.customer_id), {
             status: newStatus
         });
         selectedSession.value.customer.status = newStatus;
@@ -264,7 +296,12 @@ const updateCustomerStatus = async (newStatus) => {
                             </div>
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2">
-                                    <div class="font-black text-gray-800 dark:text-white truncate text-sm">{{ selectedSession.customer?.name || 'Unknown' }}</div>
+                                    <div class="font-black text-gray-800 dark:text-white truncate text-sm flex items-center gap-2">
+                                        {{ selectedSession.customer?.name || 'Unknown' }}
+                                        <button @click="renameCustomer" class="p-1 hover:text-blue-500 transition-colors opacity-40 hover:opacity-100" title="Ganti Nama">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                        </button>
+                                    </div>
                                     <select 
                                         v-if="selectedSession.customer"
                                         v-model="selectedSession.customer.status" 

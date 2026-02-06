@@ -45,6 +45,20 @@ class CustomerController extends Controller
         return redirect()->route('crm.sales.customers.index')->with('message', 'Customer created.');
     }
 
+    public function update(Request $request, Customer $customer)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $customer->update($validated);
+
+        return response()->json([
+            'message' => 'Kontak berhasil diperbarui',
+            'customer' => $customer
+        ]);
+    }
+
     public function updateStatus(Request $request, Customer $customer)
     {
         $validated = $request->validate([

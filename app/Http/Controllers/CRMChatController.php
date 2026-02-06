@@ -146,9 +146,59 @@ class CRMChatController extends Controller
 
             $chatSession->update(['last_message_at' => now()]);
 
+            // Push ke Firebase agar sinkron di UI semua user perusahaan
+            $this->pushToFirebase($chatSession, $message);
+
             return response()->json($message->load('sender'));
         }
 
         return response()->json(['error' => $result['message'] ?? 'Failed to send message'], 500);
+    }
+
+    /**
+     * Push data ke Firebase Realtime Database
+     */
+    private function pushToFirebase($chatSession, $message)
+    {
+        try {
+            $database = Firebase::database();
+            
+            // Hitung unread count per session (biasanya 0 karena dikirim oleh user)
+            $sessionUnreadCount = ChatMessage::where('chat_session_id', $chatSession->id)
+                ->where('sender_type', 'customer')
+                ->whereNull('read_at')
+                ->count();
+
+            // Data untuk di-push
+            $data = [
+                'session' => $chatSession->load(['customer', 'whatsappAccount']),
+                'message' => $message,
+                'session_unread_count' => $sessionUnreadCount,
+                'timestamp' => now()->timestamp,
+            ];
+
+            // Update daftar session untuk seluruh perusahaan
+            $database->getReference('inbox/companies/' . $chatSession->company_id . '/' . $chatSession->id)
+                ->set($data);
+
+            // Jika ada user yang di-assign, update juga path spesifik mereka
+            if ($chatSession->assigned_user_id) {
+                // Hitung unread count total untuk user ini
+                $unreadCount = ChatMessage::whereHas('chatSession', function($query) use ($chatSession) {
+                    $query->where('assigned_user_id', $chatSession->assigned_user_id);
+                })->where('sender_type', 'customer')->whereNull('read_at')->count();
+
+                $data['unread_count'] = $unreadCount;
+                
+                $database->getReference('inbox/users/' . $chatSession->assigned_user_id . '/' . $chatSession->id)
+                    ->set($data);
+                
+                $database->getReference('notifications/users/' . $chatSession->assigned_user_id)
+                    ->update(['unread_count' => $unreadCount]);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Firebase Push Error (CRMChatController): ' . $e->getMessage());
+        }
     }
 }
