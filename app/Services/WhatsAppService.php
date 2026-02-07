@@ -23,8 +23,11 @@ class WhatsAppService
             'meta_waba_id'
         ])->pluck('value', 'key');
 
-        $this->token = !empty($settings['meta_access_token']) ? $settings['meta_access_token'] : (config('services.whatsapp.meta_token') ?? env('WA_TOKEN'));
-        $this->sender = config('services.whatsapp.meta_phone_number_id');
+        $configToken = config('services.whatsapp.meta_token');
+        $this->token = !empty($settings['meta_access_token']) ? $settings['meta_access_token'] : (!empty($configToken) ? $configToken : env('WA_TOKEN'));
+        
+        $configSender = config('services.whatsapp.meta_phone_number_id');
+        $this->sender = !empty($configSender) ? $configSender : env('WA_ID');
         $this->baseUrl = 'https://graph.facebook.com/v22.0';
         $this->provider = 'official';
     }
@@ -41,6 +44,13 @@ class WhatsAppService
         $provider = $account ? $account->provider : $this->provider;
 
         if ($provider === 'third_party_api') $provider = 'generic';
+
+        \Log::info('WS Debug - Sending Message', [
+            'to' => $to ?? 'NULL',
+            'token_prefix' => isset($token) ? substr($token, 0, 10) : 'NULL',
+            'sender_id' => $sender ?? 'NULL',
+            'provider' => $this->provider ?? 'NULL'
+        ]);
 
         if (!$token) {
             return [
@@ -160,7 +170,22 @@ class WhatsAppService
         }
 
 
-        $response = Http::withToken($token)->post($endpoint, $payload);
+        \Log::info('WS Debug - Meta API Call', [
+            'endpoint' => $endpoint,
+            'to' => $to,
+            'payload_summarized' => array_keys($payload)
+        ]);
+
+        $response = Http::withToken($token)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post($endpoint, $payload);
+
+        if ($response->failed()) {
+            \Log::error('WS Debug - Meta API Error', [
+                'status' => $response->status(),
+                'body' => $response->json()
+            ]);
+        }
 
         if ($response->successful()) {
             return [
