@@ -20,6 +20,14 @@ watch(() => page.props.flash, (flash) => {
     }
 }, { deep: true });
 
+watch(() => page.props.errors, (errors) => {
+    if (Object.keys(errors).length > 0) {
+        // Ambil pesan error pertama atau pesan umum
+        const firstError = Object.values(errors)[0];
+        showToast(firstError || 'Terdapat kesalahan pada inputan Anda.', 'error');
+    }
+}, { deep: true });
+
 const showToast = (msg, msgType) => {
     message.value = msg;
     type.value = msgType;

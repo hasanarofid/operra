@@ -66,8 +66,10 @@ class StaffManagementController extends Controller
                 ]);
             }
 
+            event(new \Illuminate\Auth\Events\Registered($user));
+
             DB::commit();
-            return redirect()->back()->with('message', 'Staff created successfully.');
+            return redirect()->back()->with('success', 'Staff created successfully. Verification email sent.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error creating staff: ' . $e->getMessage());
