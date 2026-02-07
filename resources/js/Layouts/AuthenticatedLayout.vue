@@ -8,6 +8,7 @@ import { database } from '@/firebase';
 import { ref as dbRef, onValue } from "firebase/database";
 import OnboardingModal from '@/Components/OnboardingModal.vue';
 import ExpirationModal from '@/Components/ExpirationModal.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
 // Global variable to persist across page navigations (Inertia re-mounts)
 let globalLastSoundPlayedMessageId = null;
@@ -400,6 +401,13 @@ onUnmounted(() => {
               <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
                 Sales Portal
               </h6>
+              <li v-if="hasMinimumPlan('business-pro')" class="items-center">
+                  <Link :href="route('crm.sales.pipeline.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('crm.sales.pipeline.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Pipeline (Kanban)
+                  </Link>
+              </li>
               <li class="items-center">
                   <Link :href="route('crm.sales.customers.index')" 
                       class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
@@ -686,5 +694,6 @@ onUnmounted(() => {
     </div>
     <OnboardingModal :show="!page.props.auth.user.has_completed_onboarding" />
     <ExpirationModal />
+    <ToastNotification />
   </div>
 </template>

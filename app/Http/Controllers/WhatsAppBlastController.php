@@ -67,32 +67,13 @@ class WhatsAppBlastController extends Controller
             return response()->json(['message' => 'Campaign already completed.'], 400);
         }
 
+        // Set status to processing immediately
         $campaign->update(['status' => 'processing']);
 
-        $logs = $campaign->logs()->where('status', 'pending')->get();
-        $account = $campaign->account;
+        // Dispatch Job to Queue
+        \App\Jobs\ProcessWhatsAppBlast::dispatch($campaign->id);
 
-        foreach ($logs as $log) {
-            $result = $this->whatsappService->sendMessage(
-                $log->phone_number,
-                $campaign->message_template,
-                $account,
-                $campaign->template_name,
-                $campaign->template_data
-            );
-
-            if ($result['status']) {
-                $log->update(['status' => 'sent', 'sent_at' => now()]);
-                $campaign->increment('sent_count');
-            } else {
-                $log->update(['status' => 'failed', 'error_message' => $result['message']]);
-                $campaign->increment('failed_count');
-            }
-        }
-
-        $campaign->update(['status' => 'completed']);
-
-        return response()->json(['message' => 'Campaign processed.']);
+        return response()->json(['message' => 'Campaign processing started in background.']);
     }
 
     public function destroy(WhatsappCampaign $campaign)

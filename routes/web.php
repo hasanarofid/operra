@@ -63,7 +63,14 @@ Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
 
     // CRM Modules
     Route::prefix('crm-wa-blast')->group(base_path('routes/modules/wa_blast.php'));
-    Route::prefix('crm-sales')->group(base_path('routes/modules/sales.php'));
+    Route::prefix('crm-sales')->group(function () {
+        // Pipeline / Kanban
+        Route::get('/pipeline', [\App\Http\Controllers\ERP\PipelineController::class, 'index'])->name('crm.sales.pipeline.index');
+        Route::post('/pipeline/update-stage/{order}', [\App\Http\Controllers\ERP\PipelineController::class, 'updateOrderStage'])->name('crm.sales.pipeline.update');
+        
+        // Load legacy sales routes (if any) or keep them separate
+        require base_path('routes/modules/sales.php'); 
+    });
     Route::prefix('crm-marketing')->group(base_path('routes/modules/marketing.php'));
     Route::prefix('crm-support')->group(base_path('routes/modules/support.php'));
 

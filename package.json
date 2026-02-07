@@ -26,6 +26,7 @@
         "apexcharts": "^5.3.6",
         "firebase": "^12.7.0",
         "sweetalert2": "^11.26.17",
-        "vue3-apexcharts": "^1.10.0"
+        "vue3-apexcharts": "^1.10.0",
+        "vuedraggable": "^4.1.0"
     }
 }

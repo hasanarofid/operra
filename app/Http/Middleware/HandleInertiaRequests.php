@@ -70,6 +70,12 @@ class HandleInertiaRequests extends Middleware
             'newLeadsCount' => $request->user() && $request->user()->hasRole('super-admin')
                 ? LeadsRequest::where('status', 'new')->count()
                 : 0,
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
+            ],
         ];
     }
 }

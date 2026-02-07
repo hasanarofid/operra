@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\User;
+use App\Models\PricingPlan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -19,6 +20,7 @@ class CompanySeeder extends Seeder
             'status' => 'active',
             'enabled_modules' => ['wa_blast', 'sales_crm', 'marketing_crm', 'customer_service', 'analytical_crm'],
             'is_system_owner' => true,
+            'pricing_plan_id' => \App\Models\PricingPlan::where('slug', 'business-pro')->value('id') ?? 1,
         ]);
 
         $admin = User::updateOrCreate(['email' => 'admin@operra.com'], [
