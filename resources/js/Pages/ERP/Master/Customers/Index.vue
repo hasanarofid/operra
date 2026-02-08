@@ -1,10 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 defineProps({
-    customers: Object
+    customers: Object,
+    canCreate: Boolean,
 });
 
 const page = usePage();
@@ -17,6 +18,27 @@ const currentPortal = computed(() => {
 const createRoute = computed(() => {
     return currentPortal.value === 'wa_blast' ? 'crm.wa.leads.create' : 'crm.sales.customers.create';
 });
+
+const editRouteName = computed(() => {
+    return currentPortal.value === 'wa_blast' ? 'crm.wa.leads.edit' : 'crm.sales.customers.edit';
+});
+
+const destroyRouteName = computed(() => {
+    return currentPortal.value === 'wa_blast' ? 'crm.wa.leads.destroy' : 'crm.sales.customers.destroy';
+});
+
+const deleteCustomer = (customer) => {
+    if (!confirm('Are you sure you want to delete this lead?')) return;
+
+    router.delete(route(destroyRouteName.value, customer.id), {
+        onSuccess: () => {
+            // Toast handled by flash message in layout
+        },
+        onError: () => {
+             alert('Failed to delete lead.');
+        }
+    });
+};
 </script>
 
 <template>
@@ -39,7 +61,7 @@ const createRoute = computed(() => {
                                     {{ currentPortal === 'wa_blast' ? 'Leads List' : 'Customers List' }}
                                 </h3>
                             </div>
-                            <div class="relative w-full max-w-full flex-grow flex-1 text-right">
+                            <div class="relative w-full max-w-full flex-grow flex-1 text-right" v-if="canCreate">
                                 <Link :href="route(createRoute)" class="bg-blue-600 text-white active:bg-blue-700 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150">
                                     Add {{ currentPortal === 'wa_blast' ? 'Lead' : 'Customer' }}
                                 </Link>
@@ -57,6 +79,7 @@ const createRoute = computed(() => {
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Source</th>
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Assigned To</th>
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Address</th>
+                                    <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -79,6 +102,19 @@ const createRoute = computed(() => {
                                         {{ cust.assigned_sales ? cust.assigned_sales.name : '-' }}
                                     </td>
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-gray-700 dark:text-gray-200">{{ cust.address }}</td>
+                                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-center">
+                                        <div class="flex items-center justify-center gap-2" v-if="canCreate">
+                                            <Link :href="route(editRouteName, cust.id)" class="text-blue-500 hover:text-blue-700 font-bold uppercase text-[10px]">
+                                                Edit
+                                            </Link>
+                                            <button @click="deleteCustomer(cust)" class="text-red-500 hover:text-red-700 font-bold uppercase text-[10px]">
+                                                Delete
+                                            </button>
+                                        </div>
+                                        <div v-else>
+                                            <span class="text-gray-400 text-[10px] italic">Restricted</span>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
