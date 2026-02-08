@@ -9,12 +9,14 @@ const form = useForm({
     address: '',
     status: 'lead',
     lead_source: 'manual',
+    assigned_to: null,
 });
 
 const props = defineProps({
     submitRoute: String,
     cancelRoute: String,
     pageTitle: String,
+    salesAgents: Array,
 });
 
 const submit = () => {
@@ -67,6 +69,16 @@ const submit = () => {
                                         <option value="organic">Organic</option>
                                     </select>
                                 </div>
+                            
+                            <div class="mb-4" v-if="salesAgents && salesAgents.length > 0">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Assign to Sales</label>
+                                <select v-model="form.assigned_to" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option :value="null">-- Select Sales Agent --</option>
+                                    <option v-for="agent in salesAgents" :key="agent.id" :value="agent.id">
+                                        {{ agent.name }}
+                                    </option>
+                                </select>
+                            </div>
                             </div>
 
                             <div class="mb-4">

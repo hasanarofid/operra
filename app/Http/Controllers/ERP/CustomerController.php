@@ -9,21 +9,38 @@ use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+        $query = Customer::with('assignedSales')->latest();
+
+        if ($user->hasRole('sales')) {
+            $query->where('assigned_to', $user->id);
+        }
+
         return Inertia::render('ERP/Master/Customers/Index', [
-            'customers' => Customer::latest()->paginate(10)
+            'customers' => $query->paginate(10)
         ]);
     }
 
     public function create(Request $request)
     {
         $isWa = str_contains($request->route()->getName(), 'crm.wa');
+        $user = $request->user();
+
+        // Sales cannot create leads
+        if ($user->hasRole('sales')) {
+            abort(403, 'Sales users are not allowed to create leads directly.');
+        }
+
+        // Fetch eligible sales agents for assignment
+        $salesAgents = \App\Models\User::role('sales')->where('company_id', $user->company_id)->get();
 
         return Inertia::render('ERP/Master/Customers/Create', [
             'submitRoute' => $isWa ? 'crm.wa.leads.store' : 'crm.sales.customers.store',
             'cancelRoute' => $isWa ? 'crm.wa.leads.index' : 'crm.sales.customers.index',
-            'pageTitle' => $isWa ? 'Add New Lead' : 'Add New Customer'
+            'pageTitle' => $isWa ? 'Add New Lead' : 'Add New Customer',
+            'salesAgents' => $salesAgents
         ]);
     }
 
@@ -32,6 +49,7 @@ class CustomerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
 
         Customer::create($request->all());

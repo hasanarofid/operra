@@ -55,6 +55,7 @@ const createRoute = computed(() => {
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Phone</th>
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Status</th>
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Source</th>
+                                    <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Assigned To</th>
                                     <th class="px-6 bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-300 align-middle border border-solid border-gray-100 dark:border-gray-600 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Address</th>
                                 </tr>
                             </thead>
@@ -73,6 +74,9 @@ const createRoute = computed(() => {
                                     </td>
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-gray-600 dark:text-gray-400">
                                         {{ cust.lead_source || '-' }}
+                                    </td>
+                                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-gray-600 dark:text-gray-400">
+                                        {{ cust.assigned_sales ? cust.assigned_sales.name : '-' }}
                                     </td>
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-gray-700 dark:text-gray-200">{{ cust.address }}</td>
                                 </tr>
