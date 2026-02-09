@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified', 'tenant:bot_antam'])->prefix('portal')->g
     
     // Logs (Polled via API)
     Route::get('/logs', [LogController::class, 'index'])->name('bot_antam.logs.index');
+    Route::post('/logs/clear', [LogController::class, 'clear'])->name('bot_antam.logs.clear');
 
     // Support Tickets
     Route::get('/support', [\App\Http\Controllers\BotAntam\SupportController::class, 'index'])->name('bot_antam.support.index');

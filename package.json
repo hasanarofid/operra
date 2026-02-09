@@ -12,7 +12,7 @@
         "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-vue": "^6.0.0",
         "autoprefixer": "^10.4.12",
-        "axios": "^1.11.0",
+        "axios": "^1.13.5",
         "concurrently": "^9.0.1",
         "laravel-echo": "^2.2.7",
         "laravel-vite-plugin": "^2.0.0",
@@ -25,8 +25,29 @@
     "dependencies": {
         "apexcharts": "^5.3.6",
         "firebase": "^12.7.0",
+        "puppeteer": "^24.37.2",
+        "puppeteer-extra": "^3.3.6",
+        "puppeteer-extra-plugin-stealth": "^2.11.2",
         "sweetalert2": "^11.26.17",
         "vue3-apexcharts": "^1.10.0",
         "vuedraggable": "^4.1.0"
-    }
+    },
+    "name": "operra_prod",
+    "version": "1.0.0",
+    "description": "<p align=\"center\">   <img src=\"public/images/logo_operra.png\" alt=\"Operra Logo\" width=\"150\"> </p>",
+    "main": "postcss.config.js",
+    "directories": {
+        "test": "tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hasanarofid/operra.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/hasanarofid/operra/issues"
+    },
+    "homepage": "https://github.com/hasanarofid/operra#readme"
 }

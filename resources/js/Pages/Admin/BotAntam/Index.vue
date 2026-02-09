@@ -20,14 +20,38 @@ const form = useForm({
     lm_username: '',
     lm_password: '',
     telegram_chat_id: '',
+    target_butik: '',
     is_active: false,
 });
+
+const butiks = [
+    'Surabaya 2 Pakuwon',
+    'Surabaya 1 Darmo',
+    'Gedung Antam (Jakarta)',
+    'Balikpapan',
+    'Bandung',
+    'Bekasi',
+    'Bintaro',
+    'Bogor',
+    'Denpasar',
+    'Djuanda',
+    'Graha Dipta',
+    'Makassar',
+    'Medan',
+    'Palembang',
+    'Pekanbaru',
+    'Puri Indah',
+    'Semarang',
+    'Serpong',
+    'Setiabudi One',
+];
 
 const openModal = (account) => {
     editingAccount.value = account;
     form.lm_username = account.lm_username;
     form.lm_password = ''; // Always blank for security (or placeholder if set)
     form.telegram_chat_id = account.telegram_chat_id;
+    form.target_butik = account.target_butik;
     form.is_active = !!account.is_active;
     showModal.value = true;
 };
@@ -93,6 +117,7 @@ const closeLogsModal = () => {
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Company / User</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">LM Username</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Telegram ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Target Butik</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
@@ -108,6 +133,9 @@ const closeLogsModal = () => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {{ account.telegram_chat_id || '-' }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                            {{ account.target_butik || '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span 
@@ -182,6 +210,20 @@ const closeLogsModal = () => {
                             placeholder="123456789"
                         />
                     </div>
+
+                    <div>
+                        <InputLabel for="target_butik" value="Target Lokasi (Butik)" />
+                        <select
+                            id="target_butik"
+                            v-model="form.target_butik"
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-operra-500 dark:focus:border-operra-600 focus:ring-operra-500 dark:focus:ring-operra-600 rounded-md shadow-sm"
+                        >
+                            <option value="">Pilih Lokasi...</option>
+                            <option v-for="butik in butiks" :key="butik" :value="butik">{{ butik }}</option>
+                        </select>
+                    </div>
+
+
                     
                     <div class="flex items-center gap-2">
                         <input 

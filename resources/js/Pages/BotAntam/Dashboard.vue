@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, usePage, useForm } from '@inertiajs/vue3';
+import { Head, usePage, useForm, router } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -20,9 +20,33 @@ const showGuide = ref(false);
 
 const form = useForm({
     lm_username: props.account?.lm_username || '',
-    lm_password: '', // Default blank
+    lm_password: '', 
     telegram_chat_id: props.account?.telegram_chat_id || '',
+    target_butik: props.account?.target_butik || '',
+    captcha_api_key: props.account?.captcha_api_key || '',
 });
+
+const butiks = [
+    'Surabaya 2 Pakuwon',
+    'Surabaya 1 Darmo',
+    'Gedung Antam (Jakarta)',
+    'Balikpapan',
+    'Bandung',
+    'Bekasi',
+    'Bintaro',
+    'Bogor',
+    'Denpasar',
+    'Djuanda',
+    'Graha Dipta',
+    'Makassar',
+    'Medan',
+    'Palembang',
+    'Pekanbaru',
+    'Puri Indah',
+    'Semarang',
+    'Serpong',
+    'Setiabudi One',
+];
 
 const submitConfig = () => {
     form.post(route('bot_antam.config.update'), {
@@ -30,6 +54,17 @@ const submitConfig = () => {
         onSuccess: () => {
             form.reset('lm_password');
         },
+    });
+};
+
+const runTest = () => {
+    router.post(route('bot_antam.test.run'), {}, {
+        preserveScroll: true,
+        onStart: () => loadingLogs.value = true,
+        onFinish: () => {
+            fetchLogs();
+            loadingLogs.value = false;
+        }
     });
 };
 
@@ -41,11 +76,21 @@ const fetchLogs = async () => {
     loadingLogs.value = true;
     try {
         const response = await axios.get(route('bot_antam.logs.index'));
-        logs.value = response.data;
+        logs.value = response.data.logs || [];
     } catch (error) {
         console.error("Failed to fetch logs", error);
     } finally {
         loadingLogs.value = false;
+    }
+};
+
+const clearLogs = async () => {
+    if (!confirm('Hapus semua log aktivitas?')) return;
+    try {
+        await axios.post(route('bot_antam.logs.clear'));
+        logs.value = [];
+    } catch (error) {
+        console.error("Failed to clear logs", error);
     }
 };
 
@@ -151,10 +196,46 @@ onMounted(() => {
                                     </p>
                                 </div>
 
-                                <div class="pt-4 border-t dark:border-gray-700">
+                                <div>
+                                    <InputLabel for="target_butik" value="Target Lokasi (Butik)" />
+                                    <select
+                                        id="target_butik"
+                                        v-model="form.target_butik"
+                                        class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-operra-500 dark:focus:border-operra-600 focus:ring-operra-500 dark:focus:ring-operra-600 rounded-md shadow-sm"
+                                    >
+                                        <option value="">Pilih Lokasi...</option>
+                                        <option v-for="butik in butiks" :key="butik" :value="butik">{{ butik }}</option>
+                                    </select>
+                                    <InputError class="mt-2" :message="form.errors.target_butik" />
+                                </div>
+                                <div>
+                                    <InputLabel for="captcha_api_key" value="CAPTCHA Solver API Key (2Captcha/Anti-Captcha)" />
+                                    <TextInput
+                                        id="captcha_api_key"
+                                        type="text"
+                                        class="mt-1 block w-full text-sm"
+                                        v-model="form.captcha_api_key"
+                                        placeholder="Optional: Masukkan key jika ingin melewati reCAPTCHA otomatis"
+                                    />
+                                    <InputError class="mt-2" :message="form.errors.captcha_api_key" />
+                                    <p class="text-[10px] text-gray-500 mt-1 italic">Diperlukan untuk melewati "I'm not a robot" secara otomatis.</p>
+                                </div>
+
+
+                                <div class="pt-4 border-t dark:border-gray-700 flex flex-col gap-2">
                                     <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                        Save Configuration
+                                        Update Sniper Settings
                                     </PrimaryButton>
+                                    
+                                    <button 
+                                        type="button"
+                                        @click="runTest"
+                                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                                        :disabled="loadingLogs"
+                                    >
+                                        <span v-if="loadingLogs">🔄 Menjalankan Browser...</span>
+                                        <span v-else>🚀 Test Real Engine (Puppeteer)</span>
+                                    </button>
                                 </div>
                             </form>
 
@@ -173,7 +254,16 @@ onMounted(() => {
                                 <span class="animate-pulse w-2 h-2 bg-green-500 rounded-full"></span>
                                 Live Execution Logs
                             </h3>
-                            <span v-if="loadingLogs" class="text-gray-500 text-[10px]">Syncing...</span>
+                            <div class="flex items-center gap-2">
+                                <button 
+                                    v-if="logs.length > 0"
+                                    @click="clearLogs"
+                                    class="text-[10px] bg-red-600/20 hover:bg-red-600/40 text-red-500 px-2 py-0.5 rounded border border-red-600/50 transition whitespace-nowrap"
+                                >
+                                    Hapus Log
+                                </button>
+                                <span v-if="loadingLogs" class="text-gray-500 text-[10px]">Syncing...</span>
+                            </div>
                         </div>
                         <div class="p-4 overflow-y-auto grow custom-scrollbar bg-black/90">
                             <div v-for="log in logs" :key="log.id" class="mb-1 border-l-2 pl-2 border-transparent hover:border-gray-700 transition-colors">

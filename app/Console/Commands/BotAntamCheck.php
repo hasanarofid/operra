@@ -27,73 +27,86 @@ class BotAntamCheck extends Command
      */
     public function handle()
     {
-        $accounts = DB::table('bot_antam_accounts')->where('is_active', true)->get();
+        // Fetch accounts that are ACTIVE or have a PENDING test request
+        $accounts = DB::table('bot_antam_accounts')
+            ->where(function($query) {
+                $query->where('is_active', true)
+                      ->orWhereNotNull('test_requested_at');
+            })
+            ->get();
 
         if ($accounts->isEmpty()) {
-            $this->info('No active accounts found.');
             return;
         }
 
         foreach ($accounts as $account) {
-            $this->info("Checking for Account ID: {$account->id}");
+            $isTest = !empty($account->test_requested_at);
+            
+            // Immediately clear test flag so it doesn't run twice
+            if ($isTest) {
+                DB::table('bot_antam_accounts')->where('id', $account->id)->update(['test_requested_at' => null]);
+                $this->info("Handled test request for ID: {$account->id}");
+            }
 
-            // 1. Log START
-            DB::table('bot_antam_logs')->insert([
-                'bot_antam_account_id' => $account->id,
-                'event_type' => 'CHECK',
-                'message' => 'Checking Logam Mulia stock...',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            $this->info("Starting Real Browser Engine for Account ID: {$account->id} ({$account->lm_username}) " . ($isTest ? "[MANUAL TEST]" : ""));
 
-            // 2. SIMULATION LOGIC
-            // In a real scenario, this would curl to logammulia.com
-            // For now, we simulate a 10% chance of finding stock
-            $found = rand(1, 100) <= 10; 
-
-            if ($found) {
-                // Log FOUND
-                DB::table('bot_antam_logs')->insert([
-                    'bot_antam_account_id' => $account->id,
-                    'event_type' => 'FOUND',
-                    'message' => 'Stock FOUND! Simulating buy attempt...',
-                    'created_at' => now(),
-                    'updated_at' => now()
+            try {
+                // Decrypt password
+                $password = decrypt($account->lm_password);
+                $butik = $account->target_butik ?: 'Gedung Antam (Jakarta)';
+                
+                // Construct command
+                $process = new \Symfony\Component\Process\Process([
+                    'node', 
+                    base_path('bot_engine.js'), 
+                    $account->lm_username, 
+                    $password, 
+                    $butik, 
+                    $account->captcha_api_key ?: '',
+                    $account->id
                 ]);
-
-                // Simulate Buy
-                sleep(1);
-                $success = rand(1, 100) <= 50; // 50% success rate on buy
-
-                if ($success) {
-                     DB::table('bot_antam_logs')->insert([
-                        'bot_antam_account_id' => $account->id,
-                        'event_type' => 'SUCCESS',
-                        'message' => 'Purchase Successful (Simulation)!',
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-
-                    // Send Telegram (Mock)
-                    if ($account->telegram_chat_id) {
-                        $this->sendTelegram($account->telegram_chat_id, "🔥 STOCK FOUND AND BOUGHT! (Simulation)");
+                
+                $process->setTimeout(120); // 2 minutes max
+                
+                // Run process and capture output line by line for real-time logs
+                $process->run(function ($type, $buffer) use ($account) {
+                    $lines = explode("\n", trim($buffer));
+                    foreach ($lines as $line) {
+                        if (empty($line)) continue;
+                        
+                        // Parse [TYPE] Message
+                        if (preg_match('/^\[(INFO|SUCCESS|ERROR|CHECK|FOUND)\] (.*)$/', $line, $matches)) {
+                            $this->logEvent($account->id, $matches[1], $matches[2]);
+                            
+                            // Send Telegram on success
+                            if ($matches[1] === 'SUCCESS' && str_contains($matches[2], 'Tiket')) {
+                                if ($account->telegram_chat_id) {
+                                    $this->sendTelegram($account->telegram_chat_id, "🚀 <b>BOT NOTIFICATION</b>\n\n🎯 <b>{$matches[2]}</b>\n\nLokasi: <b>{$account->target_butik}</b>\nUsername: <b>{$account->lm_username}</b>");
+                                }
+                            }
+                        } else {
+                            $this->info($line);
+                        }
                     }
+                });
 
-                } else {
-                     DB::table('bot_antam_logs')->insert([
-                        'bot_antam_account_id' => $account->id,
-                        'event_type' => 'ERROR',
-                        'message' => 'Purchase Failed: Session Timeout / Out of Stock',
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-
-            } else {
-                 // Optional: Don't log every "Not Found" to save DB space, or log sparingly
-                 // $this->info("No stock found.");
+            } catch (\Exception $e) {
+                $this->logEvent($account->id, 'ERROR', "🚨 PHP Engine Error: " . $e->getMessage());
             }
         }
+    }
+
+    private function logEvent($accountId, $type, $message)
+    {
+        DB::table('bot_antam_logs')->insert([
+            'bot_antam_account_id' => $accountId,
+            'event_type' => $type,
+            'message' => $message,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        
+        $this->info("[$type] $message");
     }
 
     private function sendTelegram($chatId, $message)
