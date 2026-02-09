@@ -66,6 +66,7 @@ const getPortalName = (portalId) => {
         'sales_crm': 'Sales CRM',
         'marketing_crm': 'Marketing CRM',
         'customer_service': 'Customer Support',
+        'bot_antam': 'War Antam Portal',
         'analytical_crm': 'Analytical CRM'
     };
     return names[portalId] || 'Pilih Aplikasi';
@@ -500,6 +501,33 @@ onUnmounted(() => {
                       :class="route().current('crm.support.knowledge-base.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
                       Knowledge Base
                   </Link>
+              </li>
+            </template>
+
+            <!-- Bot Antam Module Links -->
+            <template v-if="currentPortal === 'bot_antam'">
+              <hr class="my-4 md:min-w-full" />
+              <h6 class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest">
+                War Antam Portal
+              </h6>
+              <li class="items-center">
+                  <Link :href="route('bot_antam.dashboard')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('bot_antam.dashboard') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Bot Dashboard
+                  </Link>
+              </li>
+              <li class="items-center">
+                  <Link :href="route('bot_antam.support.index')" 
+                      class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                      :class="route().current('bot_antam.support.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                      Support Messages
+                  </Link>
+              </li>
+              <li class="items-center">
+                 <a href="#" onclick="return false;" class="text-xs uppercase py-2 font-bold block text-gray-400 cursor-not-allowed">
+                      Transaction History (Soon)
+                 </a>
               </li>
             </template>
 

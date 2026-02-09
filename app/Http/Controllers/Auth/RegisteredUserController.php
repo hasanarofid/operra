@@ -53,6 +53,11 @@ class RegisteredUserController extends Controller
             $enabledModules = ['wa_blast', 'sales_crm', 'marketing_crm', 'customer_service'];
         }
 
+        // Module for Bot Antam
+        if ($pricingPlan && $pricingPlan->slug === 'bot-antam') {
+            $enabledModules = ['bot_antam']; // Dedicated module
+        }
+
         // Create the company first
         $company = Company::create([
             'name' => $request->company_name,

@@ -32,6 +32,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        
+        $user = Auth::user();
+        if ($user->company && $user->company->isModuleEnabled('bot_antam') && !$user->company->isModuleEnabled('sales_crm')) {
+            return redirect()->intended(route('bot_antam.dashboard', absolute: false));
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

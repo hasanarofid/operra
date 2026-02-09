@@ -232,5 +232,6 @@ class DatabaseSeeder extends Seeder
 
         // 12. Portal Demo Users
         $this->call(PortalDemoSeeder::class);
+        $this->call(BotAntamPricingPlanSeeder::class);
     }
 }

@@ -41,6 +41,7 @@ Route::get('/clear-system', function () {
 
 
 use App\Http\Controllers\Admin\LeadsRequestController;
+use App\Http\Controllers\Admin\BotAntamAccountController;
 
 Route::middleware(['auth', 'verified', 'role:super-admin', 'system_owner'])->group(function () {
     Route::get('/admin/leads-requests', [LeadsRequestController::class, 'index'])->name('admin.leads.index');
@@ -50,6 +51,14 @@ Route::middleware(['auth', 'verified', 'role:super-admin', 'system_owner'])->gro
     // System Monitoring Routes (Super Admin Operra)
     Route::get('/admin/monitoring/companies', [\App\Http\Controllers\Admin\SystemAdminController::class, 'index'])->name('admin.system.companies.index');
     Route::patch('/admin/monitoring/companies/{company}', [\App\Http\Controllers\Admin\SystemAdminController::class, 'updateSubscription'])->name('admin.system.companies.update');
+
+    // Bot Antam Accounts Management (Super Admin)
+    Route::resource('admin/bot-antam-accounts', BotAntamAccountController::class)->except(['show', 'create', 'edit']);
+
+    // Admin Ticket System
+    Route::get('/admin/tickets', [\App\Http\Controllers\Admin\TicketController::class, 'index'])->name('admin.tickets.index');
+    Route::get('/admin/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])->name('admin.tickets.show');
+    Route::post('/admin/tickets/{id}/reply', [\App\Http\Controllers\Admin\TicketController::class, 'reply'])->name('admin.tickets.reply');
 });
 Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -73,6 +82,9 @@ Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     });
     Route::prefix('crm-marketing')->group(base_path('routes/modules/marketing.php'));
     Route::prefix('crm-support')->group(base_path('routes/modules/support.php'));
+    
+    // BOT ANTAM Portal
+    Route::prefix('bot-antam')->group(base_path('routes/modules/bot_antam.php'));
 
     // Core Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

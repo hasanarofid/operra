@@ -112,7 +112,7 @@ const submit = () => {
                         <p class="text-gray-400 font-medium text-sm md:text-base px-4">Investasi terbaik untuk pertumbuhan bisnis jangka panjang Anda.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 max-w-7xl mx-auto">
                         <div 
                             v-for="plan in pricingPlans" 
                             :key="plan.id"
