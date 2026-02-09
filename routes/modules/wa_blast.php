@@ -21,7 +21,9 @@ Route::middleware(['auth', 'tenant:wa_blast'])->group(function () {
     Route::get('/leads', [CustomerController::class, 'index'])->name('crm.wa.leads.index');
     Route::get('/leads/create', [CustomerController::class, 'create'])->name('crm.wa.leads.create');
     Route::post('/leads', [CustomerController::class, 'store'])->name('crm.wa.leads.store');
-    Route::patch('/leads/{customer}', [CustomerController::class, 'update'])->name('crm.wa.leads.update');
+    Route::match(['put', 'patch'], '/leads/{customer}', [CustomerController::class, 'update'])->name('crm.wa.leads.update');
+    Route::get('/leads/{customer}/edit', [CustomerController::class, 'edit'])->name('crm.wa.leads.edit');
+    Route::delete('/leads/{customer}', [CustomerController::class, 'destroy'])->name('crm.wa.leads.destroy');
     Route::patch('/leads/{customer}/status', [CustomerController::class, 'updateStatus'])->name('crm.wa.leads.update-status');
 
     // WhatsApp Marketing (Blast)
