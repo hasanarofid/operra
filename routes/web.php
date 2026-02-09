@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified', 'role:super-admin', 'system_owner'])->gro
     Route::patch('/admin/monitoring/companies/{company}', [\App\Http\Controllers\Admin\SystemAdminController::class, 'updateSubscription'])->name('admin.system.companies.update');
 
     // Bot Antam Accounts Management (Super Admin)
+    Route::get('admin/bot-antam-accounts/{id}/logs', [BotAntamAccountController::class, 'logs'])->name('admin.bot-antam-accounts.logs');
     Route::resource('admin/bot-antam-accounts', BotAntamAccountController::class)->except(['show', 'create', 'edit']);
 
     // Admin Ticket System

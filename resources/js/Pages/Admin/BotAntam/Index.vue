@@ -7,6 +7,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import axios from 'axios';
 
 const props = defineProps({
     accounts: Array,
@@ -41,6 +42,33 @@ const updateAccount = () => {
     form.put(route('bot-antam-accounts.update', editingAccount.value.id), {
         onSuccess: () => closeModal(),
     });
+};
+
+// Logs Logic
+const showLogsModal = ref(false);
+const logs = ref([]);
+const loadingLogs = ref(false);
+const currentLogAccount = ref(null);
+
+const openLogs = async (account) => {
+    currentLogAccount.value = account;
+    showLogsModal.value = true;
+    logs.value = [];
+    loadingLogs.value = true;
+    try {
+        const response = await axios.get(route('admin.bot-antam-accounts.logs', account.id));
+        logs.value = response.data;
+    } catch (error) {
+        console.error(error);
+    } finally {
+        loadingLogs.value = false;
+    }
+};
+
+const closeLogsModal = () => {
+    showLogsModal.value = false;
+    currentLogAccount.value = null;
+    logs.value = [];
 };
 </script>
 
@@ -92,6 +120,9 @@ const updateAccount = () => {
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button @click="openModal(account)" class="text-operra-600 hover:text-operra-900 font-bold">
                                                 Configure
+                                            </button>
+                                            <button @click="openLogs(account)" class="ml-3 text-blue-600 hover:text-blue-900 font-bold">
+                                                Logs
                                             </button>
                                         </td>
                                     </tr>
@@ -168,6 +199,41 @@ const updateAccount = () => {
                     <PrimaryButton class="ms-3" :class="{ 'opacity-25': form.processing }" :disabled="form.processing" @click="updateAccount">
                         Save Configuration
                     </PrimaryButton>
+                </div>
+            </div>
+        </Modal>
+
+        <!-- Logs Modal -->
+        <Modal :show="showLogsModal" @close="closeLogsModal">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 flex justify-between items-center">
+                    <span>Logs: {{ currentLogAccount?.company_name }}</span>
+                    <button @click="openLogs(currentLogAccount)" class="text-sm text-blue-500 hover:underline" :disabled="loadingLogs">
+                        Refresh
+                    </button>
+                </h2>
+                
+                <div class="mt-4 bg-black rounded-lg p-4 h-96 overflow-y-auto font-mono text-xs">
+                    <div v-if="loadingLogs" class="text-green-500 animate-pulse">Loading logs...</div>
+                    <template v-else>
+                        <div v-for="log in logs" :key="log.id" class="mb-1 border-l-2 pl-2 border-transparent hover:border-gray-700 transition-colors">
+                            <span class="text-gray-500">[{{ new Date(log.created_at).toLocaleTimeString() }}]</span>
+                            <span :class="{
+                                'text-blue-400': log.event_type === 'CHECK',
+                                'text-yellow-400': log.event_type === 'FOUND',
+                                'text-red-500': log.event_type === 'ERROR',
+                                'text-green-500': log.event_type === 'SUCCESS'
+                            }" class="mx-2 font-bold">{{ log.event_type }}</span>
+                            <span class="text-gray-300">{{ log.message }}</span>
+                        </div>
+                        <div v-if="logs.length === 0" class="text-gray-500 italic text-center mt-10">
+                            No logs found for this account.
+                        </div>
+                    </template>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <SecondaryButton @click="closeLogsModal">Close</SecondaryButton>
                 </div>
             </div>
         </Modal>

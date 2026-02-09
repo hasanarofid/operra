@@ -6,7 +6,7 @@
 **Reply:**
 {{ $replyMessage }}
 
-<x-mail::button :url="route('bot_antam.tickets.show', $ticket->id)">
+<x-mail::button :url="route('bot_antam.support.show', $ticket->id)">
 View Ticket
 </x-mail::button>
 

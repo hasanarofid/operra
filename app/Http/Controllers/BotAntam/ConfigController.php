@@ -12,24 +12,33 @@ class ConfigController extends Controller
     {
         $request->validate([
             'lm_username' => 'required|string',
-            'lm_password' => 'required|string',
+            'lm_password' => 'nullable|string',
             'target_products' => 'nullable|array',
             'telegram_chat_id' => 'nullable|string'
         ]);
 
         $companyId = auth()->user()->company_id;
 
-        DB::table('bot_antam_accounts')->updateOrInsert(
-            ['company_id' => $companyId],
-            [
-                'lm_username' => $request->lm_username,
-                'lm_password' => encrypt($request->lm_password),
-                'target_products' => json_encode($request->target_products),
-                'telegram_chat_id' => $request->telegram_chat_id,
-                'updated_at' => now(),
-                'created_at' => now() // Only if inserting
-            ]
-        );
+        $data = [
+            'lm_username' => $request->lm_username,
+            'target_products' => json_encode($request->target_products),
+            'telegram_chat_id' => $request->telegram_chat_id,
+            'updated_at' => now(),
+        ];
+
+        if ($request->filled('lm_password')) {
+            $data['lm_password'] = encrypt($request->lm_password);
+        }
+
+        // Check if record exists to determine created_at
+        $exists = DB::table('bot_antam_accounts')->where('company_id', $companyId)->exists();
+        if (!$exists) {
+            $data['company_id'] = $companyId;
+            $data['created_at'] = now();
+            DB::table('bot_antam_accounts')->insert($data);
+        } else {
+            DB::table('bot_antam_accounts')->where('company_id', $companyId)->update($data);
+        }
 
         return back()->with('success', 'Konfigurasi berhasil disimpan.');
     }

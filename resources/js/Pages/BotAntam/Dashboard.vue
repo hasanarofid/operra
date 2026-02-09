@@ -1,8 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, useForm } from '@inertiajs/vue3';
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Components/InputError.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
     account: Object,
@@ -10,6 +16,26 @@ const props = defineProps({
 
 const logs = ref([]);
 const loadingLogs = ref(false);
+const showGuide = ref(false);
+
+const form = useForm({
+    lm_username: props.account?.lm_username || '',
+    lm_password: '', // Default blank
+    telegram_chat_id: props.account?.telegram_chat_id || '',
+});
+
+const submitConfig = () => {
+    form.post(route('bot_antam.config.update'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset('lm_password');
+        },
+    });
+};
+
+const openGuide = () => {
+    showGuide.value = true;
+};
 
 const fetchLogs = async () => {
     loadingLogs.value = true;
@@ -75,39 +101,67 @@ onMounted(() => {
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Config Summary (Read Only) -->
+                    <!-- Config Form (Editable) -->
                     <div class="md:col-span-1 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg h-fit">
                         <div class="p-6">
-                            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Current Configuration</h3>
+                            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Bot Configuration</h3>
                             
-                            <dl class="space-y-4">
+                            <form @submit.prevent="submitConfig" class="space-y-4">
                                 <div>
-                                    <dt class="text-xs text-gray-500 dark:text-gray-400 uppercase">Logam Mulia Account</dt>
-                                    <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ maskString(account?.lm_username) }}
-                                    </dd>
+                                    <InputLabel for="lm_username" value="Logam Mulia Username" />
+                                    <TextInput
+                                        id="lm_username"
+                                        type="text"
+                                        class="mt-1 block w-full text-sm"
+                                        v-model="form.lm_username"
+                                        placeholder="Username / Email"
+                                    />
+                                    <InputError class="mt-2" :message="form.errors.lm_username" />
                                 </div>
 
                                 <div>
-                                    <dt class="text-xs text-gray-500 dark:text-gray-400 uppercase">Telegram Notification</dt>
-                                    <dd class="mt-1 text-sm font-medium text-gray-900 dark:text-white">
-                                        <span v-if="account?.telegram_chat_id" class="text-green-600 dark:text-green-400 flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                                            In Use ({{ maskString(account.telegram_chat_id) }})
-                                        </span>
-                                        <span v-else class="text-red-500 text-xs">Not Configured</span>
-                                    </dd>
+                                    <InputLabel for="lm_password" value="Logam Mulia Password" />
+                                    <TextInput
+                                        id="lm_password"
+                                        type="password"
+                                        class="mt-1 block w-full text-sm"
+                                        v-model="form.lm_password"
+                                        :placeholder="account?.has_password ? 'Saved (Leave blank to keep)' : 'Enter Password'"
+                                    />
+                                    <InputError class="mt-2" :message="form.errors.lm_password" />
                                 </div>
-                            </dl>
 
-                            <div class="mt-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-100 dark:border-yellow-800">
-                                <p class="text-xs text-yellow-800 dark:text-yellow-200">
-                                    <strong>Need Changes?</strong><br>
-                                    For security and stability, configuration changes are handled by our admin team.
+                                <div>
+                                    <InputLabel for="telegram_chat_id" value="Telegram Chat ID" />
+                                    <div class="flex gap-2">
+                                        <TextInput
+                                            id="telegram_chat_id"
+                                            type="text"
+                                            class="mt-1 block w-full text-sm"
+                                            v-model="form.telegram_chat_id"
+                                            placeholder="Ex: 5195571609"
+                                        />
+                                        <SecondaryButton @click.prevent="openGuide" class="mt-1 px-2" title="How to get ID?">
+                                            ?
+                                        </SecondaryButton>
+                                    </div>
+                                    <InputError class="mt-2" :message="form.errors.telegram_chat_id" />
+                                    <p v-if="account?.telegram_chat_id" class="text-xs text-green-600 dark:text-green-400 mt-1">
+                                        Currently active: {{ maskString(account.telegram_chat_id) }}
+                                    </p>
+                                </div>
+
+                                <div class="pt-4 border-t dark:border-gray-700">
+                                    <PrimaryButton class="w-full justify-center" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                                        Save Configuration
+                                    </PrimaryButton>
+                                </div>
+                            </form>
+
+                            <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                                <p class="text-[10px] text-blue-800 dark:text-blue-200">
+                                    <strong>Note:</strong> Changes may require Admin approval. Ensure your Logam Mulia credentials are correct to avoid account locking.
                                 </p>
-                                <button @click="contactAdmin" class="mt-3 w-full inline-flex justify-center items-center px-4 py-2 bg-operra-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-operra-500 focus:bg-operra-500 active:bg-operra-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Contact Admin / Support
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -141,6 +195,24 @@ onMounted(() => {
 
             </div>
         </div>
+        <!-- Help Modal -->
+        <Modal :show="showGuide" @close="showGuide = false">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    How to get Telegram Chat ID
+                </h2>
+                <ol class="list-decimal list-inside space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>Open Telegram app.</li>
+                    <li>Search for <strong>@userinfobot</strong>.</li>
+                    <li>Start a chat with the bot.</li>
+                    <li>Copy the number labeled as <strong>Id</strong>.</li>
+                    <li>Paste it into the configuration field.</li>
+                </ol>
+                <div class="mt-6 flex justify-end">
+                    <SecondaryButton @click="showGuide = false">Close</SecondaryButton>
+                </div>
+            </div>
+        </Modal>
     </AuthenticatedLayout>
 </template>
 

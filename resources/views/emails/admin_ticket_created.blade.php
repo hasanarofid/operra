@@ -6,7 +6,7 @@
 
 {{ $messageContent }}
 
-<x-mail::button :url="route('admin.bot_antam.tickets.show', $ticket->id)">
+<x-mail::button :url="route('admin.tickets.show', $ticket->id)">
 View Ticket
 </x-mail::button>
 

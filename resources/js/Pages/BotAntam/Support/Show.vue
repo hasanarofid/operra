@@ -59,14 +59,14 @@ const submitReply = () => {
                     <div ref="messagesContainer" class="flex-1 p-6 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900">
                         <div v-for="msg in ticket.messages" :key="msg.id" 
                              class="flex flex-col max-w-[80%]"
-                             :class="msg.user_id === $page.props.auth.user.id ? 'self-end items-end' : 'self-start items-start'">
+                             :class="msg.user_id == $page.props.auth.user.id ? 'self-end items-end' : 'self-start items-start'">
                             
                             <div class="p-3 rounded-lg shadow-sm"
-                                 :class="msg.user_id === $page.props.auth.user.id ? 'bg-operra-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200'">
+                                 :class="msg.user_id == $page.props.auth.user.id ? 'bg-operra-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200'">
                                 <p class="whitespace-pre-wrap text-sm">{{ msg.message }}</p>
                             </div>
                             <span class="text-[10px] text-gray-400 mt-1">
-                                {{ msg.user_id === $page.props.auth.user.id ? 'You' : 'Admin' }} • {{ new Date(msg.created_at).toLocaleString() }}
+                                {{ msg.user_id == $page.props.auth.user.id ? 'You' : (msg.user?.name ?? 'Admin') }} • {{ new Date(msg.created_at).toLocaleString() }}
                             </span>
                         </div>
                     </div>

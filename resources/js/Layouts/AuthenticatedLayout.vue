@@ -567,6 +567,20 @@ onUnmounted(() => {
                     </span>
                 </Link>
             </li>
+            <li v-if="hasRole('super-admin') && $page.props.auth.user.company?.is_system_owner" class="items-center">
+                <Link :href="route('admin.tickets.index')" 
+                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                    :class="route().current('admin.tickets.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                    Support Inbox
+                </Link>
+            </li>
+            <li v-if="hasRole('super-admin') && $page.props.auth.user.company && $page.props.auth.user.company.is_system_owner" class="items-center">
+                <Link :href="route('bot-antam-accounts.index')" 
+                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                    :class="route().current('bot-antam-accounts.*') ? 'text-operra-500' : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'">
+                    Manage Bot Travelers
+                </Link>
+            </li>
             <li v-if="hasRole('super-admin') || hasRole('manager')" class="items-center">
               <Link
                 :href="route('settings.index')"

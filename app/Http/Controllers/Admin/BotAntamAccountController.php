@@ -67,4 +67,14 @@ class BotAntamAccountController extends Controller
 
         return redirect()->back()->with('success', 'Bot account updated successfully.');
     }
+    public function logs($id)
+    {
+        $logs = DB::table('bot_antam_logs')
+            ->where('bot_antam_account_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        return response()->json($logs);
+    }
 }
