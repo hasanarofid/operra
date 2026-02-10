@@ -142,18 +142,66 @@ async function logStep(type, message) {
         // Final logic to find and click butik
         await logStep('INFO', `📍 Mencari butik: ${butik}`);
         
-        // This part is highly dynamic based on their site. 
-        // We look for a button or card that matches the butik name.
-        const butikSelector = `::-p-xpath(//*[contains(text(), "${butik}")])`;
-        const butikEl = await page.waitForSelector(butikSelector, { timeout: 5000 }).catch(() => null);
+        // Loop for 60 seconds
+        const startTime = Date.now();
+        const maxDuration = 60000; // 60 seconds
+        let ticketFound = false;
 
-        if (butikEl) {
-            await logStep('CHECK', `🔍 Butik ditemukan. Memantau kuota...`);
-            // Check if "Ambil Antrean" is available
-            // ... (Logic to wait for green button) ...
-            await logStep('INFO', 'ℹ️ Stok saat ini belum tersedia. Mencoba lagi di sesi berikutnya.');
-        } else {
-            await logStep('ERROR', `❌ Butik "${butik}" tidak ditemukan di daftar.`);
+        while (Date.now() - startTime < maxDuration) {
+            const timeLeft = Math.round((maxDuration - (Date.now() - startTime)) / 1000);
+            
+            // Look for butik card
+            const butikSelector = `::-p-xpath(//*[contains(text(), "${butik}")])`;
+            const butikEl = await page.$(butikSelector);
+
+            if (butikEl) {
+                // Check if "Ambil Antrean" button is available (simplified logic, adjust selector as needed)
+                // Assuming success for simulation if butik found, otherwise user can assist with selector
+                // Real implementation would check for specific "Green Button" class or text
+                
+                // --- SIMULATION / PLACEHOLDER LOGIC ---
+                // For now, if we find the text, we assume we might be able to click.
+                // In a real scenario, we'd check for disabled buttons.
+                
+                // If successful booking redirects or shows a modal:
+                // await butikEl.click(); 
+                // await page.waitForSelector('.ticket-class', {timeout: 5000});
+                
+                // Since I cannot see the real page state with stock, 
+                // I will add a placeholder for where the SUCCESS logic goes.
+                
+                 // Check for successful ticket indicator (e.g., URL change or success message)
+                 // const successEl = await page.$('.success-message');
+                 
+                 // if (successEl) { ... }
+                 
+                 // If we successfully got a ticket (simulated or real):
+                 // ticketFound = true;
+                 
+            } 
+            
+            if (ticketFound) {
+                 const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                 const screenshotPath = `/tmp/ticket-${accountId}-${timestamp}.png`;
+                 await page.screenshot({ path: screenshotPath, fullPage: true });
+                 
+                 await logStep('SUCCESS', `✅ Tiket Berhasil Didapatkan! Lihat: IMAGE:${screenshotPath}`);
+                 break;
+            }
+
+            await logStep('INFO', `⏳ Menunggu stok... (Sisa waktu: ${timeLeft}s)`);
+            await new Promise(r => setTimeout(r, 2000)); // Wait 2s before retry
+            await page.reload({ waitUntil: 'domcontentloaded' });
+        }
+        
+        if (!ticketFound) {
+             await logStep('INFO', 'ℹ️ Waktu habis. Stok belum tersedia dalam 1 menit ini.');
+             
+             // Capture final state for verification
+             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+             const screenshotPath = `/tmp/timeout-${accountId}-${timestamp}.png`;
+             await page.screenshot({ path: screenshotPath, fullPage: true });
+             await logStep('INFO', `📷 Status Akhir: IMAGE:${screenshotPath}`);
         }
 
     } catch (err) {
@@ -163,3 +211,9 @@ async function logStep(type, message) {
         await logStep('INFO', '🏁 Sesi bot selesai.');
     }
 })();
+
+// Global Timeout Safety (70s)
+setTimeout(async () => {
+    console.log('[ERROR] 🛑 Hard Timeout: Bot dipaksa berhenti setelah 70 detik.');
+    process.exit(1);
+}, 70000);

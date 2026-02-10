@@ -74,14 +74,27 @@ class BotAntamCheck extends Command
                     foreach ($lines as $line) {
                         if (empty($line)) continue;
                         
-                        // Parse [TYPE] Message
+                            // Parse [TYPE] Message
                         if (preg_match('/^\[(INFO|SUCCESS|ERROR|CHECK|FOUND)\] (.*)$/', $line, $matches)) {
-                            $this->logEvent($account->id, $matches[1], $matches[2]);
+                            $type = $matches[1];
+                            $message = $matches[2];
+                            
+                            $this->logEvent($account->id, $type, $message);
                             
                             // Send Telegram on success
-                            if ($matches[1] === 'SUCCESS' && str_contains($matches[2], 'Tiket')) {
-                                if ($account->telegram_chat_id) {
-                                    $this->sendTelegram($account->telegram_chat_id, "🚀 <b>BOT NOTIFICATION</b>\n\n🎯 <b>{$matches[2]}</b>\n\nLokasi: <b>{$account->target_butik}</b>\nUsername: <b>{$account->lm_username}</b>");
+                            if ($type === 'SUCCESS') {
+                                // Check if message contains image path
+                                if (preg_match('/IMAGE:(.*)$/', $message, $imgMatches)) {
+                                    $imagePath = trim($imgMatches[1]);
+                                    $cleanMessage = str_replace("IMAGE:$imagePath", "", $message);
+                                    
+                                    if ($account->telegram_chat_id) {
+                                        $this->sendTelegramPhoto($account->telegram_chat_id, $cleanMessage, $imagePath);
+                                    }
+                                } elseif (str_contains($message, 'Tiket')) {
+                                    if ($account->telegram_chat_id) {
+                                        $this->sendTelegram($account->telegram_chat_id, "🚀 <b>BOT NOTIFICATION</b>\n\n🎯 <b>{$message}</b>\n\nLokasi: <b>{$account->target_butik}</b>\nUsername: <b>{$account->lm_username}</b>");
+                                    }
                                 }
                             }
                         } else {
@@ -132,6 +145,33 @@ class BotAntamCheck extends Command
             }
         } catch (\Exception $e) {
             $this->error("Exception sending Telegram: " . $e->getMessage());
+        }
+    }
+
+    private function sendTelegramPhoto($chatId, $caption, $imagePath)
+    {
+        $token = env('TELEGRAM_BOT_TOKEN');
+        
+        if (!$token || !file_exists($imagePath)) {
+            $this->error("TELEGRAM_BOT_TOKEN missing or Image not found: $imagePath");
+            return;
+        }
+
+        try {
+            $response = Http::attach(
+                'photo', file_get_contents($imagePath), 'ticket.png'
+            )->post("https://api.telegram.org/bot{$token}/sendPhoto", [
+                'chat_id' => $chatId,
+                'caption' => $caption
+            ]);
+
+            if ($response->successful()) {
+                $this->info("Telegram Photo sent to $chatId");
+            } else {
+                $this->error("Failed to send Telegram Photo: " . $response->body());
+            }
+        } catch (\Exception $e) {
+            $this->error("Exception sending Telegram Photo: " . $e->getMessage());
         }
     }
 }
