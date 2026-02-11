@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified', 'role:super-admin', 'system_owner'])->gro
     // System Monitoring Routes (Super Admin Operra)
     Route::get('/admin/monitoring/companies', [\App\Http\Controllers\Admin\SystemAdminController::class, 'index'])->name('admin.system.companies.index');
     Route::patch('/admin/monitoring/companies/{company}', [\App\Http\Controllers\Admin\SystemAdminController::class, 'updateSubscription'])->name('admin.system.companies.update');
+    Route::get('/admin/monitoring/webhooks', [\App\Http\Controllers\Admin\WebhookMonitorController::class, 'index'])->name('admin.monitoring.webhooks');
 
     // Bot Antam Accounts Management (Super Admin)
     Route::get('admin/bot-antam-accounts/{id}/logs', [BotAntamAccountController::class, 'logs'])->name('admin.bot-antam-accounts.logs');
