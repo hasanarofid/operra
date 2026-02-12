@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DashboardController extends Controller
 {
@@ -60,6 +61,53 @@ class DashboardController extends Controller
                 'active_automations' => \App\Models\MarketingAutomation::where('company_id', $user->company_id)->where('is_active', true)->count(),
                 'recent_campaigns' => \App\Models\MarketingCampaign::where('company_id', $user->company_id)->latest()->limit(5)->get(),
                 'top_leads' => (clone $leadsQuery)->orderBy('lead_score', 'desc')->limit(5)->get(),
+            ];
+        }
+
+        if ($portal === 'sales_crm') {
+            $stats = [
+                'total_customers' => (clone $leadsQuery)->count(),
+                'total_orders' => \App\Models\Order::where('company_id', $user->company_id)->count(),
+                'new_orders_today' => \App\Models\Order::where('company_id', $user->company_id)->whereDate('created_at', $today)->count(),
+                'revenue_this_month' => \App\Models\Order::where('company_id', $user->company_id)
+                    ->where('status', 'completed')
+                    ->whereMonth('created_at', now()->month)
+                    ->sum('total_amount'),
+                'recent_orders' => \App\Models\Order::where('company_id', $user->company_id)
+                    ->latest()
+                    ->limit(5)
+                    ->get(),
+                'customer_growth' => (clone $leadsQuery)->where('created_at', '>=', $weekAgo)->count(),
+                'low_stock_count' => \App\Models\Product::where('company_id', $user->company_id)
+                    ->withSum('stockMovements as current_stock', 'quantity')
+                    ->get()
+                    ->filter(function($product) {
+                        return ($product->current_stock ?? 0) < $product->min_stock;
+                    })
+                    ->count(),
+                'top_selling_products' => \App\Models\Product::where('company_id', $user->company_id)
+                    ->select('products.*')
+                    ->join('stock_movements', 'products.id', '=', 'stock_movements.product_id')
+                    ->where('stock_movements.quantity', '<', 0) // Negative means outgoing/sold
+                    ->selectRaw('SUM(ABS(stock_movements.quantity)) as total_sold')
+                    ->groupBy('products.id')
+                    ->orderBy('total_sold', 'desc')
+                    ->limit(5)
+                    ->get(),
+                'order_status_distribution' => \App\Models\Order::where('company_id', $user->company_id)
+                    ->select('status', DB::raw('count(*) as count'))
+                    ->groupBy('status')
+                    ->get(),
+                'revenue_weekly_trend' => collect(range(6, 0))->map(function ($days) use ($user) {
+                    $date = Carbon::today()->subDays($days);
+                    return [
+                        'date' => $date->format('Y-m-d'),
+                        'revenue' => \App\Models\Order::where('company_id', $user->company_id)
+                            ->where('status', 'completed')
+                            ->whereDate('created_at', $date)
+                            ->sum('total_amount')
+                    ];
+                }),
             ];
         }
 

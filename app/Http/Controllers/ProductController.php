@@ -10,15 +10,30 @@ class ProductController extends Controller
 {
     public function index()
     {
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
         $products = Product::latest()->paginate(10);
         return Inertia::render('Master/Products/Index', [
-            'products' => $products
+            'products' => $products,
+            'route_names' => [
+                'index' => "$routePrefix.index",
+                'create' => "$routePrefix.create",
+                'edit' => "$routePrefix.edit",
+                'store' => "$routePrefix.store",
+                'update' => "$routePrefix.update",
+                'destroy' => "$routePrefix.destroy",
+            ]
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Master/Products/Create');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return Inertia::render('Master/Products/Create', [
+            'route_names' => [
+                'index' => "$routePrefix.index",
+                'store' => "$routePrefix.store",
+            ]
+        ]);
     }
 
     public function store(Request $request)
@@ -33,13 +48,19 @@ class ProductController extends Controller
 
         Product::create($request->all());
 
-        return redirect()->route('master.products.index')->with('message', 'Product created successfully.');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return redirect()->route("$routePrefix.index")->with('message', 'Product created successfully.');
     }
 
     public function edit(Product $product)
     {
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
         return Inertia::render('Master/Products/Edit', [
-            'product' => $product
+            'product' => $product,
+            'route_names' => [
+                'index' => "$routePrefix.index",
+                'update' => "$routePrefix.update",
+            ]
         ]);
     }
 
@@ -55,12 +76,14 @@ class ProductController extends Controller
 
         $product->update($request->all());
 
-        return redirect()->route('master.products.index')->with('message', 'Product updated successfully.');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return redirect()->route("$routePrefix.index")->with('message', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('master.products.index')->with('message', 'Product deleted successfully.');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return redirect()->route("$routePrefix.index")->with('message', 'Product deleted successfully.');
     }
 }

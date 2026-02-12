@@ -2,6 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
+const props = defineProps({
+    route_names: Object
+});
+
 const form = useForm({
     name: '',
     sku: '',
@@ -12,7 +16,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('master.products.store'));
+    form.post(route(props.route_names.store));
 };
 </script>
 
@@ -63,7 +67,7 @@ const submit = () => {
                                 <button type="submit" :disabled="form.processing" class="bg-operra-500 text-white px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-operra-600 transition-all duration-150">
                                     Save Product
                                 </button>
-                                <Link :href="route('master.products.index')" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 transition-all duration-150">
+                                <Link :href="route(route_names.index)" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-bold uppercase text-xs shadow hover:bg-gray-300 transition-all duration-150">
                                     Cancel
                                 </Link>
                             </div>

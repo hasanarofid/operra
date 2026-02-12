@@ -267,12 +267,12 @@ onUnmounted(() => {
 
                     <!-- Middle: Brand -->
                     <Link
-                        class="flex items-center gap-2 text-gray-800 dark:text-gray-100"
+                        class="flex items-center gap-1 text-gray-600 dark:text-gray-200"
                         :href="route('dashboard')"
                     >
-                        <ApplicationLogo class="h-10 w-auto" />
+                        <ApplicationLogo class="h-7 w-auto" />
                         <span
-                            class="text-operra-600 dark:text-operra-400 font-black tracking-tighter text-2xl"
+                            class="text-operra-600 dark:text-operra-400 font-black tracking-tighter text-lg"
                             >OPERRA</span
                         >
                     </Link>
@@ -400,10 +400,10 @@ onUnmounted(() => {
                         class="hidden md:block text-left md:pb-2 text-gray-600 dark:text-gray-200 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
                         :href="route('dashboard')"
                     >
-                        <div class="flex items-center gap-3">
-                            <ApplicationLogo class="h-14 w-auto" />
+                        <div class="flex items-center gap-2">
+                            <ApplicationLogo class="h-8 w-auto" />
                             <span
-                                class="text-operra-600 dark:text-operra-400 font-black text-xl"
+                                class="text-operra-600 dark:text-operra-400 font-black"
                                 >OPERRA</span
                             >
                         </div>
@@ -416,34 +416,32 @@ onUnmounted(() => {
                                 ?.length > 1
                         "
                         :href="route('dashboard')"
-                        class="mt-1 md:mt-2 mb-3 md:mb-4 px-3 md:px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-2xl flex items-center justify-between group hover:bg-white dark:hover:bg-gray-800 transition-all border border-gray-100 dark:border-gray-700 hover:border-operra-200 hover:shadow-lg hover:shadow-operra-500/5 shadow-sm md:shadow-none"
+                        class="mt-1 md:mt-2 mb-3 md:mb-4 px-3 md:px-4 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-between group hover:bg-operra-50 dark:hover:bg-operra-900/20 transition-all border border-gray-100 dark:border-gray-700 hover:border-operra-200 shadow-sm md:shadow-none"
                     >
                         <div class="flex flex-col">
                             <span
-                                class="text-[9px] uppercase font-black text-gray-400 group-hover:text-operra-500 transition-colors tracking-widest leading-none mb-1.5"
-                                >Active Application</span
+                                class="text-[9px] md:text-[10px] uppercase font-black text-gray-400 group-hover:text-operra-400 transition-colors tracking-widest leading-none mb-1"
+                                >Active App</span
                             >
                             <span
-                                class="text-xs md:text-sm font-black text-gray-800 dark:text-gray-200"
+                                class="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-200"
                             >
                                 {{ getPortalName(currentPortal) }}
                             </span>
                         </div>
-                        <div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-operra-100 dark:group-hover:bg-operra-900 group-hover:text-operra-600 transition-all">
-                            <svg
-                                class="w-3.5 h-3.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="3"
-                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                                ></path>
-                            </svg>
-                        </div>
+                        <svg
+                            class="w-4 h-4 text-gray-400 group-hover:text-operra-500 transition-colors"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                            ></path>
+                        </svg>
                     </Link>
                 </div>
                 <!-- Collapse -->
@@ -714,19 +712,6 @@ onUnmounted(() => {
                                     Sales Orders
                                 </Link>
                             </li>
-                            <li class="items-center">
-                                <Link
-                                    :href="route('crm.sales.products.index')"
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                                    :class="
-                                        route().current('crm.sales.products.*')
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
-                                    "
-                                >
-                                    Stok Produk
-                                </Link>
-                            </li>
                         </template>
 
                         <!-- Marketing CRM Module Links -->
@@ -945,6 +930,12 @@ onUnmounted(() => {
                                 currentPortal === 'analytical_crm'
                             "
                         >
+                            <hr class="my-4 md:min-w-full" />
+                            <h6
+                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                            >
+                                Analytics Portal
+                            </h6>
                             <li class="items-center">
                                 <span
                                     class="text-xs uppercase py-2 font-bold block text-gray-400 italic"
@@ -952,27 +943,6 @@ onUnmounted(() => {
                                 >
                             </li>
                         </template>
-
-                        <!-- Global Support Link (Komplain) -->
-                        <hr class="my-4 md:min-w-full" />
-                        <h6
-                            class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
-                        >
-                            Pusat Bantuan
-                        </h6>
-                        <li class="items-center">
-                            <Link
-                                :href="route('support.index')"
-                                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
-                                :class="
-                                    route().current('support.*')
-                                        ? 'text-operra-500'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
-                                "
-                            >
-                                Komplain / Bantuan
-                            </Link>
-                        </li>
                     </ul>
 
                     <!-- Divider -->

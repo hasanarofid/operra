@@ -2,71 +2,104 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SupportTicket;
-use App\Models\SupportKnowledgeBase;
-use App\Models\ChatSession;
 use Illuminate\Http\Request;
+use App\Models\AdminTicket;
+use App\Models\AdminTicketMessage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\AdminTicketCreated;
 use Inertia\Inertia;
 
 class SupportController extends Controller
 {
-    public function dashboard()
+    public function index()
     {
-        $weekAgo = now()->subDays(7);
-        $chartData = \App\Models\Customer::select(
-                \Illuminate\Support\Facades\DB::raw('DATE(created_at) as date'),
-                \Illuminate\Support\Facades\DB::raw('count(*) as count')
-            )
-            ->where('created_at', '>=', $weekAgo)
-            ->groupBy('date')
-            ->orderBy('date')
+        $tickets = AdminTicket::where('user_id', Auth::id())
+            ->with(['messages' => function($q) {
+                $q->latest()->limit(1);
+            }])
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        $formattedChartData = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $existing = $chartData->firstWhere('date', $date);
-            $formattedChartData[] = [
-                'date' => $date,
-                'count' => $existing ? $existing->count : rand(5, 15) // Dummy if 0
-            ];
+        return Inertia::render('Support/Index', [
+            'tickets' => $tickets
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+            'priority' => 'required|in:low,normal,high,urgent',
+        ]);
+
+        $ticket = AdminTicket::create([
+            'user_id' => Auth::id(),
+            'company_id' => Auth::user()->company_id,
+            'subject' => $request->subject,
+            'status' => 'open',
+            'priority' => $request->priority,
+        ]);
+
+        AdminTicketMessage::create([
+            'admin_ticket_id' => $ticket->id,
+            'user_id' => Auth::id(),
+            'message' => $request->message,
+        ]);
+
+        // Notify Admin
+        $adminEmail = 'operra@gmail.com'; 
+        try {
+            Mail::to($adminEmail)->send(new AdminTicketCreated($ticket, $request->message));
+        } catch (\Exception $e) {
+            // Log error but don't stop the flow
+            \Log::error("Failed to send support email: " . $e->getMessage());
         }
 
-        return Inertia::render('Support/Dashboard', [
-            'stats' => [
-                'open_tickets' => SupportTicket::where('status', 'open')->count(),
-                'urgent_tickets' => SupportTicket::where('priority', 'urgent')->count(),
-                'resolved_today' => SupportTicket::where('status', 'resolved')->whereDate('resolved_at', now())->count(),
-                'avg_response_time' => '1.2h', // Dummy
-                'recent_tickets' => SupportTicket::with('customer')->latest()->limit(5)->get(),
-                'recent_articles' => SupportKnowledgeBase::latest()->limit(5)->get(),
-            ],
-            'chartData' => $formattedChartData,
-            'userRole' => auth()->user()->getRoleNames()->first(),
-            'recentLeads' => [], // Avoid undefined
-            'recentChats' => [], // Avoid undefined
-            'waAccounts' => [], // Avoid undefined
+        return redirect()->back()->with('message', 'Laporan komplain Anda telah terkirim.');
+    }
+
+    public function show($id)
+    {
+        $ticket = AdminTicket::where('id', $id)
+            ->where('company_id', Auth::user()->company_id)
+            // If they are admin of their company, they can see all tickets? 
+            // The prompt says "seperti di portal war bot", which usually means personal or company-wide.
+            // Let's stick to their own or company's if they have role super-admin in their company.
+            ->with(['messages.user', 'user'])
+            ->firstOrFail();
+
+        return Inertia::render('Support/Show', [
+            'ticket' => $ticket
         ]);
     }
 
-    public function tickets()
+    public function reply(Request $request, $id)
     {
-        return Inertia::render('Support/Tickets/Index', [
-            'tickets' => SupportTicket::with(['customer', 'assignedUser'])->latest()->paginate(10)
+        $request->validate([
+            'message' => 'required|string',
         ]);
-    }
 
-    public function knowledgeBase()
-    {
-        return Inertia::render('Support/KnowledgeBase/Index', [
-            'articles' => SupportKnowledgeBase::latest()->paginate(10)
-        ]);
-    }
+        $ticket = AdminTicket::where('id', $id)->firstOrFail();
 
-    public function chatHistory()
-    {
-        return Inertia::render('Support/ChatHistory/Index', [
-            'sessions' => ChatSession::with(['customer', 'assignedUser'])->latest()->paginate(10)
+        AdminTicketMessage::create([
+            'admin_ticket_id' => $ticket->id,
+            'user_id' => Auth::id(),
+            'message' => $request->message,
         ]);
+
+        $ticket->update(['status' => 'pending_admin']);
+
+        // Notify Admin
+        $adminEmail = 'operra@gmail.com';
+        try {
+            Mail::to($adminEmail)->send(new AdminTicketCreated($ticket, $request->message));
+        } catch (\Exception $e) {
+            \Log::error("Failed to send support reply email: " . $e->getMessage());
+        }
+
+        return redirect()->back()->with('message', 'Pesan balasan terkirim.');
     }
 }

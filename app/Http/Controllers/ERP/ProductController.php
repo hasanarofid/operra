@@ -11,14 +11,30 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return Inertia::render('ERP/Master/Products/Index', [
-            'products' => Product::latest()->paginate(10)
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        
+        return Inertia::render('Master/Products/Index', [
+            'products' => Product::latest()->paginate(10),
+            'route_names' => [
+                'index' => "$routePrefix.index",
+                'create' => "$routePrefix.create",
+                'edit' => "$routePrefix.edit",
+                'store' => "$routePrefix.store",
+                'update' => "$routePrefix.update",
+                'destroy' => "$routePrefix.destroy",
+            ]
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('ERP/Master/Products/Create');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return Inertia::render('Master/Products/Create', [
+            'route_names' => [
+                'index' => "$routePrefix.index",
+                'store' => "$routePrefix.store",
+            ]
+        ]);
     }
 
     public function store(Request $request)
@@ -31,12 +47,20 @@ class ProductController extends Controller
 
         Product::create($request->all());
 
-        return redirect()->route('master.products.index')->with('message', 'Product created.');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return redirect()->route("$routePrefix.index")->with('message', 'Product created.');
     }
 
     public function edit(Product $product)
     {
-        return Inertia::render('ERP/Master/Products/Edit', ['product' => $product]);
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return Inertia::render('Master/Products/Edit', [
+            'product' => $product,
+            'route_names' => [
+                'index' => "$routePrefix.index",
+                'update' => "$routePrefix.update",
+            ]
+        ]);
     }
 
     public function update(Request $request, Product $product)
@@ -49,12 +73,14 @@ class ProductController extends Controller
 
         $product->update($request->all());
 
-        return redirect()->route('master.products.index')->with('message', 'Product updated.');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return redirect()->route("$routePrefix.index")->with('message', 'Product updated.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('master.products.index')->with('message', 'Product deleted.');
+        $routePrefix = request()->is('crm-sales/*') ? 'crm.sales.products' : 'master.products';
+        return redirect()->route("$routePrefix.index")->with('message', 'Product deleted.');
     }
 }

@@ -17,6 +17,9 @@ Route::post('/request-custom-crm', [LandingPageController::class, 'submitRequest
 Route::get('/privacy-policy', [LandingPageController::class, 'privacyPolicy'])->name('privacy.policy');
 Route::get('/terms-of-service', [LandingPageController::class, 'termsOfService'])->name('terms.service');
 
+use App\Http\Controllers\PublicTrackingController;
+Route::get('/track-order/{token?}', [PublicTrackingController::class, 'index'])->name('public.tracking');
+
 Route::get('/link-storage', function () {
     try {
         if (file_exists(public_path('storage'))) {
@@ -62,6 +65,15 @@ Route::middleware(['auth', 'verified', 'role:super-admin', 'system_owner'])->gro
     Route::get('/admin/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])->name('admin.tickets.show');
     Route::post('/admin/tickets/{id}/reply', [\App\Http\Controllers\Admin\TicketController::class, 'reply'])->name('admin.tickets.reply');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Global Komplain / Support system
+    Route::get('/komplain', [App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
+    Route::post('/komplain', [App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
+    Route::get('/komplain/{id}', [App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
+    Route::post('/komplain/{id}/reply', [App\Http\Controllers\SupportController::class, 'reply'])->name('support.reply');
+});
+
 Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/onboarding/complete', function () {

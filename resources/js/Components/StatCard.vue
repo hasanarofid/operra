@@ -31,7 +31,7 @@ defineProps({
                 </div>
                 <div class="relative w-auto shrink-0">
                     <div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-inner rounded-2xl"
-                         :class="alert ? 'bg-red-500 shadow-red-200/50' : 'bg-gradient-to-br from-operra-500 to-indigo-600 shadow-operra-200/50'">
+                         :class="alert ? 'bg-red-500 shadow-red-200/50' : 'bg-gradient-to-br from-operra-500 to-cyan-500 shadow-operra-200/50'">
                         <slot name="icon"></slot>
                     </div>
                 </div>

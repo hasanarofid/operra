@@ -120,31 +120,14 @@ const chartOptions = {
         labels: { style: { colors: '#9ca3af' } }
     },
     yaxis: { labels: { style: { colors: '#9ca3af' } } },
-    colors: ['#4db9af'], // Logo Primary Teal
+    colors: ['#0ea5e9'],
     theme: { mode: 'dark' }
 };
 
-const series = computed(() => {
-    if (selectedModule.value === 'sales_crm' && props.stats.revenue_weekly_trend) {
-        return [{
-            name: 'Weekly Revenue',
-            data: props.stats.revenue_weekly_trend.map(d => d.revenue)
-        }];
-    }
-    return [{
-        name: 'Omnichannel Engagement',
-        data: props.chartData.map(d => d.count)
-    }];
-});
-
-const chartOptionsComputed = computed(() => {
-    const opts = JSON.parse(JSON.stringify(chartOptions));
-    if (selectedModule.value === 'sales_crm' && props.stats.revenue_weekly_trend) {
-        opts.xaxis.categories = props.stats.revenue_weekly_trend.map(d => d.date);
-        opts.yaxis.labels.formatter = (val) => 'Rp ' + val.toLocaleString('id-ID');
-    }
-    return opts;
-});
+const series = [{
+    name: 'New Leads',
+    data: props.chartData.map(d => d.count)
+}];
 </script>
 
 <template>
@@ -204,90 +187,33 @@ const chartOptionsComputed = computed(() => {
             </div>
 
             <!-- Grid Stats hanya muncul jika NOT launcher mode -->
-                <div v-if="!showLauncher" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <!-- Stat Cards for Omnichannel Overview -->
-                    <!-- Stat Cards for Sales CRM & Omnichannel Overview -->
-                    <template v-if="selectedModule === 'sales_crm'">
-                        <StatCard 
-                            title="Total Sales (Bulan Ini)" 
-                            :value="'Rp ' + (stats.revenue_this_month?.toLocaleString('id-ID') || 0)" 
-                            trend="+Rp 2.5M" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </template>
-                        </StatCard>
-                        <StatCard 
-                            title="Total Pelanggan" 
-                            :value="stats.total_customers" 
-                            :trend="'+' + stats.customer_growth + ' baru'" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                            </template>
-                        </StatCard>
-                        <StatCard 
-                            title="Total Pesanan" 
-                            :value="stats.total_orders" 
-                            :trend="stats.new_orders_today + ' hari ini'" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                            </template>
-                        </StatCard>
-                        <StatCard 
-                            title="Low Stock Alert" 
-                            :value="stats.low_stock_count + ' Produk'" 
-                            trend="Butuh Restock" 
-                            trendColor="text-red-500"
-                            :alert="stats.low_stock_count > 0"
-                            class="cursor-pointer hover:border-operra-500 transition-all"
-                            @click="router.get(route('crm.sales.products.index'))"
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                            </template>
-                        </StatCard>
-                    </template>
+            <div v-if="!showLauncher" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Stat Cards for WA & Sales -->
+                <template v-if="selectedModule !== 'marketing_crm' && selectedModule !== 'customer_service'">
+                    <StatCard title="Total Leads" :value="stats.total_leads">
+                        <template #icon>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        </template>
+                    </StatCard>
 
-                    <template v-if="selectedModule === 'wa_blast' || (!selectedModule && !showLauncher)">
-                        <StatCard 
-                            title="Engagement Rate" 
-                            value="68.2%" 
-                            trend="+2.4%" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                            </template>
-                        </StatCard>
-                        <StatCard 
-                            title="Email Fallback" 
-                            value="1,240" 
-                            trend="+15.0%" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            </template>
-                        </StatCard>
-                        <StatCard 
-                            title="Active Chats" 
-                            :value="stats.active_chats || 0" 
-                            trend="Live Now" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                            </template>
-                        </StatCard>
-                        <StatCard 
-                            title="System Status" 
-                            value="Optimal" 
-                            trend="All Green" 
-                        >
-                            <template #icon>
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                            </template>
-                        </StatCard>
-                    </template>
+                    <StatCard title="Active Chats" :value="stats.active_chats" :alert="stats.active_chats > 0">
+                        <template #icon>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                        </template>
+                    </StatCard>
+
+                    <StatCard title="New Leads Today" :value="stats.new_leads_today">
+                        <template #icon>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                        </template>
+                    </StatCard>
+
+                    <StatCard title="Messages Sent/Received" :value="stats.messages_today">
+                        <template #icon>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </template>
+                    </StatCard>
+                </template>
 
                 <!-- Stat Cards for Marketing CRM -->
                 <template v-if="selectedModule === 'marketing_crm'">
@@ -357,27 +283,21 @@ const chartOptionsComputed = computed(() => {
                     <div 
                         v-for="module in filteredModules" 
                         :key="module.id"
-                        @click="module.id === 'wa_blast' ? null : selectPortal(module.id)"
-                        :class="[
-                            'group cursor-pointer bg-white dark:bg-gray-800 rounded-[40px] p-8 md:p-10 shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-500 transform active:scale-95',
-                            module.id === 'wa_blast' ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:shadow-2xl hover:shadow-operra-500/10 hover:border-operra-500 hover:-translate-y-2'
-                        ]"
+                        @click="selectPortal(module.id)"
+                        class="group cursor-pointer bg-white dark:bg-gray-800 rounded-[32px] p-6 md:p-8 shadow-xl hover:shadow-2xl border-2 border-transparent hover:border-operra-500 transition-all duration-300 transform hover:-translate-y-2 active:scale-95"
                     >
-                        <div :class="module.color" class="h-16 w-16 md:h-20 md:w-20 rounded-[30px] flex items-center justify-center text-white mb-8 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                            <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div :class="module.color" class="h-14 w-14 md:h-16 md:w-16 rounded-2xl flex items-center justify-center text-white mb-5 md:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="module.icon"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl md:text-2xl font-black text-gray-900 dark:text-white mb-3 transition-colors uppercase tracking-tight" :class="module.id !== 'wa_blast' ? 'group-hover:text-operra-600' : ''">{{ module.name }}</h3>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm md:text-base leading-relaxed mb-8">
-                            {{ module.id === 'wa_blast' ? 'Fitur ini sedang dalam maintenance sistem.' : module.description }}
+                        <h3 class="text-lg md:text-xl font-bold text-gray-800 dark:text-white mb-2 group-hover:text-operra-500 transition-colors uppercase tracking-tight">{{ module.name }}</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs md:text-sm leading-relaxed mb-6">
+                            {{ module.description }}
                         </p>
-                        <div v-if="module.id !== 'wa_blast'" class="flex items-center text-operra-600 font-black text-xs md:text-sm group-hover:gap-3 transition-all uppercase tracking-widest">
-                            Masuk Portal 
-                            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7-7 7M3 12h18"></path></svg>
-                        </div>
-                        <div v-else class="flex items-center text-gray-400 font-black text-xs md:text-sm uppercase tracking-widest">
-                            Segera Hadir
+                        <div class="flex items-center text-operra-500 font-black text-[10px] md:text-sm group-hover:gap-2 transition-all uppercase tracking-widest">
+                            Masuk ke Portal 
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                         </div>
                     </div>
                 </div>
@@ -464,11 +384,12 @@ const chartOptionsComputed = computed(() => {
             <div class="flex flex-wrap mt-4 -mx-4">
                 <!-- Row content (Charts, Tables) - Show based on selected module or simplified for both -->
                 <div class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
-                    <!-- Recent Leads (Shared for Sales/WA) -->
-                    <div v-if="selectedModule === 'wa_blast'" class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
+                    <!-- Recent Leads (Shared for Sales/WA) or Campaigns (for Marketing) or Tickets (for Support) -->
+                    <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast'" class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
                         <div class="rounded-t mb-0 px-6 py-4 border-0 flex justify-between items-center">
                             <h3 class="font-bold text-lg text-gray-700 dark:text-gray-200">Recent Leads</h3>
-                            <Link :href="route('crm.wa.inbox')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Go to Inbox</Link>
+                            <Link v-if="selectedModule === 'sales_crm'" :href="route('crm.sales.customers.index')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Manage</Link>
+                            <Link v-else :href="route('crm.wa.inbox')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Go to Inbox</Link>
                         </div>
                         <div class="block w-full overflow-x-auto">
                             <table class="items-center w-full bg-transparent border-collapse">
@@ -491,45 +412,6 @@ const chartOptionsComputed = computed(() => {
                                     </tr>
                                     <tr v-if="recentLeads.length === 0">
                                         <td colspan="3" class="px-6 py-10 text-center text-gray-400 text-xs italic">Belum ada data leads.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Recent Orders (Sales CRM Only) -->
-                    <div v-if="selectedModule === 'sales_crm'" class="relative flex flex-col min-w-0 break-words bg-white dark:bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
-                        <div class="rounded-t mb-0 px-6 py-4 border-0 flex justify-between items-center">
-                            <h3 class="font-bold text-lg text-gray-700 dark:text-gray-200">Recent Sales Orders</h3>
-                            <Link :href="route('crm.sales.orders.index')" class="bg-operra-500 text-white text-xs font-bold uppercase px-4 py-2 rounded-lg">Manage Orders</Link>
-                        </div>
-                        <div class="block w-full overflow-x-auto">
-                            <table class="items-center w-full bg-transparent border-collapse">
-                                <thead>
-                                    <tr>
-                                        <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left">Order #</th>
-                                        <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left text-nowrap">Customer</th>
-                                        <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left">Amount</th>
-                                        <th class="px-6 bg-gray-50 dark:bg-gray-700 text-gray-500 py-3 text-xs uppercase font-bold text-left">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="order in stats.recent_orders" :key="order.id" class="border-t border-gray-100 dark:border-gray-700">
-                                        <td class="px-6 py-4 text-xs font-bold text-gray-700 dark:text-gray-200">{{ order.order_number }}</td>
-                                        <td class="px-6 py-4 text-xs text-gray-600 dark:text-gray-400">{{ order.customer_name }}</td>
-                                        <td class="px-6 py-4 text-xs font-bold text-gray-800 dark:text-white">Rp {{ order.total_amount?.toLocaleString('id-ID') }}</td>
-                                        <td class="px-6 py-4 text-xs">
-                                            <span :class="{
-                                                'bg-green-100 text-green-700': order.status === 'completed',
-                                                'bg-orange-100 text-orange-700': order.status === 'pending' || order.status === 'processing',
-                                                'bg-red-100 text-red-700': order.status === 'cancelled',
-                                            }" class="px-2 py-1 rounded-full font-bold uppercase tracking-wider text-[10px]">
-                                                {{ order.status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr v-if="!stats.recent_orders?.length">
-                                        <td colspan="4" class="px-6 py-10 text-center text-gray-400 text-xs italic">Belum ada data pesanan terbaru.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -611,82 +493,19 @@ const chartOptionsComputed = computed(() => {
                     <div v-if="selectedModule === 'sales_crm' || selectedModule === 'wa_blast' || selectedModule === 'marketing_crm'" class="relative flex flex-col min-w-0 break-words bg-gray-800 w-full mb-6 shadow-lg rounded-xl overflow-hidden">
                         <div class="rounded-t mb-0 px-6 py-4 bg-transparent">
                             <h6 class="uppercase text-gray-400 mb-1 text-xs font-bold tracking-widest">
-                                {{ selectedModule === 'sales_crm' ? 'Revenue Analytics' : (selectedModule === 'marketing_crm' ? 'Campaign Analytics' : 'Growth Analytics') }}
+                                {{ selectedModule === 'marketing_crm' ? 'Campaign Analytics' : 'Growth Analytics' }}
                             </h6>
                             <h2 class="text-white text-xl font-bold">
-                                {{ selectedModule === 'sales_crm' ? 'Revenue Trend (7 Days)' : (selectedModule === 'marketing_crm' ? 'Campaign Performance' : 'New Leads Trend') }}
+                                {{ selectedModule === 'marketing_crm' ? 'Campaign Performance' : 'New Leads Trend' }}
                             </h2>
                         </div>
                         <div class="p-4 flex-auto">
-                            <VueApexCharts height="350" :options="chartOptionsComputed" :series="series" />
+                            <VueApexCharts height="350" :options="chartOptions" :series="series" />
                         </div>
                     </div>
                 </div>
 
                 <div class="w-full xl:w-4/12 px-4">
-                     <!-- Quick Actions (Sales CRM) -->
-                     <div v-if="selectedModule === 'sales_crm'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-                        <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200">Quick Actions</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <Link :href="route('crm.sales.orders.create')" class="flex flex-col items-center justify-center p-4 bg-operra-50 dark:bg-operra-900/20 rounded-xl border border-operra-100 dark:border-operra-800 hover:border-operra-500 transition-all group">
-                                <div class="h-10 w-10 bg-operra-500 text-white rounded-lg flex items-center justify-center mb-2 shadow-lg group-hover:scale-110 transition-transform">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                                </div>
-                                <span class="text-[10px] font-black uppercase text-operra-700 dark:text-operra-400">New Order</span>
-                            </Link>
-                            <Link :href="route('crm.sales.customers.create')" class="flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 hover:border-blue-500 transition-all group">
-                                <div class="h-10 w-10 bg-blue-500 text-white rounded-lg flex items-center justify-center mb-2 shadow-lg group-hover:scale-110 transition-transform">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                                </div>
-                                <span class="text-[10px] font-black uppercase text-blue-700 dark:text-blue-400">Add Lead</span>
-                            </Link>
-                        </div>
-                     </div>
-
-                     <!-- Top Products (Sales CRM) -->
-                     <div v-if="selectedModule === 'sales_crm' && stats.top_selling_products?.length" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-lg text-gray-700 dark:text-gray-200 uppercase tracking-tighter">Top Selling Products</h3>
-                        </div>
-                        <div class="space-y-4">
-                            <div v-for="(product, index) in stats.top_selling_products" :key="product.id" class="flex items-center gap-3">
-                                <div class="h-8 w-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center font-black text-gray-500 text-xs">
-                                    {{ index + 1 }}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <p class="text-xs font-black text-gray-800 dark:text-white truncate">{{ product.name }}</p>
-                                        <span class="text-[10px] font-black text-operra-600 tracking-tighter">{{ product.total_sold }} Sold</span>
-                                    </div>
-                                    <div class="w-full bg-gray-100 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                                        <div 
-                                            class="bg-operra-500 h-full rounded-full transition-all duration-1000"
-                                            :style="{ width: (product.total_sold / stats.top_selling_products[0].total_sold * 100) + '%' }"
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                     </div>
-
-                     <!-- Order Distribution (Sales CRM) -->
-                     <div v-if="selectedModule === 'sales_crm' && stats.order_status_distribution?.length" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-                        <h3 class="font-bold text-lg mb-4 text-gray-700 dark:text-gray-200 uppercase tracking-tighter">Order Distribution</h3>
-                        <div class="space-y-3">
-                            <div v-for="status in stats.order_status_distribution" :key="status.status" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-transparent hover:border-operra-500/20 transition-all">
-                                <div class="flex items-center gap-3">
-                                    <div :class="{
-                                        'bg-orange-500': status.status === 'pending',
-                                        'bg-blue-500': status.status === 'processing',
-                                        'bg-green-500': status.status === 'completed',
-                                        'bg-red-500': status.status === 'cancelled',
-                                    }" class="h-2 w-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.1)]"></div>
-                                    <span class="text-[10px] font-black uppercase text-gray-600 dark:text-gray-300 tracking-widest">{{ status.status }}</span>
-                                </div>
-                                <span class="font-black text-xs text-gray-800 dark:text-white">{{ status.count }}</span>
-                            </div>
-                        </div>
-                     </div>
                      <!-- Your Package Info (WA Module) -->
                      <div v-if="selectedModule === 'wa_blast' && pricingPlan" class="bg-gradient-to-br from-operra-600 to-operra-800 text-white rounded-xl shadow-lg p-6 mb-6 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>

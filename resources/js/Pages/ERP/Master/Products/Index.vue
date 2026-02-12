@@ -2,8 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
-defineProps({
-    products: Object
+const props = defineProps({
+    products: Object,
+    route_names: Object
 });
 
 const formatCurrency = (value) => {
@@ -16,7 +17,7 @@ const formatCurrency = (value) => {
 
 const deleteProduct = (id) => {
     if (confirm('Are you sure?')) {
-        router.delete(route('master.products.destroy', id));
+        router.delete(route(props.route_names.destroy, id));
     }
 };
 </script>
@@ -38,7 +39,7 @@ const deleteProduct = (id) => {
                                 <h3 class="font-bold text-base text-gray-700 dark:text-gray-200">Products List</h3>
                             </div>
                             <div class="relative w-full px-4 max-w-full flex-grow flex-1 text-right">
-                                <Link :href="route('master.products.create')" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
+                                <Link :href="route(route_names.create)" class="bg-operra-500 text-white active:bg-operra-600 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 shadow hover:shadow-md">
                                     Add Product
                                 </Link>
                             </div>
@@ -62,7 +63,7 @@ const deleteProduct = (id) => {
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-gray-700 dark:text-gray-200">{{ formatCurrency(product.selling_price) }}</td>
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-gray-700 dark:text-gray-200">{{ product.min_stock }}</td>
                                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 flex gap-2">
-                                        <Link :href="route('master.products.edit', product.id)" class="text-indigo-500 hover:text-indigo-700 font-bold uppercase text-xs">Edit</Link>
+                                        <Link :href="route(route_names.edit, product.id)" class="text-indigo-500 hover:text-indigo-700 font-bold uppercase text-xs">Edit</Link>
                                         <button @click="deleteProduct(product.id)" class="text-red-500 hover:text-red-700 font-bold uppercase text-xs">Delete</button>
                                     </td>
                                 </tr>
