@@ -429,7 +429,9 @@ onUnmounted(() => {
                                 {{ getPortalName(currentPortal) }}
                             </span>
                         </div>
-                        <div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-operra-100 dark:group-hover:bg-operra-900 group-hover:text-operra-600 transition-all">
+                        <div
+                            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-operra-100 dark:group-hover:bg-operra-900 group-hover:text-operra-600 transition-all"
+                        >
                             <svg
                                 class="w-3.5 h-3.5"
                                 fill="none"
@@ -726,6 +728,15 @@ onUnmounted(() => {
                                 >
                                     Stok Produk
                                 </Link>
+                            </li>
+                            <li class="items-center">
+                                <a
+                                    :href="route('crm.sales.report')"
+                                    target="_blank"
+                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200 text-gray-700 dark:text-gray-300 hover:text-operra-500"
+                                >
+                                    Laporan Penjualan (PDF)
+                                </a>
                             </li>
                         </template>
 

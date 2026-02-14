@@ -55,7 +55,7 @@ class PortalDemoSeeder extends Seeder
             'name' => 'Demo Sales CRM',
             'status' => 'active',
             'enabled_modules' => ['sales_crm'],
-            'pricing_plan_id' => $plans->where('slug', 'pro')->first()?->id,
+            'pricing_plan_id' => $plans->where('slug', 'business-pro')->first()?->id,
             'subscription_ends_at' => now()->addMonths(6),
         ]);
 

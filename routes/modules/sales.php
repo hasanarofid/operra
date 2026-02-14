@@ -11,5 +11,7 @@ Route::middleware(['auth', 'tenant:sales_crm'])->group(function () {
     
     Route::resource('orders', OrderController::class)->names('crm.sales.orders');
     Route::resource('products', ProductController::class)->names('crm.sales.products');
+    
+    Route::get('report', [\App\Http\Controllers\ERP\ReportController::class, 'salesReport'])->name('crm.sales.report');
 });
 
