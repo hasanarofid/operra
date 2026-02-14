@@ -58,9 +58,9 @@ onMounted(() => {
                 </Link>
                 
                 <div class="hidden lg:flex items-center gap-10 text-sm font-semibold text-gray-600">
-                    <a href="#fitur" class="hover:text-operra-600 transition-colors">Fitur</a>
-                    <a href="#solusi" class="hover:text-operra-600 transition-colors">Solusi</a>
-                    <a href="#pricing" class="hover:text-operra-600 transition-colors">Harga</a>
+                    <Link :href="route('features')" class="hover:text-operra-600 transition-colors">Fitur</Link>
+                    <Link :href="route('solutions')" class="hover:text-operra-600 transition-colors">Solusi</Link>
+                    <Link :href="route('pricing')" class="hover:text-operra-600 transition-colors">Harga</Link>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -112,9 +112,9 @@ onMounted(() => {
                             <Link :href="route('register')" class="w-full sm:w-auto text-center rounded-full bg-operra-600 px-10 py-5 text-lg font-bold text-white shadow-2xl shadow-operra-600/30 hover:bg-operra-700 hover:-translate-y-1 transition-all">
                                 Mulai Sekarang — Gratis
                             </Link>
-                            <a href="#fitur" class="w-full sm:w-auto text-center rounded-full bg-white px-10 py-5 text-lg font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
+                            <Link :href="route('features')" class="w-full sm:w-auto text-center rounded-full bg-white px-10 py-5 text-lg font-bold text-gray-700 border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
                                 Pelajari Fitur
-                            </a>
+                            </Link>
                         </div>
                         
                         <div class="mt-12 flex items-center justify-center lg:justify-start gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
@@ -162,205 +162,40 @@ onMounted(() => {
                 </div>
             </section>
 
-            <!-- Fitur Section -->
-            <section id="fitur" class="py-24 bg-white relative overflow-hidden">
+            <!-- Simplified Feature Teaser -->
+            <section class="py-24 bg-white">
                 <div class="max-w-7xl mx-auto px-6">
-                    <div class="text-center max-w-3xl mx-auto mb-20">
-                        <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-operra-600 mb-4">Fitur Unggulan</h2>
-                        <h3 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-6">Omnichannel: Komunikasi yang Lebih Manusiawi</h3>
-                        <p class="text-gray-500 text-lg font-medium">
-                            Jangan biarkan pelanggan menunggu. Dengan Operra, semua saluran komunikasi berada di genggaman Anda.
-                        </p>
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-operra-600 mb-4">Solusi Menyeluruh</h2>
+                        <h3 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight mb-6">Satu Dashboard, Jutaan Kemungkinan</h3>
+                        <p class="text-gray-500 text-lg font-medium mb-10">Operra dirancang untuk menyederhanakan cara Anda mengelola pelanggan dan operasional bisnis.</p>
+                        <Link :href="route('features')" class="inline-flex items-center gap-2 text-operra-600 font-bold hover:gap-4 transition-all">
+                            Lihat Semua Fitur 
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </Link>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <!-- Card 1 -->
-                        <div class="group p-8 rounded-[40px] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl hover:border-operra-100 transition-all duration-500">
-                            <div class="h-16 w-16 rounded-2xl bg-operra-100 text-operra-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-4">Email Fallback</h4>
-                            <p class="text-gray-500 leading-relaxed font-medium">
-                                Kirim otomatis Invoice PDF dan notifikasi via Email saat WhatsApp sedang bermasalah. Bisnis tetap jalan, pelanggan tetap terinfokan.
-                            </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="rounded-3xl border border-gray-100 shadow-xl overflow-hidden bg-white p-4 group">
+                           <h4 class="text-sm font-bold text-gray-800 mb-4 px-2">Dashboard Analytics</h4>
+                           <img src="/images/app_preview_dashboard.png" alt="Preview Dashboard" class="w-full h-auto rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700" />
                         </div>
-
-                        <!-- Card 2 -->
-                        <div class="group p-8 rounded-[40px] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl hover:border-operra-100 transition-all duration-500">
-                            <div class="h-16 w-16 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-4">Tracking Portal</h4>
-                            <p class="text-gray-500 leading-relaxed font-medium">
-                                Berikan link pelacakan mandiri untuk pelanggan. Mereka bisa cek status pesanan, pembayaran, dan download invoice tanpa harus tanya CS.
-                            </p>
-                        </div>
-
-                        <!-- Card 3 -->
-                        <div class="group p-8 rounded-[40px] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl hover:border-operra-100 transition-all duration-500">
-                            <div class="h-16 w-16 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-4">Stock Alert</h4>
-                            <p class="text-gray-500 leading-relaxed font-medium">
-                                Notifikasi otomatis via Email ke Owner/Admin saat stok menipis. Jangan biarkan potensi penjualan hilang karena stok kosong.
-                            </p>
-                        </div>
-
-                        <!-- Card 4 -->
-                        <div class="group p-8 rounded-[40px] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl hover:border-operra-100 transition-all duration-500">
-                            <div class="h-16 w-16 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-4">Sales Analytics</h4>
-                            <p class="text-gray-500 leading-relaxed font-medium">
-                                Visualisasi data penjualan, ranking sales order, dan performa tim dalam grafik menarik. Keputusan bisnis jadi lebih terukur.
-                            </p>
-                        </div>
-
-                        <!-- Card 5 -->
-                        <div class="group p-8 rounded-[40px] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl hover:border-operra-100 transition-all duration-500">
-                            <div class="h-16 w-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-4">Payment Reminder</h4>
-                            <p class="text-gray-500 leading-relaxed font-medium">
-                                Sistem penagihan otomatis via Email untuk invoice yang mendekati atau sudah melewati jatuh tempo (Account Receivable).
-                            </p>
-                        </div>
-
-                        <!-- Card 6 (Unified Inbox Commented) -->
-                        <!-- <div class="group p-8 rounded-[40px] bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-2xl hover:border-operra-100 transition-all duration-500">
-                            <div class="h-16 w-16 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-4">Unified Inbox</h4>
-                            <p class="text-gray-500 leading-relaxed font-medium">
-                                Kelola ribuan pesan WhatsApp dari berbagai nomor dalam satu dashboard terpadu yang efisien dan profesional.
-                            </p>
-                        </div> -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pricing Section -->
-            <section id="pricing" class="py-24 bg-[#f8fafc] relative overflow-hidden">
-                <div class="max-w-7xl mx-auto px-6 relative z-10">
-                    <div class="text-center mb-20">
-                        <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-operra-600 mb-4">Rencana Harga</h2>
-                        <h3 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">Investasi Murah untuk <span class="text-operra-600">Hasil Mewah</span></h3>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div 
-                            v-for="plan in pricingPlans" 
-                            :key="plan.id"
-                            :class="plan.is_popular ? 'bg-operra-600 shadow-2xl shadow-operra-600/30 scale-105 z-10' : 'bg-white border border-gray-100'"
-                            class="relative rounded-[40px] p-10 transition-all hover:-translate-y-2 flex flex-col"
-                        >
-                            <div v-if="plan.badge" class="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-gray-950 text-white text-[10px] font-black uppercase tracking-widest whitespace-nowrap shadow-xl">
-                                {{ plan.badge }}
-                            </div>
-
-                            <div class="mb-10">
-                                <h3 :class="plan.is_popular ? 'text-white' : 'text-gray-900'" class="text-xl font-black uppercase mb-2">{{ plan.name }}</h3>
-                                <div class="flex items-baseline gap-1">
-                                    <span :class="plan.is_popular ? 'text-white' : 'text-gray-900'" class="text-4xl font-black">
-                                        {{ plan.price > 0 ? 'Rp' + (plan.price / 1000) + 'k' : 'Custom' }}
-                                    </span>
-                                    <span v-if="plan.price > 0" :class="plan.is_popular ? 'text-white/70' : 'text-gray-400'" class="text-sm font-bold">/ bulan</span>
-                                </div>
-                            </div>
-
-                            <ul class="space-y-4 mb-10 flex-1">
-                                <li v-for="feature in plan.features" :key="feature" :class="plan.is_popular ? 'text-white/90' : 'text-gray-500'" class="flex items-start gap-3 text-sm font-semibold">
-                                    <svg :class="plan.is_popular ? 'text-white' : 'text-operra-500'" class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                    {{ feature }}
-                                </li>
-                            </ul>
-
-                            <Link 
-                                v-if="plan.price > 0"
-                                :href="route('register', { plan: plan.slug })"
-                                :class="plan.is_popular ? 'bg-white text-operra-600 hover:bg-gray-50' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'" 
-                                class="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-center transition-all active:scale-95 shadow-sm"
-                            >
-                                {{ plan.cta_text }}
-                            </Link>
-
-                            <a 
-                                v-else
-                                href="#custom"
-                                :class="plan.is_popular ? 'bg-white text-operra-600 hover:bg-gray-50' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'" 
-                                class="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm text-center transition-all active:scale-95 shadow-sm"
-                            >
-                                {{ plan.cta_text }}
-                            </a>
+                        <div class="rounded-3xl border border-gray-100 shadow-xl overflow-hidden bg-white p-4 group">
+                           <h4 class="text-sm font-bold text-gray-800 mb-4 px-2">Sales Pipeline (Kanban)</h4>
+                           <img src="/images/app_preview_pipeline.png" alt="Preview Pipeline" class="w-full h-auto rounded-xl grayscale group-hover:grayscale-0 transition-all duration-700" />
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Custom Request Section -->
-            <section id="custom" class="py-24 bg-white relative">
-                <div class="max-w-7xl mx-auto px-6">
-                    <div class="max-w-6xl mx-auto bg-gray-950 rounded-[60px] p-8 md:p-20 border border-gray-800 shadow-2xl flex flex-wrap items-center overflow-hidden relative">
-                        <!-- BG Decoration -->
-                        <div class="absolute top-0 right-0 w-96 h-96 bg-operra-600/20 rounded-full blur-[100px] -mr-44 -mt-44 opacity-50"></div>
-                        
-                        <div class="w-full lg:w-1/2 mb-12 lg:mb-0 lg:pr-16 relative z-10">
-                            <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight leading-tight mb-8">Solusi Kustom untuk <span class="text-operra-400 text-nowrap">Bisnis Besar</span></h2>
-                            <p class="text-gray-400 text-lg leading-relaxed mb-10 font-medium">
-                                Kami mengerti setiap bisnis memiliki alur yang unik. Tim kami siap membangun fitur kustom, integrasi API, hingga server On-Premise khusus untuk Anda.
-                            </p>
-                            <div class="space-y-8">
-                                <div class="flex items-center gap-6 group">
-                                    <div class="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-operra-400 group-hover:bg-operra-400 group-hover:text-white transition-all">
-                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-white font-bold text-lg">On-Premise Ready</h4>
-                                        <p class="text-gray-500 text-sm">Data & Server di bawah kendali keamanan Anda sendiri.</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-6 group">
-                                    <div class="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-operra-400 group-hover:bg-operra-400 group-hover:text-white transition-all">
-                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4m4-4l-4 4M6 16l-4-4 4-4"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-white font-bold text-lg">Integrasi Menyeluruh</h4>
-                                        <p class="text-gray-500 text-sm">Hubungkan dengan sistem internal yang sudah ada.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="w-full lg:w-1/2 relative z-10">
-                            <form @submit.prevent="submit" class="bg-white p-8 md:p-12 rounded-[50px] shadow-2xl relative">
-                                <div v-if="showSuccess" class="mb-8 p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 text-sm font-bold text-center">
-                                    Permintaan terkirim! Tim kami akan segera menghubungi Anda.
-                                </div>
-
-                                <div class="space-y-4 mb-8">
-                                    <input v-model="form.name" type="text" placeholder="Nama Lengkap" class="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-900 text-sm focus:border-operra-500 focus:ring-0 transition-all font-medium" required />
-                                    <input v-model="form.company_name" type="text" placeholder="Nama Perusahaan" class="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-900 text-sm focus:border-operra-500 focus:ring-0 transition-all font-medium" required />
-                                    <input v-model="form.email" type="email" placeholder="Email Bisnis" class="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-900 text-sm focus:border-operra-500 focus:ring-0 transition-all font-medium" required />
-                                    <input v-model="form.phone" type="text" placeholder="Nomor WhatsApp" class="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-900 text-sm focus:border-operra-500 focus:ring-0 transition-all font-medium" required />
-                                    <select v-model="form.business_type" class="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-900 text-sm focus:border-operra-500 focus:ring-0 transition-all font-medium">
-                                        <option value="UMKM">UMKM / Retail</option>
-                                        <option value="Enterprise">Enterprise / Besar</option>
-                                        <option value="Government">Instansi Pemerintah</option>
-                                    </select>
-                                    <textarea v-model="form.message" placeholder="Ceritakan kebutuhan unik Anda..." rows="3" class="w-full bg-gray-50 border-gray-100 rounded-2xl p-4 text-gray-900 text-sm focus:border-operra-500 focus:ring-0 transition-all font-medium" required></textarea>
-                                </div>
-                                
-                                <button type="submit" :disabled="form.processing" class="w-full py-5 rounded-2xl bg-gray-950 text-white font-black uppercase tracking-widest text-sm hover:bg-gray-800 transition-all shadow-xl disabled:opacity-50">
-                                    Dapatkan Proposal
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <!-- Pricing Teaser -->
+            <section class="py-24 bg-[#f8fafc]">
+                 <div class="max-w-7xl mx-auto px-6 text-center">
+                    <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-8">Siap Memulai Transformasi Digital?</h2>
+                    <Link :href="route('pricing')" class="inline-block rounded-full bg-operra-600 px-10 py-5 text-lg font-bold text-white shadow-2xl shadow-operra-600/30 hover:bg-operra-700 transition-all">
+                        Lihat Paket Harga
+                    </Link>
+                 </div>
             </section>
         </main>
 

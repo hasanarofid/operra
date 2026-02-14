@@ -20,6 +20,23 @@ class LandingPageController extends Controller
         ]);
     }
 
+    public function showFeatures()
+    {
+        return Inertia::render('Features');
+    }
+
+    public function showPricing()
+    {
+        return Inertia::render('Pricing', [
+            'pricingPlans' => PricingPlan::all(),
+        ]);
+    }
+
+    public function showSolutions()
+    {
+        return Inertia::render('Solutions');
+    }
+
     public function showContact()
     {
         return Inertia::render('Contact');

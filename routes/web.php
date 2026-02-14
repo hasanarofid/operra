@@ -12,6 +12,9 @@ use Inertia\Inertia;
 use App\Http\Controllers\LandingPageController;
 
 Route::get('/', [LandingPageController::class, 'index'])->name('welcome');
+Route::get('/features', [LandingPageController::class, 'showFeatures'])->name('features');
+Route::get('/pricing', [LandingPageController::class, 'showPricing'])->name('pricing');
+Route::get('/solutions', [LandingPageController::class, 'showSolutions'])->name('solutions');
 Route::get('/contact', [LandingPageController::class, 'showContact'])->name('contact');
 Route::post('/request-custom-crm', [LandingPageController::class, 'submitRequest'])->name('request.custom');
 Route::get('/privacy-policy', [LandingPageController::class, 'privacyPolicy'])->name('privacy.policy');
