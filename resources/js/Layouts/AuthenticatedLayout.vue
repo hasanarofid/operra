@@ -427,13 +427,13 @@ onUnmounted(() => {
                         class="hidden md:block text-left md:pb-2 text-gray-600 dark:text-gray-200 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold py-6 px-0"
                         :href="route('dashboard')"
                     >
-                        <div class="flex items-center gap-3">
-                            <div class="bg-emerald-500 p-2 rounded-2xl shadow-lg shadow-emerald-500/20 shrink-0">
+                        <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                            <div class="bg-emerald-500 p-2 rounded-2xl shadow-lg shadow-emerald-500/20 shrink-0 transition-transform duration-300" :class="isSidebarCollapsed ? 'scale-90' : ''">
                                 <ApplicationLogo class="h-8 w-8 text-white" />
                             </div>
                             <span
                                 v-show="!isSidebarCollapsed"
-                                class="text-emerald-600 dark:text-emerald-400 font-black text-2xl tracking-tighter transition-all duration-300"
+                                class="text-emerald-600 dark:text-emerald-400 font-black text-2xl tracking-tighter transition-all duration-300 whitespace-nowrap"
                                 >OPERRA</span
                             >
                         </div>
@@ -446,11 +446,13 @@ onUnmounted(() => {
                                 ?.length > 1
                         "
                         :href="route('dashboard')"
-                        class="mt-1 md:mt-2 mb-3 md:mb-4 px-3 md:px-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-2xl flex items-center justify-between group hover:bg-white dark:hover:bg-gray-800 transition-all border border-gray-100 dark:border-gray-700 hover:border-operra-200 hover:shadow-lg hover:shadow-operra-500/5 shadow-sm md:shadow-none"
+                        class="mt-1 md:mt-2 mb-3 md:mb-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl flex items-center transition-all border border-gray-100 dark:border-gray-700 hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-500/5 group"
+                        :class="isSidebarCollapsed ? 'p-2 justify-center mx-1' : 'px-4 py-2.5 justify-between'"
+                        :title="isSidebarCollapsed ? 'Switch Application' : ''"
                     >
-                        <div class="flex flex-col">
+                        <div class="flex flex-col" v-if="!isSidebarCollapsed">
                             <span
-                                class="text-[9px] uppercase font-black text-gray-400 group-hover:text-operra-500 transition-colors tracking-widest leading-none mb-1.5"
+                                class="text-[9px] uppercase font-black text-gray-400 group-hover:text-emerald-500 transition-colors tracking-widest leading-none mb-1.5"
                                 >Active Application</span
                             >
                             <span
@@ -460,10 +462,11 @@ onUnmounted(() => {
                             </span>
                         </div>
                         <div
-                            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-operra-100 dark:group-hover:bg-operra-900 group-hover:text-operra-600 transition-all"
+                            class="rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900 group-hover:text-emerald-600 transition-all"
+                            :class="isSidebarCollapsed ? 'p-2.5' : 'p-2'"
                         >
                             <svg
-                                class="w-3.5 h-3.5"
+                                class="w-4 h-4"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -525,7 +528,7 @@ onUnmounted(() => {
                     <!-- Divider -->
                     <hr class="my-4 md:min-w-full" />
                     <h6
-                        class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                        class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                         v-show="!isSidebarCollapsed"
                     >
                         Main Navigation
@@ -550,7 +553,7 @@ onUnmounted(() => {
                                 "
                                 :title="isSidebarCollapsed ? 'Dashboard' : ''"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                     <svg
                                         class="w-5 h-5 shrink-0"
                                         fill="none"
@@ -576,7 +579,7 @@ onUnmounted(() => {
                         <template v-if="currentPortal === 'wa_blast'">
                             <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                             <h6
-                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                                 v-show="!isSidebarCollapsed"
                             >
                                 CRM & Leads
@@ -592,7 +595,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Chat Inbox' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -625,7 +628,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Scan WhatsApp' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -658,7 +661,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Manage Leads' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -691,7 +694,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'WhatsApp Blast' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -724,7 +727,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Auto Reply' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -746,13 +749,12 @@ onUnmounted(() => {
                                     </div>
                                 </Link>
                             </li>
-                            <li class="items-center">
-                                <span
-                                    class="text-[10px] uppercase py-2 font-black block text-gray-400"
-                                >
-                                    Laporan Harian (WA)
-                                </span>
-                            </li>
+                            <h6
+                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                v-show="!isSidebarCollapsed"
+                            >
+                                WhatsApp Tools
+                            </h6>
                             <li
                                 v-if="
                                     hasRole('super-admin') &&
@@ -762,16 +764,36 @@ onUnmounted(() => {
                             >
                                 <Link
                                     :href="route('crm.wa.external-apps.index')"
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current(
                                             'crm.wa.external-apps.*',
                                         )
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'External Apps' : ''"
                                 >
-                                    External Apps (Embed)
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                                            />
+                                        </svg>
+                                        <span
+                                            v-show="!isSidebarCollapsed"
+                                            class="whitespace-nowrap overflow-hidden transition-all duration-300 text-xs"
+                                            >External Apps</span>
+                                    </div>
                                 </Link>
                             </li>
                             <li
@@ -780,14 +802,34 @@ onUnmounted(() => {
                             >
                                 <Link
                                     :href="route('crm.wa.media.index')"
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current('crm.wa.media.*')
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'WA Media Gallery' : ''"
                                 >
-                                    WA Media Gallery
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                            />
+                                        </svg>
+                                        <span
+                                            v-show="!isSidebarCollapsed"
+                                            class="whitespace-nowrap overflow-hidden transition-all duration-300 text-xs"
+                                            >WA Media Gallery</span>
+                                    </div>
                                 </Link>
                             </li>
                             <li
@@ -798,25 +840,45 @@ onUnmounted(() => {
                                     :href="
                                         route('crm.wa.customer-statuses.index')
                                     "
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current(
                                             'crm.wa.customer-statuses.*',
                                         )
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'Lead Statuses' : ''"
                                 >
-                                    Lead Statuses
-                                </Link>
-                            </li>
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                        />
+                                    </svg>
+                                    <span
+                                        v-show="!isSidebarCollapsed"
+                                        class="whitespace-nowrap overflow-hidden transition-all duration-300 text-xs"
+                                        >Lead Statuses</span>
+                                </div>
+                            </Link>
+                        </li>
                         </template>
 
                         <!-- Sales CRM Module Links -->
                         <template v-if="currentPortal === 'sales_crm'">
                             <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                             <h6
-                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                                 v-show="!isSidebarCollapsed"
                             >
                                 Sales Portal
@@ -832,7 +894,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Pipeline (Kanban)' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -865,7 +927,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Manage Leads' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -898,7 +960,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Sales Orders' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -931,7 +993,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Stok Produk' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -960,7 +1022,7 @@ onUnmounted(() => {
                                     class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1 text-gray-600 dark:text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600"
                                     :title="isSidebarCollapsed ? 'Laporan (PDF)' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -988,7 +1050,7 @@ onUnmounted(() => {
                         <template v-if="currentPortal === 'marketing_crm'">
                             <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                             <h6
-                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                                 v-show="!isSidebarCollapsed"
                             >
                                 Marketing Portal
@@ -1006,7 +1068,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Portal Dashboard' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1047,7 +1109,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Broadcasting' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1082,7 +1144,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Email Marketing' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1111,16 +1173,36 @@ onUnmounted(() => {
                                             'crm.marketing.lead-scoring.index',
                                         )
                                     "
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current(
                                             'crm.marketing.lead-scoring.*',
                                         )
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'Lead Scoring' : ''"
                                 >
-                                    Lead Scoring
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2"
+                                            />
+                                        </svg>
+                                        <span
+                                            v-show="!isSidebarCollapsed"
+                                            class="whitespace-nowrap overflow-hidden transition-all duration-300 text-xs"
+                                            >Lead Scoring</span>
+                                    </div>
                                 </Link>
                             </li>
                             <li class="items-center">
@@ -1128,16 +1210,36 @@ onUnmounted(() => {
                                     :href="
                                         route('crm.marketing.automations.index')
                                     "
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current(
                                             'crm.marketing.automations.*',
                                         )
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'Automations' : ''"
                                 >
-                                    Automations
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"
+                                            />
+                                        </svg>
+                                        <span
+                                            v-show="!isSidebarCollapsed"
+                                            class="whitespace-nowrap overflow-hidden transition-all duration-300 text-xs"
+                                            >Automations</span>
+                                    </div>
                                 </Link>
                             </li>
                         </template>
@@ -1146,7 +1248,7 @@ onUnmounted(() => {
                         <template v-if="currentPortal === 'customer_service'">
                             <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                             <h6
-                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                                 v-show="!isSidebarCollapsed"
                             >
                                 Support Portal
@@ -1162,7 +1264,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Support Stats' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1195,7 +1297,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Ticketing' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1228,7 +1330,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Chat History' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1261,7 +1363,7 @@ onUnmounted(() => {
                                     "
                                     :title="isSidebarCollapsed ? 'Knowledge Base' : ''"
                                 >
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             class="h-5 w-5 shrink-0"
@@ -1287,36 +1389,77 @@ onUnmounted(() => {
 
                         <!-- Bot Antam Module Links -->
                         <template v-if="currentPortal === 'bot_antam'">
-                            <hr class="my-4 md:min-w-full" />
+                            <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                             <h6
-                                class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                                v-show="!isSidebarCollapsed"
                             >
                                 War Antam Portal
                             </h6>
                             <li class="items-center">
                                 <Link
                                     :href="route('bot_antam.dashboard')"
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current('bot_antam.dashboard')
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'Bot Dashboard' : ''"
                                 >
-                                    Bot Dashboard
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2"
+                                            />
+                                        </svg>
+                                        <span
+                                            v-show="!isSidebarCollapsed"
+                                            class="whitespace-nowrap overflow-hidden transition-all duration-300"
+                                            >Bot Dashboard</span>
+                                    </div>
                                 </Link>
                             </li>
                             <li class="items-center">
                                 <Link
                                     :href="route('bot_antam.support.index')"
-                                    class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                    class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current('bot_antam.support.*')
-                                            ? 'text-operra-500'
-                                            : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                     "
+                                    :title="isSidebarCollapsed ? 'Support Messages' : ''"
                                 >
-                                    Support Messages
+                                    <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 shrink-0"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                                            />
+                                        </svg>
+                                        <span
+                                            v-show="!isSidebarCollapsed"
+                                            class="whitespace-nowrap overflow-hidden transition-all duration-300"
+                                            >Support Messages</span>
+                                    </div>
                                 </Link>
                             </li>
                             <li class="items-center">
@@ -1347,7 +1490,7 @@ onUnmounted(() => {
                         <!-- Global Support Link (Komplain) -->
                         <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                         <h6
-                            class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                            class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                             v-show="!isSidebarCollapsed"
                         >
                             Pusat Bantuan
@@ -1363,7 +1506,7 @@ onUnmounted(() => {
                                 "
                                 :title="isSidebarCollapsed ? 'Komplain / Bantuan' : ''"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 shrink-0"
@@ -1389,7 +1532,7 @@ onUnmounted(() => {
 
                     <hr class="my-4 md:min-w-full" v-show="!isSidebarCollapsed" />
                     <h6
-                        class="md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
+                        class="px-4 md:min-w-full text-gray-500 text-[10px] uppercase font-black block pt-1 pb-4 no-underline tracking-widest"
                         v-show="!isSidebarCollapsed"
                     >
                         Administrative
@@ -1406,14 +1549,34 @@ onUnmounted(() => {
                         >
                             <Link
                                 :href="route('admin.system.companies.index')"
-                                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                 :class="
                                     route().current('admin.system.companies.*')
-                                        ? 'text-operra-500'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 "
+                                :title="isSidebarCollapsed ? 'Monitoring Pelanggan' : ''"
                             >
-                                Monitoring Pelanggan
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 shrink-0"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 005.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                        />
+                                    </svg>
+                                    <span
+                                        v-show="!isSidebarCollapsed"
+                                        class="whitespace-nowrap overflow-hidden transition-all duration-300"
+                                        >Monitoring Pelanggan</span>
+                                </div>
                             </Link>
                         </li>
                         <li
@@ -1424,14 +1587,34 @@ onUnmounted(() => {
                         >
                             <Link
                                 :href="route('admin.monitoring.webhooks')"
-                                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                 :class="
                                     route().current('admin.monitoring.webhooks')
-                                        ? 'text-operra-500'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 "
+                                :title="isSidebarCollapsed ? 'Webhook Monitor' : ''"
                             >
-                                WhatsApp Webhook Monitor
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 shrink-0"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                                        />
+                                    </svg>
+                                    <span
+                                        v-show="!isSidebarCollapsed"
+                                        class="whitespace-nowrap overflow-hidden transition-all duration-300"
+                                        >Webhook Monitor</span>
+                                </div>
                             </Link>
                         </li>
                         <li
@@ -1443,20 +1626,40 @@ onUnmounted(() => {
                         >
                             <Link
                                 :href="route('admin.leads.index')"
-                                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                 :class="
                                     route().current('admin.leads.*')
-                                        ? 'text-operra-500'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 "
+                                :title="isSidebarCollapsed ? 'Leads Request' : ''"
                             >
-                                Leads Request
-                                <span
-                                    v-if="$page.props.newLeadsCount > 0"
-                                    class="ml-2 px-2 py-0.5 bg-operra-500 text-white rounded-full text-[10px]"
-                                >
-                                    {{ $page.props.newLeadsCount }}
-                                </span>
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 shrink-0"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"
+                                        />
+                                    </svg>
+                                    <span
+                                        v-show="!isSidebarCollapsed"
+                                        class="whitespace-nowrap overflow-hidden transition-all duration-300 text-xs"
+                                        >Leads Request</span>
+                                    <span
+                                        v-if="$page.props.newLeadsCount > 0 && !isSidebarCollapsed"
+                                        class="ml-auto px-2 py-0.5 bg-emerald-500 text-white rounded-full text-[10px]"
+                                    >
+                                        {{ $page.props.newLeadsCount }}
+                                    </span>
+                                </div>
                             </Link>
                         </li>
                         <li
@@ -1476,7 +1679,7 @@ onUnmounted(() => {
                                 "
                                 :title="isSidebarCollapsed ? 'Support Inbox' : ''"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 shrink-0"
@@ -1508,14 +1711,34 @@ onUnmounted(() => {
                         >
                             <Link
                                 :href="route('bot-antam-accounts.index')"
-                                class="text-xs uppercase py-2 font-bold block transition-colors duration-200"
+                                class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                 :class="
                                     route().current('bot-antam-accounts.*')
-                                        ? 'text-operra-500'
-                                        : 'text-gray-700 dark:text-gray-300 hover:text-operra-500'
+                                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                                 "
+                                :title="isSidebarCollapsed ? 'Manage Bot Travelers' : ''"
                             >
-                                Manage Bot Travelers
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5 shrink-0"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                                        />
+                                    </svg>
+                                    <span
+                                        v-show="!isSidebarCollapsed"
+                                        class="whitespace-nowrap overflow-hidden transition-all duration-300"
+                                        >Manage Bot Travelers</span>
+                                </div>
                             </Link>
                         </li>
                         <li
@@ -1532,7 +1755,7 @@ onUnmounted(() => {
                                 "
                                 :title="isSidebarCollapsed ? 'Company Settings' : ''"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 shrink-0"
@@ -1579,7 +1802,7 @@ onUnmounted(() => {
                                 "
                                 :title="isSidebarCollapsed ? 'Manage Staff' : ''"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 shrink-0"
@@ -1612,7 +1835,7 @@ onUnmounted(() => {
                                 "
                                 :title="isSidebarCollapsed ? 'Profile Settings' : ''"
                             >
-                                <div class="flex items-center gap-3">
+                                <div class="flex items-center transition-all duration-300" :class="isSidebarCollapsed ? 'justify-center w-full' : 'gap-3'">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         class="h-5 w-5 shrink-0"
