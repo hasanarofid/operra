@@ -78,15 +78,13 @@ class DashboardController extends Controller
                     ->limit(5)
                     ->get(),
                 'customer_growth' => (clone $leadsQuery)->where('created_at', '>=', $weekAgo)->count(),
-                'low_stock_count' => \App\Models\Product::where('company_id', $user->company_id)
-                    ->withSum('stockMovements as current_stock', 'quantity')
+                'low_stock_count' => \App\Models\Product::withSum('stockMovements as current_stock', 'quantity')
                     ->get()
                     ->filter(function($product) {
                         return ($product->current_stock ?? 0) < $product->min_stock;
                     })
                     ->count(),
-                'top_selling_products' => \App\Models\Product::where('company_id', $user->company_id)
-                    ->select('products.*')
+                'top_selling_products' => \App\Models\Product::select('products.*')
                     ->join('stock_movements', 'products.id', '=', 'stock_movements.product_id')
                     ->where('stock_movements.quantity', '<', 0) // Negative means outgoing/sold
                     ->selectRaw('SUM(ABS(stock_movements.quantity)) as total_sold')
