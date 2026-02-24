@@ -1098,11 +1098,11 @@ onUnmounted(() => {
                             </li>
                             <li class="items-center">
                                 <Link
-                                    :href="route('crm.marketing.broadcasts.index')"
+                                    :href="route('crm.marketing.blasts.index')"
                                     class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
                                     :class="
                                         route().current(
-                                            'crm.marketing.broadcasts.*',
+                                            'crm.marketing.blasts.*',
                                         )
                                             ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                                             : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -1253,7 +1253,8 @@ onUnmounted(() => {
                             >
                                 Support Portal
                             </h6>
-                            <li class="items-center">
+                            <!-- Support Stats (Redundant with dashboard) -->
+                            <!-- <li class="items-center">
                                 <Link
                                     :href="route('crm.support.dashboard')"
                                     class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
@@ -1285,7 +1286,8 @@ onUnmounted(() => {
                                             >Support Stats</span>
                                     </div>
                                 </Link>
-                            </li>
+                            </li> -->
+
                             <li class="items-center">
                                 <Link
                                     :href="route('crm.support.tickets.index')"
@@ -1352,7 +1354,8 @@ onUnmounted(() => {
                                     </div>
                                 </Link>
                             </li>
-                            <li class="items-center">
+                            <!-- Knowledge Base (Hidden as requested) -->
+                            <!-- <li class="items-center">
                                 <Link
                                     :href="route('crm.support.knowledge-base.index')"
                                     class="text-xs uppercase py-3 px-4 font-bold block transition-all duration-200 rounded-xl mb-1"
@@ -1384,7 +1387,7 @@ onUnmounted(() => {
                                             >Knowledge Base</span>
                                     </div>
                                 </Link>
-                            </li>
+                            </li> -->
                         </template>
 
                         <!-- Bot Antam Module Links -->

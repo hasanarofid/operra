@@ -46,7 +46,7 @@ class RegisteredUserController extends Controller
         $pricingPlan = \App\Models\PricingPlan::where('slug', $planSlug)->first();
 
         // Default modules (Starter gets WA Blast and Sales CRM for Leads)
-        $enabledModules = ['internal', 'wa_blast', 'sales_crm'];
+        $enabledModules = ['internal', 'wa_blast', 'sales_crm', 'marketing_crm', 'customer_service'];
 
         // Modules for Business Pro or Enterprise
         if ($pricingPlan && in_array($pricingPlan->slug, ['business-pro', 'enterprise'])) {
